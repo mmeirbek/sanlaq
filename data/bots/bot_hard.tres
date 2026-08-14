@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BotProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/bot_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+profile_id = "bot_hard"
+display_name = "Шебер"
+difficulty = 2
+wander_speed_mult = 1.0
+fear_distance = 140.0
+hide_tendency = 0.2
+reaction_delay = 0.05
+noise_mistake_chance = 0.02
+can_sprint = true
+use_hiding_spots = true
+taunt_chance = 0.1

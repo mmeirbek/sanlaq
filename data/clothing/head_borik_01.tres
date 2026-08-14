@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ClothingItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/clothing_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "head_borik_01"
+slot_type = 0
+name_kz = "Бөрік"
+name_ru = "Борик"
+name_en = "Borik"
+desc_kz = "Қысқы жылы бас киім. Көбінесе аң терісінен жасалады."
+desc_ru = "Зимний тёплый головной убор. Часто изготавливается из меха."
+desc_en = "Warm winter hat. Often made of fur."
+color = Color(0.25, 0.2, 0.1, 1)
+rarity = 0
+unlock_by_default = true
+wrong_answers_kz = Array[String](["Тақия", "Тымақ", "Кимешек"])
+wrong_answers_ru = Array[String](["Тақия", "Тымак", "Кимешек"])
+texture_path = "res://assets/character/head/head_borik_01.png"
+icon_path = "res://assets/items/head_borik_01.png"

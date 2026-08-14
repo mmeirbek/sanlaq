@@ -1,0 +1,114 @@
+[gd_scene load_steps=2 format=3 uid="uid://main_menu"]
+
+[ext_resource type="Script" path="res://scenes/ui/main_menu.gd" id="1"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+anchor_left = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+anchor_left = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.12, 0.05, 1)
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+anchor_left = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 16
+
+[node name="SpacerTop" type="Control" parent="Margin/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 60)
+
+[node name="Title" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+text = "Соқыртеке  Sokyroteke"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 48
+
+[node name="Subtitle" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+text = "Ұлттық киімдерді таны!"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 22
+
+[node name="NicknameEdit" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="NickNameLabel" type="Label" parent="Margin/VBox/NicknameEdit"]
+layout_mode = 2
+text = "Лақап ат: "
+
+[node name="NicknameInput" type="LineEdit" parent="Margin/VBox/NicknameEdit"]
+layout_mode = 2
+custom_minimum_size = Vector2(220, 0)
+placeholder_text = "Nickname"
+
+[node name="LangBtn" type="Button" parent="Margin/VBox"]
+layout_mode = 2
+text = "KZ  |  RU  |  EN"
+theme_override_font_sizes/font_size = 18
+
+[node name="SpacerMid" type="Control" parent="Margin/VBox"]
+layout_mode = 2
+
+[node name="PlayBtn" type="Button" parent="Margin/VBox"]
+layout_mode = 2
+text = "Ойнау  /  Играть"
+theme_override_font_sizes/font_size = 28
+
+[node name="PlayVsBotsBtn" type="Button" parent="Margin/VBox"]
+layout_mode = 2
+text = "Боттарға қарсы  /  Против ботов"
+theme_override_font_sizes/font_size = 22
+
+[node name="WardrobeBtn" type="Button" parent="Margin/VBox"]
+layout_mode = 2
+text = "Шкаф  /  Шкаф"
+theme_override_font_sizes/font_size = 22
+
+[node name="CodexBtn" type="Button" parent="Margin/VBox"]
+layout_mode = 2
+text = "Мұра  /  Наследие"
+theme_override_font_sizes/font_size = 22
+
+[node name="QuitBtn" type="Button" parent="Margin/VBox"]
+layout_mode = 2
+text = "Шығу  /  Выйти"
+theme_override_font_sizes/font_size = 18
+
+[node name="SpacerBot" type="Control" parent="Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[connection signal="pressed" from="Margin/VBox/PlayBtn" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="Margin/VBox/PlayVsBotsBtn" to="." method="_on_play_vs_bots_pressed"]
+[connection signal="pressed" from="Margin/VBox/WardrobeBtn" to="." method="_on_wardrobe_pressed"]
+[connection signal="pressed" from="Margin/VBox/CodexBtn" to="." method="_on_codex_pressed"]
+[connection signal="pressed" from="Margin/VBox/QuitBtn" to="." method="_on_quit_pressed"]
+[connection signal="pressed" from="Margin/VBox/LangBtn" to="." method="_on_lang_pressed"]
+[connection signal="text_changed" from="Margin/VBox/NicknameInput" to="." method="_on_nickname_changed"]

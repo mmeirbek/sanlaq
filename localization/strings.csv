@@ -1,0 +1,52 @@
+keys,kz,ru,en
+main_title,Соқыртеке,Сокыртеке,Sokyroteke
+main_subtitle,Ұлттық киімдерді таны!,Узнай национальную одежду!,Discover national clothing!
+btn_play,Ойнау,Играть,Play
+btn_wardrobe,Шкаф,Шкаф,Wardrobe
+btn_codex,Мұра,Наследие,Heritage
+btn_settings,Баптаулар,Настройки,Settings
+btn_back,Артқа,Назад,Back
+btn_ready,Дайын,Готов,Ready
+btn_leave,Шығу,Выйти,Leave
+btn_rematch,Қайта ойнау,Реванш,Rematch
+btn_create_room,Бөлме құру,Создать комнату,Create Room
+btn_join_room,Бөлмеге кіру,Войти в комнату,Join Room
+btn_copy_code,Кодты көшіру,Копировать код,Copy Code
+lobby_room_code,Бөлме коды,Код комнаты,Room Code
+lobby_players,Ойыншылар,Игроки,Players
+lobby_waiting,Күтуде...,Ожидание...,Waiting...
+lobby_vs_bots,Боттарға қарсы,Против ботов,VS Bots
+lbl_nickname,Лақап ат,Никнейм,Nickname
+lbl_language,Тіл,Язык,Language
+wardrobe_head,Бас киім,Головной убор,Headwear
+wardrobe_torso,Сырт киім,Верхняя одежда,Torso
+wardrobe_pants,Шалбар,Штаны,Pants
+wardrobe_shoes,Аяқ киім,Обувь,Shoes
+wardrobe_save,Сақтау,Сохранить,Save
+wardrobe_random,Кездейсоқ,Случайно,Random
+quiz_question,Бұл қандай {slot}?,Что это за {slot}?,What {slot} is this?
+quiz_correct,Дұрыс!,Правильно!,Correct!
+quiz_wrong,Қате!,Неправильно!,Wrong!
+quiz_answer_was,Бұл: {name},Это был: {name},It was: {name}
+quiz_escaped,Қашып кетті!,Сбежал!,Escaped!
+round_new,Жаңа раунд!,Новый раунд!,New Round!
+round_sokyroteke_chosen,Сіз - Соқыртеке!,Вы - Сокыртеке!,You are Sokyroteke!
+round_run,Қашыңыз!,Убегайте!,Run!
+round_time,Уақыт,Время,Time
+round_catches,Ұсталды,Поймано,Caught
+round_victory,Жеңіс!,Победа!,Victory!
+round_defeat,Жеңіліс,Поражение,Defeat
+results_title,Нәтижелер,Результаты,Results
+results_player,Ойыншы,Игрок,Player
+results_score,Ұпай,Очки,Score
+codx_unlocked,Ашылған,Открыто,Unlocked
+codx_locked,Жабық,Закрыто,Locked
+codx_item_name,Атауы,Название,Name
+codx_item_desc,Сипаттамасы,Описание,Description
+codx_correct_count,Дұрыс жауап,Правильных ответов,Correct answers
+settings_title,Баптаулар,Настройки,Settings
+settings_audio,Дыбыс,Звук,Audio
+settings_master,Жалпы,Общий,Master
+settings_sfx,Әсерлер,Эффекты,SFX
+settings_music,Музыка,Музыка,Music
+settings_lang,Тіл,Язык,Language

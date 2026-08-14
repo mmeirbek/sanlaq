@@ -1,0 +1,7 @@
+.godot/
+*.uid
+*.import
+*.translation
+export/
+build/
+*.tmp

@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ClothingItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/clothing_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "head_tymaq_01"
+slot_type = 0
+name_kz = "Тымақ"
+name_ru = "Тымак"
+name_en = "Tymaq"
+desc_kz = "Қысқы бас киім. Құлақ пен мойынды жауып тұратын қалқандары бар."
+desc_ru = "Зимний головной убор с клапанами, закрывающими уши и шею."
+desc_en = "Winter hat with flaps covering ears and neck."
+color = Color(0.5, 0.35, 0.2, 1)
+rarity = 1
+unlock_by_default = true
+wrong_answers_kz = Array[String](["Тақия", "Бөрік", "Сәукеле"])
+wrong_answers_ru = Array[String](["Тақия", "Борик", "Саукеле"])
+texture_path = "res://assets/character/head/head_tymaq_01.png"
+icon_path = "res://assets/items/head_tymaq_01.png"

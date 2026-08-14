@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ClothingItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/clothing_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "pants_shalbar_01"
+slot_type = 2
+name_kz = "Шалбар"
+name_ru = "Шалбар"
+name_en = "Shalbar"
+desc_kz = "Дәстүрлі қазақ шалбары. Кең, ыңғайлы пішілген."
+desc_ru = "Традиционные казахские штаны. Широкого, удобного кроя."
+desc_en = "Traditional Kazakh pants. Wide, comfortable cut."
+color = Color(0.25, 0.2, 0.15, 1)
+rarity = 0
+unlock_by_default = true
+wrong_answers_kz = Array[String](["Мәсі", "Шапан", "Кебіс"])
+wrong_answers_ru = Array[String](["Маси", "Шапан", "Кебис"])
+texture_path = "res://assets/character/pants/pants_shalbar_01.png"
+icon_path = "res://assets/items/pants_shalbar_01.png"

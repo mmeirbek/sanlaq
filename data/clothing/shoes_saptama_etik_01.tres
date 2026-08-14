@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ClothingItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/clothing_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "shoes_saptama_etik_01"
+slot_type = 3
+name_kz = "Саптама етік"
+name_ru = "Саптама етик"
+name_en = "Saptama Etik"
+desc_kz = "Биік қонышты, ұзартылған былғары етік. Қыста және салт атпен жүргенде киіледі."
+desc_ru = "Высокие удлинённые кожаные сапоги. Носят зимой и при верховой езде."
+desc_en = "Tall elongated leather boots. Worn in winter and horseback riding."
+color = Color(0.1, 0.1, 0.1, 1)
+rarity = 1
+unlock_by_default = false
+wrong_answers_kz = Array[String](["Мәсі", "Кебіс", "Шалбар"])
+wrong_answers_ru = Array[String](["Маси", "Кебис", "Шалбар"])
+texture_path = "res://assets/character/shoes/shoes_saptama_etik_01.png"
+icon_path = "res://assets/items/shoes_saptama_etik_01.png"

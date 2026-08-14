@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ClothingItem" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/clothing_item.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "pants_shalbar_decorated_01"
+slot_type = 2
+name_kz = "Әшекейлі шалбар"
+name_ru = "Украшенный шалбар"
+name_en = "Decorated Shalbar"
+desc_kz = "Ою-өрнекпен әшекейленген дәстүрлі шалбар. Мерекелік киім."
+desc_ru = "Традиционные штаны, украшенные орнаментом. Праздничная одежда."
+desc_en = "Traditional pants decorated with ornaments. Festive attire."
+color = Color(0.55, 0.1, 0.1, 1)
+rarity = 1
+unlock_by_default = false
+wrong_answers_kz = Array[String](["Шалбар", "Мәсі", "Көйлек"])
+wrong_answers_ru = Array[String](["Шалбар", "Маси", "Койлек"])
+texture_path = "res://assets/character/pants/pants_shalbar_decorated_01.png"
+icon_path = "res://assets/items/pants_shalbar_decorated_01.png"

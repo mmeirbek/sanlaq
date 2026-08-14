@@ -1,0 +1,74 @@
+[gd_scene format=3 uid="uid://yurt"]
+
+[ext_resource type="Texture2D" path="res://assets/character/yurt/yurt.png" id="1"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_wall"]
+radius = 11.0
+
+[node name="Yurt" type="Node2D"]
+
+[node name="Roof" type="Sprite2D" parent="."]
+z_index = 50
+texture = ExtResource("1")
+centered = true
+scale = Vector2(0.75, 0.75)
+
+[node name="Walls" type="StaticBody2D" parent="."]
+collision_layer = 5
+collision_mask = 0
+
+[node name="Wall0" type="CollisionShape2D" parent="Walls"]
+position = Vector2(90, 0)
+shape = SubResource("CircleShape2D_wall")
+
+[node name="Wall1" type="CollisionShape2D" parent="Walls"]
+position = Vector2(84.572, 30.778)
+shape = SubResource("CircleShape2D_wall")
+
+[node name="Wall2" type="CollisionShape2D" parent="Walls"]
+position = Vector2(68.944, 57.879)
+shape = SubResource("CircleShape2D_wall")
+
+[node name="Wall3" type="CollisionShape2D" parent="Walls"]
+position = Vector2(15.627, 88.633)
+shape = SubResource("CircleShape2D_wall")
+
+[node name="Wall4" type="CollisionShape2D" parent="Walls"]
+position = Vector2(-15.627, 88.633)
+shape = SubResource("CircleShape2D_wall")
+
+[node name="Wall5" type="CollisionShape2D" parent="Walls"]
+position = Vector2(-68.944, 57.879)
+shape = SubResource("CircleShape2D_wall")
+
+[node name="Wall6" type="CollisionShape2D" parent="Walls"]
+position = Vector2(-84.572, 30.778)
+shape = SubResource("CircleShape2D_wall")
+
+[node name="Wall7" type="CollisionShape2D" parent="Walls"]
+position = Vector2(-90, 0)
+shape = SubResource("CircleShape2D_wall")
+
+[node name="Wall8" type="CollisionShape2D" parent="Walls"]
+position = Vector2(-84.572, -30.778)
+shape = SubResource("CircleShape2D_wall")
+
+[node name="Wall9" type="CollisionShape2D" parent="Walls"]
+position = Vector2(-68.944, -57.879)
+shape = SubResource("CircleShape2D_wall")
+
+[node name="Wall10" type="CollisionShape2D" parent="Walls"]
+position = Vector2(-15.627, -88.633)
+shape = SubResource("CircleShape2D_wall")
+
+[node name="Wall11" type="CollisionShape2D" parent="Walls"]
+position = Vector2(15.627, -88.633)
+shape = SubResource("CircleShape2D_wall")
+
+[node name="Wall12" type="CollisionShape2D" parent="Walls"]
+position = Vector2(68.944, -57.879)
+shape = SubResource("CircleShape2D_wall")
+
+[node name="Wall13" type="CollisionShape2D" parent="Walls"]
+position = Vector2(84.572, -30.778)
+shape = SubResource("CircleShape2D_wall")

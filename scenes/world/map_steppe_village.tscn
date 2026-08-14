@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://map_steppe_village"]
+
+[ext_resource type="Script" path="res://scripts/systems/map_manager.gd" id="1"]
+
+[node name="Map" type="Node2D"]
+script = ExtResource("1")

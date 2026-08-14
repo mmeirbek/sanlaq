@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MapDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/map_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+map_id = "steppe_village"
+display_name_kz = "Дала ауылы"
+display_name_ru = "Степной аул"
+spawn_points = Array[Vector2]([Vector2(-500, -300), Vector2(-200, -300), Vector2(100, -300), Vector2(400, -300), Vector2(-500, 200), Vector2(-200, 200), Vector2(100, 200), Vector2(400, 200)])
+bounds_min = Vector2(-900, -550)
+bounds_max = Vector2(900, 550)
+ambient_color = Color(0.15, 0.28, 0.12, 1)

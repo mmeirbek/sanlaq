@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="GameModeDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/game_mode_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+mode_id = "classic"
+display_name_kz = "Классикалық"
+display_name_ru = "Классика"
+min_players = 4
+max_players = 6
+sokyroteke_count = 1
+round_duration = 90.0
+catches_needed = 3
+headstart_secs = 3.0
+sokyroteke_speed_mult = 1.2
+player_base_speed = 220.0
+sokyroteke_speed_penalty_mult = 0.9
+quiz_answer_time = 10.0
+total_rounds = 3
+standing_noise_interval = 4.5
+shield_duration = 2.0
