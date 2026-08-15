@@ -40,7 +40,9 @@ jobs:
         run: godot --headless --import --path .
 
       - name: Export web build
-        run: godot --headless --export-release "Web" --path . export/web/index.html
+        run: |
+          mkdir -p export/web
+          godot --headless --export-release "Web" --path . export/web/index.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
