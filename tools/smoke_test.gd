@@ -1,24 +1,35 @@
 extends SceneTree
 
+const SCENES := [
+	"res://scenes/ui/main_menu.tscn",
+	"res://scenes/ui/lobby.tscn",
+	"res://scenes/ui/wardrobe.tscn",
+	"res://scenes/ui/codex.tscn",
+	"res://scenes/ui/results.tscn",
+	"res://scenes/ui/settings.tscn",
+	"res://scenes/ui/components/sanlaq_ornament.tscn",
+	"res://scenes/ui/components/sanlaq_panel.tscn",
+	"res://scenes/ui/components/sanlaq_button.tscn",
+	"res://scenes/ui/components/sanlaq_label.tscn",
+	"res://scenes/ui/components/sanlaq_divider.tscn",
+	"res://scenes/world/game.tscn",
+]
+
 func _init() -> void:
 	await process_frame
 	await process_frame
-
-	var wardrobe_path := "res://scenes/ui/wardrobe.tscn"
-	var game_path := "res://scenes/world/game.tscn"
-
-	var err := await _try_load(wardrobe_path)
-	if err != OK:
-		print("[test] WARDROBE FAILED: ", err)
+	var failed := 0
+	for path in SCENES:
+		var err := await _try_load(path)
+		if err != OK:
+			failed += 1
+			print("[test] FAILED ", path, " -> ", err)
+		else:
+			print("[test] OK ", path)
+	if failed == 0:
+		print("[test] ALL PASSED")
 	else:
-		print("[test] wardrobe OK")
-
-	err = await _try_load(game_path)
-	if err != OK:
-		print("[test] GAME FAILED: ", err)
-	else:
-		print("[test] game OK")
-
+		print("[test] FAILURES: ", failed)
 	quit()
 
 func _try_load(path: String) -> Error:
@@ -32,4 +43,5 @@ func _try_load(path: String) -> Error:
 	await process_frame
 	await process_frame
 	inst.queue_free()
+	await process_frame
 	return OK

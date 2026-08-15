@@ -8,6 +8,7 @@ signal input_changed(direction: Vector2, sprint: bool)
 
 var _direction: Vector2 = Vector2.ZERO
 var _sprinting: bool = false
+var _touch_sprint: bool = false
 var touch_override: bool = false
 
 func _ready() -> void:
@@ -24,7 +25,8 @@ func _process(_delta: float) -> void:
 		Input.get_axis("move_up", "move_down")
 	)
 
-	var sprint := Input.is_action_pressed("sprint")
+	# The on-screen SPRINT button must supplement keyboard input, never replace it.
+	var sprint := Input.is_action_pressed("sprint") or _touch_sprint
 
 	if dir.length() > 1.0:
 		dir = dir.normalized()
@@ -45,3 +47,6 @@ func set_remote_input(dir: Vector2, sprint: bool) -> void:
 		_direction = dir
 		_sprinting = sprint
 		input_changed.emit(dir, sprint)
+
+func set_touch_sprint_active(active: bool) -> void:
+	_touch_sprint = active

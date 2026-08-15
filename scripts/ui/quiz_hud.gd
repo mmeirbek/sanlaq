@@ -89,10 +89,7 @@ func _build_options(item: ClothingItem) -> Array[String]:
 	var correct := item.get_name_for_lang(lang)
 	var wrongs: Array[String]
 
-	if lang == "ru":
-		wrongs = item.wrong_answers_ru.duplicate()
-	else:
-		wrongs = item.wrong_answers_kz.duplicate()
+	wrongs = item.wrong_answers_kz.duplicate()
 
 	while wrongs.size() > 2:
 		wrongs.remove_at(randi() % wrongs.size())

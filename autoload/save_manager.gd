@@ -7,9 +7,12 @@ var unlocked_clothing: Array[String] = []
 var equipped: Dictionary = {}
 var cloth_pool: Array[String] = []
 var settings: Dictionary = {}
+var career: Dictionary = {"wins": 0, "streak": 0, "best_streak": 0, "knowledge": 0}
 
 func _ready() -> void:
 	_load_from_disk()
+	_unlock_all_clothing()
+	_ensure_equipped_outfit()
 
 func get_equipped(slot_type: ClothingItem.SlotType) -> String:
 	return equipped.get(slot_type, "")
@@ -68,6 +71,7 @@ func _save_to_disk() -> void:
 		equipped = _dict_to_string_keys(equipped),
 		cloth_pool = cloth_pool,
 		settings = settings,
+		career = career,
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
@@ -105,6 +109,7 @@ func _load_from_disk() -> void:
 	equipped = _dict_int_keys(data.get("equipped", {}))
 	cloth_pool = _array_string(data.get("cloth_pool", []))
 	settings = data.get("settings", {})
+	career = data.get("career", career)
 
 	if unlocked_clothing.is_empty():
 		_unlock_defaults()
@@ -116,6 +121,27 @@ func _unlock_defaults() -> void:
 		if item.unlock_by_default:
 			if not is_unlocked(item.id):
 				unlocked_clothing.append(item.id)
+
+func _unlock_all_clothing() -> void:
+	var changed := false
+	for item in AssetRegistry.clothing_items:
+		if not is_unlocked(item.id):
+			unlocked_clothing.append(item.id)
+			changed = true
+	if changed:
+		_save_to_disk()
+
+func _ensure_equipped_outfit() -> void:
+	var changed := false
+	for slot in ClothingItem.SlotType.values():
+		var equipped_id: String = equipped.get(slot, "")
+		if AssetRegistry.get_clothing_by_id(equipped_id) == null:
+			var items := AssetRegistry.get_clothing(slot as ClothingItem.SlotType)
+			if not items.is_empty():
+				equipped[slot] = items[0].id
+				changed = true
+	if changed:
+		_save_to_disk()
 
 func _equip_defaults() -> void:
 	if equipped.is_empty():
@@ -150,12 +176,24 @@ func set_nickname(value: String) -> void:
 	nickname = value
 	_save_to_disk()
 
+func record_match(won: bool, correct_answers: int) -> Dictionary:
+	career["knowledge"] = int(career.get("knowledge", 0)) + correct_answers
+	if won:
+		career["wins"] = int(career.get("wins", 0)) + 1
+		career["streak"] = int(career.get("streak", 0)) + 1
+		career["best_streak"] = maxi(int(career.get("best_streak", 0)), int(career["streak"]))
+	else:
+		career["streak"] = 0
+	_save_to_disk()
+	return career.duplicate()
+
 func reset_all() -> void:
 	unlocked_clothing.clear()
 	equipped.clear()
 	cloth_pool.clear()
 	nickname = ""
 	settings.clear()
-	_unlock_defaults()
+	career = {"wins": 0, "streak": 0, "best_streak": 0, "knowledge": 0}
+	_unlock_all_clothing()
 	_equip_defaults()
 	_save_to_disk()

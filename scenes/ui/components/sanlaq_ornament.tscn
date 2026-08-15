@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/components/sanlaq_ornament.gd" id="1"]
+
+[node name="SanlaqOrnament" type="Control"]
+custom_minimum_size = Vector2(0, 44)
+mouse_filter = 2
+script = ExtResource("1")

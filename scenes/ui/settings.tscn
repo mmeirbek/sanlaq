@@ -1,0 +1,314 @@
+[gd_scene format=3 uid="uid://dtg3qkbn8eqg2"]
+
+[ext_resource type="Script" uid="uid://n8l7yv1hy63x" path="res://scenes/ui/settings.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_ornament.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="3"]
+[ext_resource type="FontFile" uid="uid://dtqjd8bgha67o" path="res://assets/fonts/NotoSans-Bold.ttf" id="4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_audio_card"]
+bg_color = Color(0.984, 0.969, 0.933, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.851, 0.663, 0.247, 0.82)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+shadow_color = Color(0.04, 0.16, 0.23, 0.2)
+shadow_size = 12
+shadow_offset = Vector2(0, 5)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rank_card"]
+bg_color = Color(0.035, 0.12, 0.16, 0.93)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.918, 0.761, 0.357, 0.9)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+shadow_color = Color(0.04, 0.16, 0.23, 0.26)
+shadow_size = 12
+shadow_offset = Vector2(0, 5)
+
+[node name="Settings" type="Control" unique_id=2019682047]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" parent="." unique_id=1791518158 instance=ExtResource("3")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 23.0
+offset_bottom = 23.0
+grow_horizontal = 2
+grow_vertical = 2
+variant = 3
+
+[node name="TopOrnament" parent="." unique_id=701063375 instance=ExtResource("2")]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 44.0
+grow_horizontal = 2
+
+[node name="BottomOrnament" parent="." unique_id=1634841608 instance=ExtResource("2")]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -44.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Title" type="Label" parent="." unique_id=529266983]
+layout_mode = 0
+offset_left = 88.0
+offset_top = 72.0
+offset_right = 700.0
+offset_bottom = 114.0
+theme_override_colors/font_color = Color(0.984, 0.969, 0.933, 1)
+theme_override_fonts/font = ExtResource("4")
+theme_override_font_sizes/font_size = 34
+text = "БАПТАУЛАР"
+
+[node name="Subtitle" type="Label" parent="." unique_id=677379154]
+layout_mode = 0
+offset_left = 92.0
+offset_top = 117.0
+offset_right = 780.0
+offset_bottom = 140.0
+theme_override_colors/font_color = Color(0.918, 0.761, 0.357, 1)
+theme_override_font_sizes/font_size = 15
+text = "ДЫБЫС ПЕН ОЙЫНШЫ ПРОФИЛІ"
+
+[node name="BackBtn" type="Button" parent="." unique_id=1907963707]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -230.0
+offset_top = 76.0
+offset_right = -72.0
+offset_bottom = 128.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 19
+text = "← Артқа"
+
+[node name="AudioCard" type="PanelContainer" parent="." unique_id=939478625]
+layout_mode = 0
+offset_left = 88.0
+offset_top = 200.0
+offset_right = 680.0
+offset_bottom = 645.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_audio_card")
+
+[node name="Margin" type="MarginContainer" parent="AudioCard" unique_id=718427109]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 24
+
+[node name="VBox" type="VBoxContainer" parent="AudioCard/Margin" unique_id=1790980703]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Heading" type="Label" parent="AudioCard/Margin/VBox" unique_id=1147164542]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_fonts/font = ExtResource("4")
+theme_override_font_sizes/font_size = 25
+text = "ДЫБЫС"
+
+[node name="MusicTitle" type="Label" parent="AudioCard/Margin/VBox" unique_id=794057137]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
+theme_override_fonts/font = ExtResource("4")
+theme_override_font_sizes/font_size = 16
+text = "МУЗЫКА"
+
+[node name="MusicToggle" type="CheckButton" parent="AudioCard/Margin/VBox" unique_id=1331371607]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+text = "Музыканы қосу"
+
+[node name="MusicVolume" type="HBoxContainer" parent="AudioCard/Margin/VBox" unique_id=1507726587]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="MusicSlider" type="HSlider" parent="AudioCard/Margin/VBox/MusicVolume" unique_id=1959721718]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MusicValue" type="Label" parent="AudioCard/Margin/VBox/MusicVolume" unique_id=1196586591]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(58, 0)
+layout_mode = 2
+text = "70%"
+horizontal_alignment = 2
+
+[node name="Divider" type="HSeparator" parent="AudioCard/Margin/VBox" unique_id=1987061652]
+layout_mode = 2
+
+[node name="SfxTitle" type="Label" parent="AudioCard/Margin/VBox" unique_id=1987457180]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
+theme_override_fonts/font = ExtResource("4")
+theme_override_font_sizes/font_size = 16
+text = "ДЫБЫС ӘСЕРЛЕРІ"
+
+[node name="SfxToggle" type="CheckButton" parent="AudioCard/Margin/VBox" unique_id=280778489]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+text = "Әсерлерді қосу"
+
+[node name="SfxVolume" type="HBoxContainer" parent="AudioCard/Margin/VBox" unique_id=1936763576]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="SfxSlider" type="HSlider" parent="AudioCard/Margin/VBox/SfxVolume" unique_id=2054185343]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SfxValue" type="Label" parent="AudioCard/Margin/VBox/SfxVolume" unique_id=1699107737]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(58, 0)
+layout_mode = 2
+text = "100%"
+horizontal_alignment = 2
+
+[node name="Hint" type="Label" parent="AudioCard/Margin/VBox" unique_id=201278784]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.38, 0.35, 0.31, 1)
+theme_override_font_sizes/font_size = 14
+text = "Музыка мен әсерлер бөлек сақталады."
+
+[node name="ProfileCard" type="PanelContainer" parent="." unique_id=837560379]
+layout_mode = 0
+offset_left = 708.0
+offset_top = 166.0
+offset_right = 1192.0
+offset_bottom = 516.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_rank_card")
+
+[node name="Margin" type="MarginContainer" parent="ProfileCard" unique_id=1772155437]
+layout_mode = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 28
+
+[node name="VBox" type="VBoxContainer" parent="ProfileCard/Margin" unique_id=613691739]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Heading" type="Label" parent="ProfileCard/Margin/VBox" unique_id=1776682375]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.918, 0.761, 0.357, 1)
+theme_override_fonts/font = ExtResource("4")
+theme_override_font_sizes/font_size = 23
+text = "ОЙЫНШЫ ЖОЛЫ"
+
+[node name="RankCaption" type="Label" parent="ProfileCard/Margin/VBox" unique_id=1237899894]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.76, 0.68, 1)
+theme_override_font_sizes/font_size = 14
+text = "ҚАЗІРГІ ДӘРЕЖЕ"
+
+[node name="Rank" type="Label" parent="ProfileCard/Margin/VBox" unique_id=1242983647]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.918, 0.761, 0.357, 1)
+theme_override_fonts/font = ExtResource("4")
+theme_override_font_sizes/font_size = 30
+text = "БАСТАУШЫ"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Line" type="HSeparator" parent="ProfileCard/Margin/VBox" unique_id=186446195]
+layout_mode = 2
+
+[node name="Stats" type="Label" parent="ProfileCard/Margin/VBox" unique_id=1656198721]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.984, 0.969, 0.933, 1)
+theme_override_constants/line_spacing = 8
+theme_override_font_sizes/font_size = 17
+text = "БІЛІМ ҰПАЙЫ: 0
+ЖЕҢІС: 0
+ҚАЗІРГІ СЕРИЯ: 0
+ҮЗДІК СЕРИЯ: 0"
+
+[node name="GameplayCard" type="PanelContainer" parent="." unique_id=1536604122]
+layout_mode = 0
+offset_left = 709.0
+offset_top = 519.0
+offset_right = 1193.0
+offset_bottom = 723.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_rank_card")
+
+[node name="Margin" type="MarginContainer" parent="GameplayCard" unique_id=1825184879]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="GameplayCard/Margin" unique_id=1110566506]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Heading" type="Label" parent="GameplayCard/Margin/VBox" unique_id=1515071394]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.918, 0.761, 0.357, 1)
+theme_override_fonts/font = ExtResource("4")
+theme_override_font_sizes/font_size = 20
+text = "ОЙЫНҒА"
+
+[node name="ShakeToggle" type="CheckButton" parent="GameplayCard/Margin/VBox" unique_id=1901375874]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+text = "Экран треморі"
+
+[node name="NamesToggle" type="CheckButton" parent="GameplayCard/Margin/VBox" unique_id=2070684477]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+text = "Ойыншы атын көрсету"
+
+[node name="Version" type="Label" parent="." unique_id=544388336]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -118.0
+offset_top = -34.0
+offset_right = -24.0
+offset_bottom = -12.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.984, 0.969, 0.933, 0.74)
+theme_override_font_sizes/font_size = 13
+text = "v0.2.0"
+horizontal_alignment = 2

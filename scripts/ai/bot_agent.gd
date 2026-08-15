@@ -103,10 +103,14 @@ func _process_sokyroteke(_delta: float) -> void:
 	for p in _match_mgr.players:
 		if p == _player or not p.is_alive():
 			continue
+		if _map.is_inside_yurt(p.global_position):
+			continue
 		if p.has_shield():
 			continue
 		var to_p := p.global_position - _player.global_position
-		if to_p.length() < 200:
+		# Shapan reduces the range at which any seeker (including a bot) notices a runner.
+		var detection_range := 200.0 * p.get_visibility_multiplier()
+		if to_p.length() < detection_range:
 			_player._controller.set_remote_input(to_p.normalized() * 0.8, true)
 			return
 

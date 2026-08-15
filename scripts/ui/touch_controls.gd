@@ -62,7 +62,9 @@ func _on_joy_input(event: InputEvent) -> void:
 func _process(_delta: float) -> void:
 	if player == null or player.eliminated:
 		return
-	var active := _joy_active or _sprint_active
-	player._controller.touch_override = active
-	if active:
+	# Sprint is an ability modifier. It cannot take over the controller, otherwise
+	# pressing it while using WASD/arrow keys replaces movement with Vector2.ZERO.
+	player._controller.set_touch_sprint_active(_sprint_active)
+	player._controller.touch_override = _joy_active
+	if _joy_active:
 		player._controller.set_remote_input(_joy_vec, _sprint_active)

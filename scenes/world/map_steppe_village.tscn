@@ -1,6 +1,9 @@
-[gd_scene format=3 uid="uid://map_steppe_village"]
+[gd_scene load_steps=3 format=3 uid="uid://map_steppe_village"]
 
 [ext_resource type="Script" path="res://scripts/systems/map_manager.gd" id="1"]
+[ext_resource type="Resource" path="res://data/maps/map_steppe_village.tres" id="2"]
 
 [node name="Map" type="Node2D"]
+z_index = -9
+map_data = ExtResource("2")
 script = ExtResource("1")

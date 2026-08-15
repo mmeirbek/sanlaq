@@ -3,7 +3,6 @@ extends Resource
 
 @export var map_id: String = ""
 @export var display_name_kz: String = ""
-@export var display_name_ru: String = ""
 
 var scene_path: String:
 	set(v): _scene_path = v

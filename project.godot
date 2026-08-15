@@ -10,17 +10,19 @@ config_version=5
 
 [application]
 
-config/name="Соқыртеке Sokyroteke"
-config/description="Соқыртеке — казахская национальная игра. Соревновательная мультиплеерная погоня с изучением казахской одежды."
+config/name="САҢЛАҚ / Sañlaq"
+config/version="0.2.0"
+config/description="САҢЛАҚ — казахская игра в ловца «соқыртеке»: соревновательная погоня-прятки с изучением национальной одежды."
 run/main_scene="res://scenes/ui/main_menu.tscn"
-config/features=PackedStringArray("4.6")
-config/icon="res://icon.svg"
+config/features=PackedStringArray("4.7")
+config/icon="res://assets/ui/sanlaq_logo.png"
 
 [autoload]
 
 AssetRegistry="*res://autoload/asset_registry.gd"
 SaveManager="*res://autoload/save_manager.gd"
 GameSettings="*res://autoload/game_settings.gd"
+MusicAudio="*res://autoload/music_audio.gd"
 SceneRouter="*res://autoload/scene_router.gd"
 
 [display]
@@ -35,6 +37,10 @@ window/handheld/orientation="landscape"
 [editor_plugins]
 
 enabled=PackedStringArray()
+
+[gui]
+
+theme/custom="res://resources/ui/sanlaq_theme.tres"
 
 [input]
 

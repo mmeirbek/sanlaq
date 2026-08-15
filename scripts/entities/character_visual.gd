@@ -1,7 +1,11 @@
 class_name CharacterVisual
 extends Node2D
 
-const BASE_SHEET := "res://assets/character/base/base.png"
+const BASE_SHEETS := [
+	"res://assets/character/base/base.png",
+	"res://assets/character/base/base_02.png",
+	"res://assets/character/base/base_03.png",
+]
 const SHEET_W := 6
 const FRAME_PX := 64
 const DIRS := ["down", "up", "left", "right"]
@@ -10,6 +14,10 @@ var _current_dir: String = "down"
 var _moving: bool = false
 var _anim_timer: float = 0.0
 var _layers: Array[AnimatedSprite2D] = []
+var _base_variant := 0
+var _is_chaser := false
+var _pose_time := 0.0
+var _rest_position := Vector2.ZERO
 
 @onready var _base: AnimatedSprite2D = $Base
 @onready var _head: AnimatedSprite2D = $Head
@@ -18,11 +26,24 @@ var _layers: Array[AnimatedSprite2D] = []
 @onready var _shoes: AnimatedSprite2D = $Shoes
 
 func _ready() -> void:
+	_rest_position = position
 	_layers = [_base, _shoes, _pants, _torso, _head]
-	var base_tex := load(BASE_SHEET) as Texture2D
+	_apply_base_variant()
+	_apply_animation()
+
+func set_base_variant(variant: int) -> void:
+	_base_variant = posmod(variant, BASE_SHEETS.size())
+	if is_node_ready():
+		_apply_base_variant()
+
+func set_chaser(active: bool) -> void:
+	_is_chaser = active
+	queue_redraw()
+
+func _apply_base_variant() -> void:
+	var base_tex := load(BASE_SHEETS[_base_variant]) as Texture2D
 	if base_tex:
 		_base.sprite_frames = _build_frames(base_tex)
-	_apply_animation()
 
 func set_clothing(slot: ClothingItem.SlotType, item: ClothingItem) -> void:
 	var layer := _layer_for(slot)
@@ -77,10 +98,30 @@ func _process(delta: float) -> void:
 	var speed := 9.0 if _moving else 3.0
 	var fcount := 4 if _moving else 2
 	_anim_timer += delta
+	_pose_time += delta
 	var f := int(_anim_timer * speed) % fcount
 	for l in _layers:
 		if l.sprite_frames:
 			l.frame = f
+	# Общий пиксельный ритм оживляет все слои одновременно: одежда не «съезжает» с тела.
+	var bounce := sin(_pose_time * (11.0 if _moving else 3.0))
+	position = _rest_position + Vector2(0, round(bounce * (1.0 if _moving else 0.5)))
+	queue_redraw()
+
+func _draw() -> void:
+	if not _is_chaser:
+		return
+	# Красное кольцо — игровой маркер Соқыртеке; рисуется под моделькой,
+	# поэтому не скрывает одежду и остаётся узнаваемым на траве.
+	var col := Color("d64b45")
+	draw_line(Vector2(-18, 19), Vector2(-6, 19), col, 3.0, false)
+	draw_line(Vector2(6, 19), Vector2(18, 19), col, 3.0, false)
+	draw_line(Vector2(-21, 16), Vector2(-18, 19), col, 3.0, false)
+	draw_line(Vector2(21, 16), Vector2(18, 19), col, 3.0, false)
+	# Треугольный знак над головой остаётся видимым даже в толпе и под юртой.
+	draw_colored_polygon(PackedVector2Array([
+		Vector2(0, -39), Vector2(7, -31), Vector2(-7, -31),
+	]), col)
 
 func _build_frames(sheet: Texture2D) -> SpriteFrames:
 	var sf := SpriteFrames.new()

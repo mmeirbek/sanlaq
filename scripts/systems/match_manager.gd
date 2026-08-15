@@ -21,6 +21,8 @@ var map: MapManager
 var players: Array[Player] = []
 var human_player: Player
 var sokyroteke: Player
+var forced_sokyroteke: Player
+var human_must_be_runner := false
 
 var current_round: int = 0
 var round_timer: float = 0.0
@@ -62,15 +64,21 @@ func _start_new_round() -> void:
 			runners_total += 1
 
 	headstart_timer = mode.headstart_secs
-	round_timer = mode.round_duration
+	round_timer = mode.round_base_time + mode.time_per_runner * maxi(0, runners_total - 1)
 
 	current_state = MatchState.COUNTDOWN
 	match_state_changed.emit(current_state)
 	round_started.emit()
 
 func _select_sokyroteke() -> void:
+	if forced_sokyroteke and forced_sokyroteke.is_alive():
+		sokyroteke = forced_sokyroteke
+		sokyroteke_assigned.emit(sokyroteke)
+		return
 	var candidates: Array[Player] = []
 	for p in players:
+		if human_must_be_runner and p == human_player:
+			continue
 		if p != sokyroteke or sokyroteke == null:
 			candidates.append(p)
 	if candidates.is_empty():
@@ -150,14 +158,15 @@ func _trigger_quiz(target: Player) -> void:
 		submit_quiz_answer(randf() < chance)
 
 func _bot_correct_chance() -> float:
+	var base_chance := 0.4
 	var agent := sokyroteke.get_node_or_null("BotAgent") as BotAgent
-	if agent == null or agent.bot_profile == null:
-		return 0.4
-	match agent.bot_profile.difficulty:
-		BotProfile.Difficulty.EASY: return 0.3
-		BotProfile.Difficulty.MEDIUM: return 0.5
-		BotProfile.Difficulty.HARD: return 0.7
-	return 0.5
+	if agent and agent.bot_profile:
+		match agent.bot_profile.difficulty:
+			BotProfile.Difficulty.EASY: base_chance = 0.3
+			BotProfile.Difficulty.MEDIUM: base_chance = 0.5
+			BotProfile.Difficulty.HARD: base_chance = 0.7
+	var extra_players := maxi(0, players.size() - 2)
+	return maxf(0.1, base_chance - float(extra_players) * 0.05)
 
 func submit_quiz_answer(correct: bool) -> void:
 	quiz_active = false

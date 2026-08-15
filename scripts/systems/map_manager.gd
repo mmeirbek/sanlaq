@@ -10,6 +10,8 @@ const WATER_TEX := "res://assets/tiles/water_blob.png"
 const ROCK_TEX := "res://assets/tiles/rock.png"
 const YURT_BLOCK_RADIUS := 105.0
 const ROCK_CLEAR := 34.0
+const ARENA_CENTER := Vector2.ZERO
+const ARENA_RADIUS := 360.0
 
 var bounds: Rect2:
 	get:
@@ -20,6 +22,7 @@ var bounds: Rect2:
 var yurt_positions: Array[Vector2] = []
 var obstacle_positions: Array[Vector2] = []
 var water_zones: Array[Dictionary] = []
+var _spawn_cursor := 0
 
 func _ready() -> void:
 	_build_map()
@@ -45,9 +48,9 @@ func _build_ground() -> void:
 func _build_water() -> void:
 	var tex := load(WATER_TEX) as Texture2D
 	var bases := [
-		Vector2(-700, -380), Vector2(680, 460), Vector2(180, 470),
-		Vector2(-520, 420), Vector2(-80, 300), Vector2(420, 120),
-		Vector2(820, -420), Vector2(-820, 140), Vector2(40, -460),
+		Vector2(-720, -390), Vector2(710, 410), Vector2(80, 475),
+		Vector2(-580, 380), Vector2(-60, 465), Vector2(620, 80),
+		Vector2(790, -390), Vector2(-790, 110), Vector2(100, -480),
 	]
 	water_zones.clear()
 	for b in bases:
@@ -60,16 +63,16 @@ func _build_water() -> void:
 		spr.position = pos
 		spr.scale = Vector2(radius / 64.0, radius / 64.0) * randf_range(0.9, 1.2)
 		spr.rotation = randf_range(0, TAU)
-		spr.z_index = -5
+		spr.z_index = 1
 		add_child(spr)
 
 func _build_rocks() -> void:
 	var rock_tex := load(ROCK_TEX)
 	obstacle_positions = [
-		Vector2(-700, -100), Vector2(-300, 100), Vector2(0, -400),
-		Vector2(250, 250), Vector2(600, 400), Vector2(-600, 350),
-		Vector2(700, -350), Vector2(100, 350), Vector2(-400, -400),
-		Vector2(350, -350), Vector2(-150, -100), Vector2(520, -50),
+		Vector2(-730, -90), Vector2(-490, 110), Vector2(-45, -470),
+		Vector2(430, 305), Vector2(690, 355), Vector2(-650, 340),
+		Vector2(720, -305), Vector2(120, 430), Vector2(-440, -400),
+		Vector2(390, -390), Vector2(-320, -290), Vector2(540, -70),
 	]
 	for pos in obstacle_positions:
 		pos = clamp_to_bounds(pos, 30.0)
@@ -91,9 +94,9 @@ func _build_rocks() -> void:
 
 func _build_yurts() -> void:
 	yurt_positions = [
-		Vector2(-500, -250), Vector2(-150, 250), Vector2(400, -200),
-		Vector2(500, 300), Vector2(-200, -350), Vector2(200, 0),
-		Vector2(650, -100),
+		Vector2(-590, -300), Vector2(-570, 305), Vector2(525, -280),
+		Vector2(555, 280), Vector2(-155, -425), Vector2(165, 425),
+		Vector2(740, -30),
 	]
 	var pack := load(YURT_SCENE) as PackedScene
 	for pos in yurt_positions:
@@ -111,11 +114,17 @@ func get_random_spawn() -> Vector2:
 	)
 
 func get_safe_spawn() -> Vector2:
+	# Карта может открываться отдельно от ресурса в редакторе: тогда всё равно
+	# начинаем на арене, а не в случайной точке пустой степи.
+	if map_data == null and _spawn_cursor == 0:
+		_spawn_cursor += 1
+		return ARENA_CENTER
 	var margin := 120.0
 	for i in 60:
 		var p: Vector2
 		if map_data and not map_data.spawn_points.is_empty() and i < map_data.spawn_points.size():
-			p = map_data.spawn_points[i]
+			p = map_data.spawn_points[_spawn_cursor % map_data.spawn_points.size()]
+			_spawn_cursor += 1
 		else:
 			p = Vector2(
 				randf_range(bounds.position.x + margin, bounds.end.x - margin),
@@ -156,9 +165,63 @@ func is_water(pos: Vector2) -> bool:
 
 func is_inside_yurt(pos: Vector2) -> bool:
 	for yurt in yurt_positions:
-		if pos.distance_to(yurt) < 29:
+		if pos.distance_to(yurt) < 48:
 			return true
 	return false
 
 func _draw() -> void:
-	draw_rect(bounds, Color(0.07, 0.15, 0.05), false, 6.0)
+	# Пиксельная арена в центре: круглый той-алаң с национальным орнаментом.
+	draw_rect(bounds, Color("4c6c38"), false, 10.0, false)
+	draw_circle(ARENA_CENTER + Vector2(12, 16), ARENA_RADIUS + 24, Color(0.10, 0.18, 0.10, 0.24), false)
+	draw_circle(ARENA_CENTER, ARENA_RADIUS + 16, Color("77502e"), false)
+	draw_circle(ARENA_CENTER, ARENA_RADIUS + 8, Color("d8ae61"), false)
+	draw_circle(ARENA_CENTER, ARENA_RADIUS, Color("a97342"), false)
+	draw_circle(ARENA_CENTER, ARENA_RADIUS - 16, Color("e2bd78"), false)
+	draw_circle(ARENA_CENTER, ARENA_RADIUS - 34, Color("cf9e5d"), false)
+	draw_circle(ARENA_CENTER, ARENA_RADIUS - 44, Color("e8c984"), false)
+
+	_draw_arena_motifs()
+	_draw_corner_props()
+
+func _draw_arena_motifs() -> void:
+	# Восьмиугольники намеренно рисуются без сглаживания — это держит 2D pixel-art характер.
+	for radius in [ARENA_RADIUS - 24.0, ARENA_RADIUS - 52.0]:
+		_draw_pixel_ring(radius, Color("896039"), 3.0)
+
+	for i in range(16):
+		var a := TAU * float(i) / 16.0
+		var pos := ARENA_CENTER + Vector2(cos(a), sin(a)) * (ARENA_RADIUS - 38.0)
+		_draw_diamond(pos, 12.0, Color("805430"), Color("f2d58c"))
+
+	_draw_diamond(ARENA_CENTER, 112.0, Color("a46b39"), Color("edcf85"))
+	_draw_diamond(ARENA_CENTER, 76.0, Color("edcf85"), Color("8b5b34"))
+	_draw_diamond(ARENA_CENTER, 37.0, Color("81502f"), Color("f4d78e"))
+	for i in range(4):
+		var pos := ARENA_CENTER + Vector2(0, -150).rotated(TAU * i / 4.0)
+		_draw_diamond(pos, 24.0, Color("9b6336"), Color("e7c479"))
+
+func _draw_pixel_ring(radius: float, color: Color, width: float) -> void:
+	var points := PackedVector2Array()
+	for i in range(33):
+		var a := TAU * float(i) / 32.0
+		points.append(ARENA_CENTER + Vector2(round(cos(a) * radius / 4.0) * 4.0, round(sin(a) * radius / 4.0) * 4.0))
+	draw_polyline(points, color, width, false)
+
+func _draw_diamond(center: Vector2, radius: float, fill: Color, outline: Color) -> void:
+	var points := PackedVector2Array([
+		center + Vector2(0, -radius), center + Vector2(radius, 0),
+		center + Vector2(0, radius), center + Vector2(-radius, 0),
+	])
+	draw_colored_polygon(points, fill)
+	draw_polyline(PackedVector2Array([points[0], points[1], points[2], points[3], points[0]]), outline, 3.0, false)
+
+func _draw_corner_props() -> void:
+	# Коврики и флажки по краям создают ощущение аула и хорошо читаются сверху.
+	var rugs := [
+		Rect2(-825, -505, 170, 76), Rect2(650, -505, 170, 76),
+		Rect2(-825, 430, 170, 76), Rect2(650, 430, 170, 76),
+	]
+	for rug in rugs:
+		draw_rect(rug, Color("8c3e32"), true)
+		draw_rect(rug.grow(-7), Color("d19d4b"), false, 4.0, false)
+		_draw_diamond(rug.get_center(), 16.0, Color("e1bd70"), Color("67352d"))

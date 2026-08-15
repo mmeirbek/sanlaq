@@ -7,30 +7,26 @@ enum Rarity { COMMON, RARE, LEGENDARY }
 @export var id: String = ""
 @export var slot_type: SlotType = SlotType.HEAD
 @export var name_kz: String = ""
-@export var name_ru: String = ""
 @export var name_en: String = ""
 @export_multiline var desc_kz: String = ""
-@export_multiline var desc_ru: String = ""
 @export_multiline var desc_en: String = ""
 @export var color: Color = Color.WHITE
 @export var rarity: Rarity = Rarity.COMMON
 @export var unlock_by_default: bool = true
 @export var wrong_answers_kz: Array[String] = []
-@export var wrong_answers_ru: Array[String] = []
 @export var texture_path: String = ""
 @export var icon_path: String = ""
+@export var reference_photo_path: String = ""
 @export var price: int = 0
 @export var unlock_condition: int = 0
 
 func get_name_for_lang(lang: String) -> String:
 	match lang:
-		"ru": return name_ru
 		"en": return name_en
 		_: return name_kz
 
 func get_desc_for_lang(lang: String) -> String:
 	match lang:
-		"ru": return desc_ru
 		"en": return desc_en
 		_: return desc_kz
 

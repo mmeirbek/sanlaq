@@ -1,23 +1,129 @@
-[gd_scene format=3 uid="uid://results_placeholder"]
+[gd_scene format=3 uid="uid://de4bwijwausa3"]
 
-[node name="Results" type="Control"]
+[ext_resource type="Script" uid="uid://dgvs3vwwllkp6" path="res://scenes/ui/results.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_ornament.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_divider.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_replay"]
+bg_color = Color(0.918, 0.761, 0.357, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.851, 0.663, 0.247, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[node name="Results" type="Control" unique_id=1594483496]
 layout_mode = 3
 anchors_preset = 15
-anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-anchor_left = 0.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1")
 
-[node name="Label" type="Label" parent="."]
+[node name="Background" parent="." unique_id=607498368 instance=ExtResource("4")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+variant = 3
+
+[node name="TopOrnament" parent="." unique_id=355445032 instance=ExtResource("2")]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 44.0
+grow_horizontal = 2
+
+[node name="BottomOrnament" parent="." unique_id=1727617625 instance=ExtResource("2")]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -44.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Panel" type="PanelContainer" parent="." unique_id=288299866]
 layout_mode = 1
 anchors_preset = 8
+anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-anchor_left = 0.5
+offset_left = -330.0
+offset_top = -220.0
+offset_right = 330.0
+offset_bottom = 220.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "НӘТИЖЕЛЕР  (жүктелуде...)"
+
+[node name="Margin" type="MarginContainer" parent="Panel" unique_id=680858202]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 28
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin" unique_id=1552274288]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Kicker" type="Label" parent="Panel/Margin/VBox"]
+layout_mode = 2
+text = "РАУНД АЯҚТАЛДЫ"
 horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
+theme_override_font_sizes/font_size = 15
+
+[node name="WinnerLabel" type="Label" parent="Panel/Margin/VBox" unique_id=395689480]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "НӘТИЖЕ"
+horizontal_alignment = 1
+
+[node name="SubLabel" type="Label" parent="Panel/Margin/VBox" unique_id=2018412340]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "..."
+horizontal_alignment = 1
+
+[node name="Divider" parent="Panel/Margin/VBox" unique_id=831189109 instance=ExtResource("3")]
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="Panel/Margin/VBox" unique_id=1463013171]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="ReplayBtn" type="Button" parent="Panel/Margin/VBox" unique_id=1707362756]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_replay")
+text = "ҚАЙТА ОЙНАУ "
+
+[node name="WardrobeBtn" type="Button" parent="Panel/Margin/VBox" unique_id=386471659]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Киім шкафы"
+
+[node name="MenuBtn" type="Button" parent="Panel/Margin/VBox" unique_id=1849052187]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Бас мәзір"

@@ -6,8 +6,7 @@
 script = ExtResource("1")
 map_id = "steppe_village"
 display_name_kz = "Дала ауылы"
-display_name_ru = "Степной аул"
-spawn_points = Array[Vector2]([Vector2(-500, -300), Vector2(-200, -300), Vector2(100, -300), Vector2(400, -300), Vector2(-500, 200), Vector2(-200, 200), Vector2(100, 200), Vector2(400, 200)])
+spawn_points = Array[Vector2]([Vector2(-240, -150), Vector2(0, -245), Vector2(240, -150), Vector2(260, 100), Vector2(80, 235), Vector2(-175, 190), Vector2(-285, 35), Vector2(0, 0)])
 bounds_min = Vector2(-900, -550)
 bounds_max = Vector2(900, 550)
 ambient_color = Color(0.15, 0.28, 0.12, 1)

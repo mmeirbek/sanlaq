@@ -1,23 +1,174 @@
-[gd_scene format=3 uid="uid://lobby_placeholder"]
+[gd_scene format=3 uid="uid://ddtssiwiktndv"]
 
-[node name="Lobby" type="Control"]
+[ext_resource type="Script" uid="uid://cwppsigevgves" path="res://scenes/ui/lobby.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_ornament.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_divider.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_start"]
+bg_color = Color(0.918, 0.761, 0.357, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.851, 0.663, 0.247, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[node name="Lobby" type="Control" unique_id=1506570198]
 layout_mode = 3
 anchors_preset = 15
-anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-anchor_left = 0.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1")
 
-[node name="Label" type="Label" parent="."]
+[node name="Background" parent="." unique_id=655144706 instance=ExtResource("4")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+variant = 0
+
+[node name="TopOrnament" parent="." unique_id=1186934737 instance=ExtResource("2")]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 44.0
+grow_horizontal = 2
+
+[node name="BottomOrnament" parent="." unique_id=428313797 instance=ExtResource("2")]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -44.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Panel" type="PanelContainer" parent="." unique_id=960168867]
 layout_mode = 1
 anchors_preset = 8
+anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-anchor_left = 0.5
+offset_left = -330.0
+offset_top = -270.0
+offset_right = 330.0
+offset_bottom = 270.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "LOBBI — күту бөлмесі  (жүктелуде...)"
+
+[node name="Margin" type="MarginContainer" parent="Panel" unique_id=1049938918]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 24
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin" unique_id=1421682798]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Kicker" type="Label" parent="Panel/Margin/VBox"]
+layout_mode = 2
+text = "ОЙЫН АЛДЫНДАҒЫ БАПТАУ"
 horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
+theme_override_font_sizes/font_size = 15
+
+[node name="TitleLabel" type="Label" parent="Panel/Margin/VBox" unique_id=786807213]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_font_sizes/font_size = 34
+text = "ДАЙЫНДЫҚ АЛАҢЫ"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="ModeLabel" type="Label" parent="Panel/Margin/VBox" unique_id=1821924225]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Ойын түрі: ..."
+horizontal_alignment = 1
+
+[node name="RoleLabel" type="Label" parent="Panel/Margin/VBox"]
+layout_mode = 2
+text = "РОЛЬДІ ТАҢДА"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
+theme_override_font_sizes/font_size = 15
+
+[node name="RoleStep" type="HBoxContainer" parent="Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="SokyrotekeBtn" type="Button" parent="Panel/Margin/VBox/RoleStep"]
+custom_minimum_size = Vector2(210, 42)
+layout_mode = 2
+text = "СОҚЫРТЕКЕ БОЛУ"
+
+[node name="RunnerBtn" type="Button" parent="Panel/Margin/VBox/RoleStep"]
+custom_minimum_size = Vector2(210, 42)
+layout_mode = 2
+text = "ҚАШУШЫ БОЛУ"
+
+[node name="PlayersRow" type="HBoxContainer" parent="Panel/Margin/VBox" unique_id=510287925]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="BotStep" type="HBoxContainer" parent="Panel/Margin/VBox" unique_id=1965455069]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="MinusBtn" type="Button" parent="Panel/Margin/VBox/BotStep" unique_id=1049607823]
+custom_minimum_size = Vector2(48, 44)
+layout_mode = 2
+text = "−"
+
+[node name="BotsLabel" type="Label" parent="Panel/Margin/VBox/BotStep" unique_id=990619485]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Боттар: 3"
+
+[node name="PlusBtn" type="Button" parent="Panel/Margin/VBox/BotStep" unique_id=690232037]
+custom_minimum_size = Vector2(48, 44)
+layout_mode = 2
+text = "+"
+
+[node name="Divider" parent="Panel/Margin/VBox" unique_id=1563073854 instance=ExtResource("3")]
+layout_mode = 2
+
+[node name="Hint" type="Label" parent="Panel/Margin/VBox" unique_id=1032160034]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.53, 0.5, 1)
+text = "Қатысушыларды реттеңіз де, аңшылықты бастаңыз"
+horizontal_alignment = 1
+
+[node name="StartBtn" type="Button" parent="Panel/Margin/VBox" unique_id=663691866]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_start")
+text = "БАСТАУ"
+
+[node name="BackBtn" type="Button" parent="Panel/Margin/VBox" unique_id=1259149181]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "← Артқа"

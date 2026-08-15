@@ -7,6 +7,10 @@ extends CharacterBody2D
 
 signal caught(target: Player)
 signal stepped(sound_radius: float)
+signal runner_sprint_changed(time_left: float, uses_left: int)
+
+const RUNNER_SPRINT_DURATION := 3.0
+const RUNNER_SPRINT_USES := 1
 
 var current_speed: float = 0.0
 var max_speed: float = 220.0
@@ -21,6 +25,19 @@ var _visual: CharacterVisual
 var _shield_timer: float = 0.0
 var _noise_timer: float = 0.0
 var _noise_random: float = 0.0
+var _equipped_items: Dictionary = {}
+var runner_sprint_time := 0.0
+var runner_sprint_uses := RUNNER_SPRINT_USES
+
+const OUTFIT_PROFILES := [
+	["head_tymaq_01", "torso_shapan_01", "pants_shalbar_01", "shoes_saptama_etik_01"],
+	["head_takiya_01", "torso_koylek_01", "pants_shalbar_01", "shoes_masi_01"],
+	["head_saukele_01", "torso_kamzol_01", "pants_shalbar_decorated_01", "shoes_kebis_01"],
+	["head_kimeshek_01", "torso_shapan_01", "pants_shalbar_decorated_01", "shoes_saptama_etik_01"],
+	["head_borik_01", "torso_kamzol_01", "pants_shalbar_01", "shoes_masi_01"],
+	["head_tymaq_01", "torso_koylek_01", "pants_shalbar_decorated_01", "shoes_kebis_01"],
+	["head_takiya_01", "torso_shapan_01", "pants_shalbar_01", "shoes_saptama_etik_01"],
+]
 
 func _ready() -> void:
 	_controller = $PlayerController
@@ -30,13 +47,14 @@ func _ready() -> void:
 		_mode = GameModeDefinition.new()
 
 	_noise_random = randf_range(0.0, 1.5)
+	_visual.set_base_variant(player_index)
 	_setup_clothing()
 
 func _setup_clothing() -> void:
 	for slot in ClothingItem.SlotType.values():
 		var item_id := SaveManager.get_equipped(slot as ClothingItem.SlotType)
 		var item := AssetRegistry.get_clothing_by_id(item_id)
-		_visual.set_clothing(slot as ClothingItem.SlotType, item)
+		_set_outfit_item(slot as ClothingItem.SlotType, item)
 
 func apply_random_outfit() -> void:
 	for slot in ClothingItem.SlotType.values():
@@ -44,7 +62,25 @@ func apply_random_outfit() -> void:
 		var item: ClothingItem = null
 		if not items.is_empty():
 			item = items[randi() % items.size()]
-		_visual.set_clothing(slot as ClothingItem.SlotType, item)
+		_set_outfit_item(slot as ClothingItem.SlotType, item)
+
+func apply_outfit_profile(profile_index: int) -> void:
+	var profile := get_outfit_profile(profile_index)
+	for slot in ClothingItem.SlotType.values():
+		var item_id: String = profile[int(slot)]
+		var item := AssetRegistry.get_clothing_by_id(item_id)
+		if item:
+			_set_outfit_item(slot as ClothingItem.SlotType, item)
+		else:
+			apply_random_outfit()
+			return
+
+static func get_outfit_profile(profile_index: int) -> Array:
+	return OUTFIT_PROFILES[posmod(profile_index, OUTFIT_PROFILES.size())]
+
+func _set_outfit_item(slot: ClothingItem.SlotType, item: ClothingItem) -> void:
+	_equipped_items[slot] = item
+	_visual.set_clothing(slot, item)
 
 func revive() -> void:
 	eliminated = false
@@ -56,6 +92,9 @@ func revive() -> void:
 	set_deferred("collision_mask", 5)
 	slow_timer = 0.0
 	_in_water = false
+	runner_sprint_time = 0.0
+	runner_sprint_uses = RUNNER_SPRINT_USES
+	runner_sprint_changed.emit(runner_sprint_time, runner_sprint_uses)
 	velocity = Vector2.ZERO
 
 func eliminate() -> void:
@@ -79,7 +118,8 @@ func set_frozen(f: bool) -> void:
 		velocity = Vector2.ZERO
 
 func apply_slow(duration: float) -> void:
-	slow_timer = maxf(slow_timer, duration)
+	var adjusted_duration := duration * (0.7 if _wears("head_tymaq_01") else 1.0)
+	slow_timer = maxf(slow_timer, adjusted_duration)
 	modulate = Color(0.5, 0.6, 1.0, 1.0)
 
 func is_slowed() -> bool:
@@ -107,26 +147,26 @@ func _physics_process(delta: float) -> void:
 		_shield_timer -= delta
 		modulate.a = 0.4 + sin(_shield_timer * 10.0) * 0.2
 
-	_noise_timer -= delta
-	if _noise_timer <= 0:
-		var interval := _mode.standing_noise_interval
-		if current_speed > 150:
-			interval = 0.6
-		elif current_speed > 50:
-			interval = 2.0
-		elif current_speed > 8:
-			interval = 3.5
-		_noise_timer = interval + randf_range(-0.3, 0.3)
-		_emit_noise()
-
 	var direction := _controller.get_direction()
-	var sprint := _controller.is_sprinting()
+	var sprint_requested := _controller.is_sprinting()
+	if not is_sokyroteke:
+		if runner_sprint_time > 0.0:
+			runner_sprint_time = maxf(0.0, runner_sprint_time - delta)
+			if runner_sprint_time == 0.0:
+				runner_sprint_changed.emit(runner_sprint_time, runner_sprint_uses)
+		elif sprint_requested and runner_sprint_uses > 0:
+			runner_sprint_uses -= 1
+			runner_sprint_time = RUNNER_SPRINT_DURATION
+			runner_sprint_changed.emit(runner_sprint_time, runner_sprint_uses)
+	var sprint := runner_sprint_time > 0.0
 
 	var player_speed := _mode.player_base_speed
 	if is_sokyroteke:
 		player_speed *= _mode.sokyroteke_speed_mult
 	elif sprint:
-		player_speed *= 1.2
+		player_speed *= 1.55
+	if _wears("shoes_saptama_etik_01") and not _in_water:
+		player_speed *= 1.08
 
 	if slow_timer > 0:
 		player_speed *= _mode.slow_speed_mult
@@ -143,6 +183,18 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	_visual.set_direction(direction)
 	_visual.set_moving(current_speed > 15.0)
+	_update_footsteps(delta)
+
+func _update_footsteps(delta: float) -> void:
+	if current_speed <= 8.0:
+		_noise_timer = 0.0
+		return
+	_noise_timer -= delta
+	if _noise_timer > 0.0:
+		return
+	var interval := 0.38 if current_speed > 250.0 else (0.52 if current_speed > 150.0 else 0.72)
+	_noise_timer = interval + randf_range(-0.05, 0.05)
+	_emit_noise()
 
 func _emit_noise() -> void:
 	var radius := 30.0
@@ -171,16 +223,27 @@ func is_alive() -> bool:
 func get_random_clothing_item_for_quiz() -> ClothingItem:
 	var slots := ClothingItem.SlotType.values()
 	var slot_index := randi() % slots.size()
-	var eq_id := SaveManager.get_equipped(slots[slot_index] as ClothingItem.SlotType)
-	var item := AssetRegistry.get_clothing_by_id(eq_id)
+	var slot := slots[slot_index] as ClothingItem.SlotType
+	var item: ClothingItem = _equipped_items.get(slot, null)
 	if item == null:
 		var all_in_slot := AssetRegistry.get_clothing(slots[slot_index] as ClothingItem.SlotType)
 		if not all_in_slot.is_empty():
 			item = all_in_slot[randi() % all_in_slot.size()]
 	return item
 
+func get_visibility_multiplier() -> float:
+	return 0.82 if _wears("torso_shapan_01") else 1.0
+
+func _wears(item_id: String) -> bool:
+	for item in _equipped_items.values():
+		if item and item.id == item_id:
+			return true
+	return false
+
 func set_as_sokyroteke(active: bool) -> void:
 	is_sokyroteke = active
+	if _visual:
+		_visual.set_chaser(active)
 
 func apply_center_text(_text: String) -> void:
 	pass
