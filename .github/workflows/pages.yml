@@ -1,0 +1,58 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot 4.7.1
+        run: |
+          cd /tmp
+          curl -fsSL -o godot.zip https://github.com/godotengine/godot/releases/download/4.7.1-stable/Godot_v4.7.1-stable_linux.x86_64.zip
+          unzip -q godot.zip
+          sudo mv Godot_v4.7.1-stable_linux.x86_64 /usr/local/bin/godot
+
+      - name: Download export templates
+        run: |
+          cd /tmp
+          curl -fsSL -o templates.tpz https://github.com/godotengine/godot/releases/download/4.7.1-stable/Godot_v4.7.1-stable_export_templates.tpz
+          mkdir -p ~/.local/share/godot/export_templates/4.7.1.stable
+          unzip -q templates.tpz -d templates
+          mv templates/templates/* ~/.local/share/godot/export_templates/4.7.1.stable/
+          ls ~/.local/share/godot/export_templates/4.7.1.stable/
+
+      - name: Import resources
+        run: godot --headless --import --path .
+
+      - name: Export web build
+        run: godot --headless --export-release "Web" --path . export/web/index.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: export/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
