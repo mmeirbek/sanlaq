@@ -31,7 +31,6 @@ func _shake_nickname_field() -> void:
 
 func _spawn_mascot() -> void:
 	var visual := _make_hero_character(Vector2(946, 390), 4.4, Vector2.LEFT)
-	visual.set_chaser(true)
 	for slot in ClothingItem.SlotType.values():
 		var item := AssetRegistry.get_clothing_by_id(SaveManager.get_equipped(slot))
 		visual.set_clothing(slot, item)

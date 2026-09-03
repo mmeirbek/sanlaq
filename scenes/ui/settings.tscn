@@ -257,8 +257,8 @@ text = "БІЛІМ ҰПАЙЫ: 0
 layout_mode = 0
 offset_left = 709.0
 offset_top = 519.0
-offset_right = 1193.0
-offset_bottom = 723.0
+offset_right = 1145.0
+offset_bottom = 704.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_rank_card")
 
 [node name="Margin" type="MarginContainer" parent="GameplayCard" unique_id=1825184879]

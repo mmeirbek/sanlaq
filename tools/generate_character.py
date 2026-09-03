@@ -64,8 +64,11 @@ def layout(direction, frame):
     head = (5, 1 + bob, 11, 6 + bob)
     hair = (5, 0 + bob, 11, 3 + bob)
     torso = (5, 6 + bob, 11, 12 + bob)
-    arm_l = (3 - arm, 7 + abs(arm) + bob, 5 - arm, 12 + abs(arm) + bob)
-    arm_r = (11 + arm, 7 + abs(arm) + bob, 13 + arm, 12 + abs(arm) + bob)
+    # The shoulder-side edge of each arm stays pinned to the torso's edge at every frame —
+    # only the outer edge moves with the swing — so a swinging arm never opens a gap at
+    # the shoulder no matter how far it travels.
+    arm_l = (3 - arm, 7 + abs(arm) + bob, 5, 12 + abs(arm) + bob)
+    arm_r = (11, 7 + abs(arm) + bob, 13 + arm, 12 + abs(arm) + bob)
     leg_l = (6 + stride, 11, 8 + stride, 15)
     leg_r = (8 - stride, 11, 10 - stride, 15)
     foot_l = (5 + stride, 14, 8 + stride, 16)
@@ -76,7 +79,7 @@ def layout(direction, frame):
                     arm_r=arm_r, leg_l=leg_l, leg_r=leg_r, foot_l=foot_l, foot_r=foot_r)
     if direction == "left":
         return dict(head=(6, 1 + bob, 12, 6 + bob), hair=(6, 0 + bob, 12, 3 + bob), torso=(5, 6 + bob, 11, 12 + bob),
-                    arm_l=(4 - arm, 7 + abs(arm) + bob, 6 - arm, 12 + abs(arm) + bob), arm_r=(10 + arm, 7 + abs(arm) + bob, 12 + arm, 12 + abs(arm) + bob),
+                    arm_l=(4 - arm, 7 + abs(arm) + bob, 6, 12 + abs(arm) + bob), arm_r=(10, 7 + abs(arm) + bob, 12 + arm, 12 + abs(arm) + bob),
                     leg_l=leg_l, leg_r=leg_r, foot_l=foot_l, foot_r=foot_r)
     return dict(head=head, hair=hair, torso=torso, arm_l=arm_l, arm_r=arm_r,
                 leg_l=leg_l, leg_r=leg_r, foot_l=foot_l, foot_r=foot_r)
@@ -86,6 +89,12 @@ def darken(color, factor=0.78):
     r, g, b = color[0], color[1], color[2]
     a = color[3] if len(color) > 3 else 255
     return (int(r * factor), int(g * factor), int(b * factor), a)
+
+
+def lighten(color, factor=0.30):
+    r, g, b = color[0], color[1], color[2]
+    a = color[3] if len(color) > 3 else 255
+    return (int(r + (255 - r) * factor), int(g + (255 - g) * factor), int(b + (255 - b) * factor), a)
 
 
 def _super_rect(r):
@@ -112,6 +121,24 @@ def draw_part(d, r, color):
     outline_r(d, r, OUTLINE)
     sr = _super_rect(r)
     d.rounded_rectangle(sr, radius=_radius_for(sr), fill=color)
+
+
+def draw_head(d, r, color):
+    """Head is drawn as a true ellipse instead of a rounded rectangle — reads as an
+    actual round head silhouette rather than a rounded box, at the same bounding rect."""
+    x0, y0, x1, y1 = _super_rect(r)
+    pad = int(SUPER * 0.35)
+    d.ellipse((x0 - pad, y0 - pad, x1 + pad, y1 + pad), fill=OUTLINE)
+    d.ellipse((x0, y0, x1, y1), fill=color)
+
+
+def draw_end_cap(d, r, color):
+    """Hands/feet: a rounder capsule shape distinct from the straight limb above it."""
+    x0, y0, x1, y1 = _super_rect(r)
+    pad = int(SUPER * 0.35)
+    rad = int(min(x1 - x0, y1 - y0) * 0.45)
+    d.rounded_rectangle((x0 - pad, y0 - pad, x1 + pad, y1 + pad), radius=rad + pad, fill=OUTLINE)
+    d.rounded_rectangle((x0, y0, x1, y1), radius=rad, fill=color)
 
 
 def draw_face(d, direction, layout_info, hair_style):
@@ -162,41 +189,72 @@ def body_frame(direction, frame, variant):
     L = layout(direction, frame)
     skin = variant["skin"]
     skin_dark = variant["skin_dark"]
+    skin_light = lighten(skin)
     for key in ("foot_l", "foot_r"):
-        draw_part(d, L[key], skin)
+        draw_end_cap(d, L[key], skin)
+        _shade_bottom_band(img, d, L[key], skin_dark, 0.3)
     for key in ("leg_l", "leg_r"):
         draw_part(d, L[key], skin)
     for key in ("arm_l", "arm_r"):
         draw_part(d, L[key], skin)
+        _shade_band(img, d, L[key], skin_light, 0.28, from_top=True)
     draw_part(d, L["torso"], skin)
+    _shade_band(img, d, L["torso"], skin_light, 0.22, from_top=True)
     _shade_bottom_band(img, d, L["torso"], skin_dark, 0.3)
     for key in ("leg_l", "leg_r"):
         _shade_bottom_band(img, d, L[key], skin_dark, 0.22)
-    draw_part(d, L["head"], skin)
+    # Soft neck crease where the round head sits on the torso — separates the two
+    # silhouettes instead of letting them read as one fused blob.
+    _draw_neck_shadow(img, L, skin_dark)
+    draw_head(d, L["head"], skin)
+    _shade_band(img, d, L["head"], skin_light, 0.32, from_top=True, oval=True)
     draw_hair(d, img, direction, L, variant["hair"], variant["hair_style"], skin)
     draw_face(d, direction, L, variant["hair_style"])
     return img.resize((FRAME, FRAME), Image.LANCZOS)
 
 
-def _shade_bottom_band(img, d, r, shadow_color, frac):
-    """Paints a flat shadow tone along the bottom of an already-drawn rounded part,
-    clipped to that part's own rounded silhouette so the shading never spills past the outline."""
+def _draw_neck_shadow(img, L, skin_dark):
+    hx0, hy0, hx1, hy1 = L["head"]
+    cx = (hx0 + hx1) / 2.0 * SUPER
+    cy = hy1 * SUPER
+    rw = (hx1 - hx0) * SUPER * 0.30
+    rh = SUPER * 0.55
+    layer = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    ld = ImageDraw.Draw(layer)
+    ld.ellipse((cx - rw, cy - rh * 0.4, cx + rw, cy + rh), fill=(*skin_dark[:3], 140))
+    img.alpha_composite(layer)
+
+
+def _shade_band(img, d, r, tone_color, frac, from_top, oval=False):
+    """Paints a flat tone along the top or bottom of an already-drawn part, clipped to
+    that part's own silhouette (rounded rect or ellipse) so it never spills past the outline.
+    Two calls (from_top=False then True) give simple two-tone cel shading: a shadow band
+    at the bottom and a lighter highlight band at the top, reading as more three-dimensional
+    than a single flat fill."""
     x0, y0, x1, y1 = _super_rect(r)
     w, h = x1 - x0, y1 - y0
     if w <= 0 or h <= 0:
         return
-    rad = _radius_for((x0, y0, x1, y1))
     mask = Image.new("L", (int(w), int(h)), 0)
     md = ImageDraw.Draw(mask)
-    md.rounded_rectangle((0, 0, w, h), radius=rad, fill=255)
-    band_top = h * (1.0 - frac)
+    if oval:
+        md.ellipse((0, 0, w, h), fill=255)
+    else:
+        md.rounded_rectangle((0, 0, w, h), radius=_radius_for((x0, y0, x1, y1)), fill=255)
     band = Image.new("L", (int(w), int(h)), 0)
     bd = ImageDraw.Draw(band)
-    bd.rectangle((0, band_top, w, h), fill=255)
+    if from_top:
+        bd.rectangle((0, 0, w, h * frac), fill=255)
+    else:
+        bd.rectangle((0, h * (1.0 - frac), w, h), fill=255)
     from PIL import ImageChops
     band = ImageChops.multiply(mask, band)
-    layer = Image.new("RGBA", (int(w), int(h)), shadow_color)
+    layer = Image.new("RGBA", (int(w), int(h)), tone_color)
     img.paste(layer, (int(x0), int(y0)), band)
+
+
+def _shade_bottom_band(img, d, r, shadow_color, frac):
+    _shade_band(img, d, r, shadow_color, frac, from_top=False)
 
 
 def garment_parts(item, direction, frame):
@@ -331,19 +389,27 @@ def garment_frame(item, direction, frame):
     color = item["color"]
     if len(color) == 3:
         color = (color[0], color[1], color[2], 255)
+    highlight = lighten(color, 0.24)
+    shadow = darken(color)
     crown, extras = garment_parts(item, direction, frame)
     if crown:
         draw_crown(d, crown, color)
+        _shade_band(img, d, (crown[0], crown[1], crown[2], crown[3] + 1), highlight, 0.3, from_top=True)
+    is_shoes = item["slot"] == "shoes"
     if item.get("hat") == "wrap":
         for i, r in enumerate(extras):
             draw_piece_outer(d, r, color, i == 1)
     else:
         for r in extras:
-            draw_part(d, r, color)
-    # Плоская тень снизу каждой крупной части — та же логика, что и на теле.
-    shadow = darken(color)
+            if is_shoes:
+                draw_end_cap(d, r, color)
+            else:
+                draw_part(d, r, color)
+    # Двухтоновый cel-shading — блик сверху и тень снизу — на каждой крупной части,
+    # та же логика, что и на теле, чтобы одежда не выглядела площе персонажа.
     if extras and item.get("hat") != "wrap":
         for r in extras:
+            _shade_band(img, d, r, highlight, 0.24, from_top=True)
             _shade_bottom_band(img, d, r, shadow, 0.3)
     draw_garment_details(d, item, direction, frame)
     if item["slot"] == "torso":

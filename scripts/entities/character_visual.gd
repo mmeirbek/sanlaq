@@ -15,9 +15,9 @@ var _moving: bool = false
 var _anim_timer: float = 0.0
 var _layers: Array[AnimatedSprite2D] = []
 var _base_variant := 0
-var _is_chaser := false
 var _pose_time := 0.0
 var _rest_position := Vector2.ZERO
+var _pending_clothing: Dictionary = {}
 
 @onready var _base: AnimatedSprite2D = $Base
 @onready var _head: AnimatedSprite2D = $Head
@@ -29,6 +29,12 @@ func _ready() -> void:
 	_rest_position = position
 	_layers = [_base, _shoes, _pants, _torso, _head]
 	_apply_base_variant()
+	# Callers sometimes build this node off-tree (e.g. inside a not-yet-added container)
+	# and call set_clothing() before @onready vars like _head/_torso resolve — those calls
+	# got queued below instead of silently no-op'ing, so flush them now that layers exist.
+	for slot in _pending_clothing:
+		_apply_clothing(slot, _pending_clothing[slot])
+	_pending_clothing.clear()
 	_apply_animation()
 
 func set_base_variant(variant: int) -> void:
@@ -36,16 +42,18 @@ func set_base_variant(variant: int) -> void:
 	if is_node_ready():
 		_apply_base_variant()
 
-func set_chaser(active: bool) -> void:
-	_is_chaser = active
-	queue_redraw()
-
 func _apply_base_variant() -> void:
 	var base_tex := load(BASE_SHEETS[_base_variant]) as Texture2D
 	if base_tex:
 		_base.sprite_frames = _build_frames(base_tex)
 
 func set_clothing(slot: ClothingItem.SlotType, item: ClothingItem) -> void:
+	if not is_node_ready():
+		_pending_clothing[slot] = item
+		return
+	_apply_clothing(slot, item)
+
+func _apply_clothing(slot: ClothingItem.SlotType, item: ClothingItem) -> void:
 	var layer := _layer_for(slot)
 	if layer == null:
 		return
@@ -106,22 +114,6 @@ func _process(delta: float) -> void:
 	# Общий пиксельный ритм оживляет все слои одновременно: одежда не «съезжает» с тела.
 	var bounce := sin(_pose_time * (11.0 if _moving else 3.0))
 	position = _rest_position + Vector2(0, round(bounce * (1.0 if _moving else 0.5)))
-	queue_redraw()
-
-func _draw() -> void:
-	if not _is_chaser:
-		return
-	# Красное кольцо — игровой маркер Соқыртеке; рисуется под моделькой,
-	# поэтому не скрывает одежду и остаётся узнаваемым на траве.
-	var col := Color("d64b45")
-	draw_line(Vector2(-18, 19), Vector2(-6, 19), col, 3.0, false)
-	draw_line(Vector2(6, 19), Vector2(18, 19), col, 3.0, false)
-	draw_line(Vector2(-21, 16), Vector2(-18, 19), col, 3.0, false)
-	draw_line(Vector2(21, 16), Vector2(18, 19), col, 3.0, false)
-	# Треугольный знак парит над головой (не касаясь её) — виден даже в толпе и под юртой.
-	draw_colored_polygon(PackedVector2Array([
-		Vector2(0, -53), Vector2(7, -45), Vector2(-7, -45),
-	]), col)
 
 func _build_frames(sheet: Texture2D) -> SpriteFrames:
 	var sf := SpriteFrames.new()

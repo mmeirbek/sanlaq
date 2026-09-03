@@ -261,8 +261,6 @@ func _wears(item_id: String) -> bool:
 
 func set_as_sokyroteke(active: bool) -> void:
 	is_sokyroteke = active
-	if _visual:
-		_visual.set_chaser(active)
 
 func apply_center_text(_text: String) -> void:
 	pass

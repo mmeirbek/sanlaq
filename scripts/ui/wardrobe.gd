@@ -39,7 +39,7 @@ func _build_tabs() -> void:
 	for slot in ClothingItem.SlotType.values():
 		var btn := Button.new()
 		btn.text = SLOT_NAMES.get(slot, str(slot))
-		btn.custom_minimum_size = Vector2(0, 46)
+		btn.custom_minimum_size = Vector2(0, 40)
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.focus_mode = Control.FOCUS_NONE
 		btn.tooltip_text = tr("Киім санатын ашу · Open category")
