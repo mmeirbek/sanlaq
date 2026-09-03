@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 const RADIUS := 90.0
+const EDGE_MARGIN := 40.0
 
 var player: Player
 var _joy_active: bool = false
@@ -12,10 +13,14 @@ var _knob: Control
 var _sprint_btn: Button
 
 func _ready() -> void:
+	if not DisplayServer.is_touchscreen_available():
+		visible = false
+		set_process(false)
+		return
+
 	_joy_base = Control.new()
 	_joy_base.custom_minimum_size = Vector2(RADIUS * 2, RADIUS * 2)
 	_joy_base.size = Vector2(RADIUS * 2, RADIUS * 2)
-	_joy_base.position = Vector2(40, 720 - RADIUS * 2 - 40)
 	_joy_base.gui_input.connect(_on_joy_input)
 	_joy_base.mouse_filter = Control.MOUSE_FILTER_STOP
 	_joy_base.draw.connect(func(): _draw_circle(_joy_base, Color(1, 1, 1, 0.15)))
@@ -32,11 +37,25 @@ func _ready() -> void:
 	_sprint_btn = Button.new()
 	_sprint_btn.text = "SPRINT"
 	_sprint_btn.custom_minimum_size = Vector2(140, 90)
-	_sprint_btn.position = Vector2(1280 - 180, 720 - 130)
 	_sprint_btn.focus_mode = Control.FOCUS_NONE
 	_sprint_btn.button_down.connect(func(): _sprint_active = true)
 	_sprint_btn.button_up.connect(func(): _sprint_active = false)
 	add_child(_sprint_btn)
+
+	# Screen size varies per device (canvas_items/expand stretch, any aspect ratio) —
+	# hardcoding 1280x720 here left the joystick/sprint button off-screen or misplaced
+	# on phones with a different aspect ratio. Position relative to the real viewport
+	# and re-lay-out on resize (covers orientation changes too).
+	get_viewport().size_changed.connect(_layout_controls)
+	_layout_controls()
+
+func _layout_controls() -> void:
+	var vp_size := get_viewport().get_visible_rect().size
+	_joy_base.position = Vector2(EDGE_MARGIN, vp_size.y - RADIUS * 2 - EDGE_MARGIN)
+	_sprint_btn.position = Vector2(
+		vp_size.x - _sprint_btn.custom_minimum_size.x - EDGE_MARGIN,
+		vp_size.y - _sprint_btn.custom_minimum_size.y - EDGE_MARGIN
+	)
 
 func _draw_circle(c: Control, col: Color) -> void:
 	var r := c.size / 2.0

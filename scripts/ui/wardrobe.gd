@@ -25,7 +25,7 @@ var _tab_buttons: Array[Button] = []
 @onready var _items_grid: GridContainer = $RightPanel/Margin/VBox/Scroll/Items
 @onready var _effect_label: Label = $RightPanel/Margin/VBox/EffectPanel/EffectLabel
 @onready var _info_label: RichTextLabel = $RightPanel/Margin/VBox/InfoPanel/Info
-@onready var _back_btn: Button = $RightPanel/Margin/VBox/BackBtn
+@onready var _back_btn: Button = $BackBtn
 @onready var _slot_title: Label = $RightPanel/Margin/VBox/SlotTitle
 
 func _ready() -> void:
@@ -42,7 +42,7 @@ func _build_tabs() -> void:
 		btn.custom_minimum_size = Vector2(0, 46)
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.focus_mode = Control.FOCUS_NONE
-		btn.tooltip_text = "Киім санатын ашу · Open category"
+		btn.tooltip_text = tr("Киім санатын ашу · Open category")
 		btn.pressed.connect(_show_slot.bind(slot as ClothingItem.SlotType))
 		_slot_tabs.add_child(btn)
 		_tab_buttons.append(btn)
@@ -99,6 +99,7 @@ func _refresh_items() -> void:
 		btn.add_theme_color_override("font_color", SanlaqDesignTokens.NAVY)
 		btn.add_theme_color_override("font_hover_color", SanlaqDesignTokens.NAVY)
 		btn.expand_icon = true
+		btn.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 		btn.tooltip_text = item.get_desc_for_lang(GameSettings.get_lang_code())
 		btn.text = _card_text(item)
 		if not item.icon_path.is_empty():
@@ -126,8 +127,8 @@ func _refresh_items() -> void:
 		selected = items[0]
 	if selected:
 		var lang := GameSettings.get_lang_code()
-		var status := "[color=#d9a93f](✓ жабдықталған)[/color]" if selected.id == equipped_id else ""
-		_effect_label.text = "ҚАСИЕТІ: %s" % _effect_for(selected.id)
+		var status := tr("[color=#d9a93f](✓ жабдықталған)[/color]") if selected.id == equipped_id else ""
+		_effect_label.text = tr("ҚАСИЕТІ: %s") % _effect_for(selected.id)
 		_info_label.text = "[b]%s[/b]\n%s\n%s" % [
 			selected.get_name_for_lang(lang),
 			selected.get_desc_for_lang(lang),
@@ -144,15 +145,15 @@ func _card_text(item: ClothingItem) -> String:
 	if item.id == SaveManager.get_equipped(_current_slot):
 		return "%s\n✓" % name
 	if not SaveManager.is_unlocked(item.id):
-		return "%s\n🔒 Жабық" % name
+		return tr("%s\n🔒 Жабық") % name
 	return "%s" % name
 
 func _effect_for(item_id: String) -> String:
 	match item_id:
-		"head_tymaq_01": return "Баяулау уақыты −30%"
-		"torso_shapan_01": return "Соқыртекеге азырақ көрінесіз"
-		"shoes_saptama_etik_01": return "Құрғақ жерде жылдамдық +8%"
-	return "Сәндік зат"
+		"head_tymaq_01": return tr("Баяулау уақыты −30%")
+		"torso_shapan_01": return tr("Соқыртекеге азырақ көрінесіз")
+		"shoes_saptama_etik_01": return tr("Құрғақ жерде жылдамдық +8%")
+	return tr("Сәндік зат")
 
 func _item_style(equipped: bool = false, hovered: bool = false) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()

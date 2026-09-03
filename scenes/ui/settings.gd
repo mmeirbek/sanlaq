@@ -11,6 +11,7 @@ extends Control
 @onready var _rank: Label = %Rank
 @onready var _stats: Label = %Stats
 @onready var _back_btn: Button = %BackBtn
+@onready var _lang_btn: Button = %LanguageBtn
 
 func _ready() -> void:
 	_music_toggle.button_pressed = GameSettings.audio_music_enabled
@@ -26,6 +27,11 @@ func _ready() -> void:
 	_shake_toggle.toggled.connect(GameSettings.set_screen_shake_enabled)
 	_names_toggle.toggled.connect(GameSettings.set_show_player_names)
 	_back_btn.pressed.connect(func() -> void: SceneRouter.go_to_main_menu())
+	_lang_btn.pressed.connect(_on_language_pressed)
+	_refresh()
+
+func _on_language_pressed() -> void:
+	GameSettings.cycle_language()
 	_refresh()
 
 func _on_music_volume_changed(value: float) -> void:
@@ -37,18 +43,13 @@ func _on_sfx_volume_changed(value: float) -> void:
 	_refresh()
 
 func _refresh() -> void:
+	_lang_btn.text = "ENG / АҒЫЛ" if GameSettings.current_language == GameSettings.Language.KZ else "ҚАЗ / KAZ"
 	_music_value.text = "%d%%" % roundi(GameSettings.audio_music_volume * 100.0)
 	_sfx_value.text = "%d%%" % roundi(GameSettings.audio_sfx_volume * 100.0)
 	var career: Dictionary = SaveManager.career
 	var wins := int(career.get("wins", 0))
-	_rank.text = _rank_name(wins)
-	_stats.text = "БІЛІМ ҰПАЙЫ: %d\nЖЕҢІС: %d\nҚАЗІРГІ СЕРИЯ: %d\nҮЗДІК СЕРИЯ: %d" % [
+	_rank.text = RankSystem.current_rank_name(wins)
+	_stats.text = tr("БІЛІМ ҰПАЙЫ: %d\nЖЕҢІС: %d\nҚАЗІРГІ СЕРИЯ: %d\nҮЗДІК СЕРИЯ: %d\n%s") % [
 		int(career.get("knowledge", 0)), wins, int(career.get("streak", 0)), int(career.get("best_streak", 0)),
+		RankSystem.progress_text(wins),
 	]
-
-func _rank_name(wins: int) -> String:
-	if wins >= 12:
-		return "ДАЛА ШЕБЕРІ"
-	if wins >= 5:
-		return "ТОЙ БАСЫ"
-	return "БАСТАУШЫ"

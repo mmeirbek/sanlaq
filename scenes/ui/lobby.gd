@@ -24,7 +24,7 @@ func _ready() -> void:
 	_selected_role = _game_data.get("role", "sokyroteke")
 	if _selected_role != "runner":
 		_selected_role = "sokyroteke"
-	_mode_label.text = "Ойын түрі: %s" % _mode_name(mode)
+	_mode_label.text = tr("Ойын түрі: %s") % _mode_name(mode)
 	_refresh_bots_label()
 	_refresh_role_buttons()
 	_build_players()
@@ -37,11 +37,11 @@ func _ready() -> void:
 
 func _mode_name(mode: String) -> String:
 	match mode:
-		"vs_bots": return "Боттарға қарсы"
-		_: return "Классикалық"
+		"vs_bots": return tr("Боттарға қарсы")
+		_: return tr("Классикалық")
 
 func _refresh_bots_label() -> void:
-	_bots_label.text = "Боттар: %d" % _bots_count
+	_bots_label.text = tr("Боттар: %d") % _bots_count
 
 func _set_role(role: String) -> void:
 	_selected_role = role
@@ -69,9 +69,9 @@ func _build_players() -> void:
 	var compact := _bots_count >= 5
 	var avatar_size := Vector2(64, 82) if compact else AVATAR_SIZE
 	_players_row.add_theme_constant_override("separation", 8 if compact else 20)
-	_add_avatar(SaveManager.nickname + "  ·  Ойыншы", false, 0, avatar_size)
+	_add_avatar(SaveManager.nickname + tr("  ·  Ойыншы"), false, 0, avatar_size)
 	for i in range(1, _bots_count + 1):
-		_add_avatar("Қарсылас %d" % i, true, i - 1, avatar_size)
+		_add_avatar(tr("Қарсылас %d") % i, true, i - 1, avatar_size)
 
 func _add_avatar(player_name: String, is_bot: bool, outfit_index: int = 0, avatar_size: Vector2 = AVATAR_SIZE) -> void:
 	var box := VBoxContainer.new()

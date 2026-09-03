@@ -118,9 +118,9 @@ func _draw() -> void:
 	draw_line(Vector2(6, 19), Vector2(18, 19), col, 3.0, false)
 	draw_line(Vector2(-21, 16), Vector2(-18, 19), col, 3.0, false)
 	draw_line(Vector2(21, 16), Vector2(18, 19), col, 3.0, false)
-	# Треугольный знак над головой остаётся видимым даже в толпе и под юртой.
+	# Треугольный знак парит над головой (не касаясь её) — виден даже в толпе и под юртой.
 	draw_colored_polygon(PackedVector2Array([
-		Vector2(0, -39), Vector2(7, -31), Vector2(-7, -31),
+		Vector2(0, -53), Vector2(7, -45), Vector2(-7, -45),
 	]), col)
 
 func _build_frames(sheet: Texture2D) -> SpriteFrames:

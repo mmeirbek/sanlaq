@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://dhn235qb745v6"]
 
 [ext_resource type="Script" uid="uid://c5hx0m8vs6xxf" path="res://scenes/ui/main_menu.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_ornament.tscn" id="2"]
 [ext_resource type="FontFile" uid="uid://dtqjd8bgha67o" path="res://assets/fonts/NotoSans-Bold.ttf" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_main_backdrop.tscn" id="4"]
 [ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_dialog.tscn" id="5"]
@@ -20,6 +19,22 @@ corner_radius_bottom_left = 22
 shadow_color = Color(0.04, 0.16, 0.23, 0.2)
 shadow_size = 18
 shadow_offset = Vector2(0, 7)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary"]
+content_margin_left = 26.0
+content_margin_top = 14.0
+content_margin_right = 26.0
+content_margin_bottom = 14.0
+bg_color = Color(0.918, 0.761, 0.357, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.851, 0.663, 0.247, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hero_card"]
 bg_color = Color(0.03, 0.16, 0.19, 0.28)
@@ -48,22 +63,6 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary"]
-content_margin_left = 24.0
-content_margin_top = 10.0
-content_margin_right = 24.0
-content_margin_bottom = 10.0
-bg_color = Color(0.918, 0.761, 0.357, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.851, 0.663, 0.247, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-
 [node name="MainMenu" type="Control" unique_id=288087735]
 layout_mode = 3
 anchors_preset = 15
@@ -81,30 +80,135 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="TopOrnament" parent="." unique_id=1096315544 instance=ExtResource("2")]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 44.0
-grow_horizontal = 2
-
-[node name="BottomOrnament" parent="." unique_id=1434982424 instance=ExtResource("2")]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -44.0
-grow_horizontal = 2
-grow_vertical = 0
-
 [node name="MenuCard" type="Panel" parent="." unique_id=176306271]
 layout_mode = 0
 offset_left = 118.0
 offset_top = 74.0
 offset_right = 700.0
-offset_bottom = 693.0
+offset_bottom = 710.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_menu_card")
+
+[node name="Margin" type="MarginContainer" parent="MenuCard" unique_id=1032986260]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = -28.0
+offset_bottom = 28.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 24
+
+[node name="VBox" type="VBoxContainer" parent="MenuCard/Margin" unique_id=987777394]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="SpacerTop" type="Control" parent="MenuCard/Margin/VBox" unique_id=1214419137]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="Title" type="Label" parent="MenuCard/Margin/VBox" unique_id=681921391]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.984, 0.969, 0.933, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 46
+text = "Sañlaq"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="Subtitle" type="Label" parent="MenuCard/Margin/VBox" unique_id=401136524]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
+theme_override_font_sizes/font_size = 22
+text = "ҰЛТТЫҚ ОЙЫН · NATIONAL GAME"
+horizontal_alignment = 1
+
+[node name="NicknameEdit" type="HBoxContainer" parent="MenuCard/Margin/VBox" unique_id=1017268331]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="NickNameLabel" type="Label" parent="MenuCard/Margin/VBox/NicknameEdit" unique_id=1794279849]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.918, 0.761, 0.357, 1)
+text = "Ойыншы аты"
+
+[node name="NicknameInput" type="LineEdit" parent="MenuCard/Margin/VBox/NicknameEdit" unique_id=249399860]
+custom_minimum_size = Vector2(280, 48)
+layout_mode = 2
+placeholder_text = "Атыңызды жазыңыз"
+
+[node name="NicknameWarning" type="Label" parent="MenuCard/Margin/VBox" unique_id=3021884471]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.29, 0.29, 1)
+theme_override_font_sizes/font_size = 14
+text = "Алдымен атыңызды жазыңыз!"
+horizontal_alignment = 1
+
+[node name="SpacerMid" type="Control" parent="MenuCard/Margin/VBox" unique_id=2003310065]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="PlayBtn" type="Button" parent="MenuCard/Margin/VBox" unique_id=1898331553]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_font_sizes/font_size = 21
+theme_override_styles/normal = SubResource("StyleBoxFlat_primary")
+text = "ОЙНАУ"
+
+[node name="WardrobeBtn" type="Button" parent="MenuCard/Margin/VBox" unique_id=1256275402]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 21
+text = "КИІМ ШКАФЫ"
+
+[node name="CodexBtn" type="Button" parent="MenuCard/Margin/VBox" unique_id=1199192319]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 21
+text = "МҰРА  ·  ЭНЦИКЛОПЕДИЯ"
+
+[node name="AboutBtn" type="Button" parent="MenuCard/Margin/VBox" unique_id=2053508301]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 21
+text = "ОЙЫН ТУРАЛЫ"
+
+[node name="SettingsBtn" type="Button" parent="MenuCard/Margin/VBox" unique_id=971536816]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 21
+text = "БАПТАУЛАР"
+
+[node name="QuitBtn" type="Button" parent="MenuCard/Margin/VBox" unique_id=1339786302]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 21
+text = "Шығу"
+
+[node name="SpacerBot" type="Control" parent="MenuCard/Margin/VBox" unique_id=1234042292]
+layout_mode = 2
+size_flags_vertical = 3
 
 [node name="HeroCard" type="Panel" parent="." unique_id=359629454]
 layout_mode = 0
@@ -155,129 +259,6 @@ theme_override_font_sizes/font_size = 14
 text = "Қашқындарды ұста да, олардың киімін дұрыс атаңыз."
 autowrap_mode = 2
 
-[node name="Margin" type="MarginContainer" parent="." unique_id=1032986260]
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 0.58
-anchor_bottom = 1.0
-offset_left = 4.0
-offset_top = -77.0
-offset_right = -27.000061
-offset_bottom = 44.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 152
-theme_override_constants/margin_top = 150
-theme_override_constants/margin_right = 48
-theme_override_constants/margin_bottom = 76
-
-[node name="VBox" type="VBoxContainer" parent="Margin" unique_id=987777394]
-layout_mode = 2
-theme_override_constants/separation = 5
-
-[node name="SpacerTop" type="Control" parent="Margin/VBox" unique_id=1214419137]
-custom_minimum_size = Vector2(0, 6)
-layout_mode = 2
-
-[node name="Title" type="Label" parent="Margin/VBox" unique_id=681921391]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.984, 0.969, 0.933, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 46
-text = "Sañlaq"
-horizontal_alignment = 1
-uppercase = true
-
-[node name="Subtitle" type="Label" parent="Margin/VBox" unique_id=401136524]
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
-theme_override_font_sizes/font_size = 22
-text = "ҰЛТТЫҚ ОЙЫН · NATIONAL GAME"
-horizontal_alignment = 1
-
-[node name="NicknameEdit" type="HBoxContainer" parent="Margin/VBox" unique_id=1017268331]
-layout_mode = 2
-size_flags_vertical = 4
-theme_override_constants/separation = 10
-alignment = 1
-
-[node name="NickNameLabel" type="Label" parent="Margin/VBox/NicknameEdit" unique_id=1794279849]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.918, 0.761, 0.357, 1)
-text = "Ойыншы аты"
-
-[node name="NicknameInput" type="LineEdit" parent="Margin/VBox/NicknameEdit" unique_id=249399860]
-custom_minimum_size = Vector2(280, 48)
-layout_mode = 2
-placeholder_text = "Атыңызды жазыңыз"
-
-[node name="SpacerMid" type="Control" parent="Margin/VBox" unique_id=2003310065]
-custom_minimum_size = Vector2(0, 6)
-layout_mode = 2
-
-[node name="PlayBtn" type="Button" parent="Margin/VBox" unique_id=1898331553]
-custom_minimum_size = Vector2(0, 42)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
-theme_override_font_sizes/font_size = 21
-theme_override_styles/normal = SubResource("StyleBoxFlat_primary")
-text = "ОЙНАУ"
-
-[node name="PlayVsBotsBtn" type="Button" parent="Margin/VBox" unique_id=508584297]
-custom_minimum_size = Vector2(0, 42)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_font_sizes/font_size = 21
-text = "БОТТАРМЕН ЖАТТЫҒУ"
-
-[node name="WardrobeBtn" type="Button" parent="Margin/VBox" unique_id=1256275402]
-custom_minimum_size = Vector2(0, 42)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_font_sizes/font_size = 21
-text = "КИІМ ШКАФЫ"
-
-[node name="CodexBtn" type="Button" parent="Margin/VBox" unique_id=1199192319]
-custom_minimum_size = Vector2(0, 42)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_font_sizes/font_size = 21
-text = "МҰРА  ·  ЭНЦИКЛОПЕДИЯ"
-
-[node name="AboutBtn" type="Button" parent="Margin/VBox" unique_id=2053508301]
-custom_minimum_size = Vector2(0, 42)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_font_sizes/font_size = 21
-text = "ОЙЫН ТУРАЛЫ"
-
-[node name="SettingsBtn" type="Button" parent="Margin/VBox" unique_id=971536816]
-custom_minimum_size = Vector2(0, 42)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_font_sizes/font_size = 21
-text = "БАПТАУЛАР"
-
-[node name="QuitBtn" type="Button" parent="Margin/VBox" unique_id=1339786302]
-custom_minimum_size = Vector2(0, 42)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-theme_override_font_sizes/font_size = 21
-text = "Шығу"
-
-[node name="SpacerBot" type="Control" parent="Margin/VBox" unique_id=1234042292]
-layout_mode = 2
-size_flags_vertical = 3
-
 [node name="Version" type="Label" parent="." unique_id=1488877245]
 layout_mode = 1
 anchors_preset = 3
@@ -308,10 +289,10 @@ grow_vertical = 2
 dialog_title = "Шығу"
 dialog_message = "Ойыннан шығасыз ба?"
 
-[connection signal="pressed" from="Margin/VBox/PlayBtn" to="." method="_on_play_pressed"]
-[connection signal="pressed" from="Margin/VBox/PlayVsBotsBtn" to="." method="_on_play_vs_bots_pressed"]
-[connection signal="pressed" from="Margin/VBox/WardrobeBtn" to="." method="_on_wardrobe_pressed"]
-[connection signal="pressed" from="Margin/VBox/CodexBtn" to="." method="_on_codex_pressed"]
-[connection signal="pressed" from="Margin/VBox/AboutBtn" to="." method="_on_about_pressed"]
-[connection signal="pressed" from="Margin/VBox/SettingsBtn" to="." method="_on_settings_pressed"]
-[connection signal="pressed" from="Margin/VBox/QuitBtn" to="." method="_on_quit_pressed"]
+[connection signal="text_changed" from="MenuCard/Margin/VBox/NicknameEdit/NicknameInput" to="." method="_on_nickname_changed"]
+[connection signal="pressed" from="MenuCard/Margin/VBox/PlayBtn" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="MenuCard/Margin/VBox/WardrobeBtn" to="." method="_on_wardrobe_pressed"]
+[connection signal="pressed" from="MenuCard/Margin/VBox/CodexBtn" to="." method="_on_codex_pressed"]
+[connection signal="pressed" from="MenuCard/Margin/VBox/AboutBtn" to="." method="_on_about_pressed"]
+[connection signal="pressed" from="MenuCard/Margin/VBox/SettingsBtn" to="." method="_on_settings_pressed"]
+[connection signal="pressed" from="MenuCard/Margin/VBox/QuitBtn" to="." method="_on_quit_pressed"]

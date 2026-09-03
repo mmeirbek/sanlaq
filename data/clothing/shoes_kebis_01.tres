@@ -14,6 +14,7 @@ color = Color(0.3, 0.25, 0.15, 1)
 rarity = 1
 unlock_by_default = true
 wrong_answers_kz = Array[String](["Мәсі", "Саптама етік", "Тымақ"])
+wrong_answers_en = Array[String](["Masi", "Saptama Etik", "Tymaq"])
 texture_path = "res://assets/character/shoes/shoes_kebis_01.png"
 icon_path = "res://assets/items/shoes_kebis_01.png"
 reference_photo_path = "res://assets/ui/encyclopedia_photos/boots.png"

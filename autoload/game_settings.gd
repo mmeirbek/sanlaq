@@ -32,7 +32,7 @@ func cycle_language() -> void:
 	_apply_language()
 
 func localize(key: String) -> String:
-	return key
+	return tr(key)
 
 func _apply_saved_settings() -> void:
 	var saved_lang: int = SaveManager.get_setting("language", Language.KZ)
@@ -43,6 +43,7 @@ func _apply_saved_settings() -> void:
 	audio_music_enabled = SaveManager.get_setting("music_enabled", true)
 	screen_shake_enabled = SaveManager.get_setting("screen_shake_enabled", true)
 	show_player_names = SaveManager.get_setting("show_player_names", true)
+	_apply_language()
 
 func set_sfx_enabled(enabled: bool) -> void:
 	audio_sfx_enabled = enabled
@@ -79,4 +80,6 @@ func get_music_volume_db() -> float:
 	return linear_to_db(audio_music_volume) - 18.0
 
 func _apply_language() -> void:
-	pass
+	# "kk" (Kazakh) has no registered translation resource on purpose — every scene's
+	# authored text already IS the Kazakh source string, so tr() falls back to it verbatim.
+	TranslationServer.set_locale("en" if current_language == Language.EN else "kk")

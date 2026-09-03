@@ -1,11 +1,14 @@
 [gd_scene format=3 uid="uid://de4bwijwausa3"]
 
 [ext_resource type="Script" uid="uid://dgvs3vwwllkp6" path="res://scenes/ui/results.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_ornament.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_divider.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="4"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_replay"]
+content_margin_left = 26.0
+content_margin_top = 14.0
+content_margin_right = 26.0
+content_margin_bottom = 14.0
 bg_color = Color(0.918, 0.761, 0.357, 1)
 border_width_left = 2
 border_width_top = 2
@@ -34,23 +37,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 variant = 3
-
-[node name="TopOrnament" parent="." unique_id=355445032 instance=ExtResource("2")]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 44.0
-grow_horizontal = 2
-
-[node name="BottomOrnament" parent="." unique_id=1727617625 instance=ExtResource("2")]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -44.0
-grow_horizontal = 2
-grow_vertical = 0
 
 [node name="Panel" type="PanelContainer" parent="." unique_id=288299866]
 layout_mode = 1

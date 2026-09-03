@@ -14,6 +14,7 @@ color = Color(0.25, 0.2, 0.1, 1)
 rarity = 0
 unlock_by_default = true
 wrong_answers_kz = Array[String](["Тақия", "Тымақ", "Кимешек"])
+wrong_answers_en = Array[String](["Takiya", "Tymaq", "Kimeshek"])
 texture_path = "res://assets/character/head/head_borik_01.png"
 icon_path = "res://assets/items/head_borik_01.png"
 reference_photo_path = "res://assets/ui/encyclopedia_photos/borik.jpg"

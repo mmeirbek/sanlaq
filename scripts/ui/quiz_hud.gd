@@ -32,7 +32,7 @@ func show_quiz(item: ClothingItem, answer_time: float) -> void:
 
 	var lang := GameSettings.get_lang_code()
 	var slot_name := _slot_name(item.slot_type)
-	item_label.text = "Бұл қандай %s?" % slot_name + "\n \n \n  ?"
+	item_label.text = tr("Бұл қандай %s?") % slot_name + "\n \n \n  ?"
 
 	_current_options = _build_options(item)
 	btn_a.text = _current_options[0]
@@ -54,9 +54,9 @@ func show_result(correct: bool, item: ClothingItem) -> void:
 	var name := item.get_name_for_lang(lang)
 
 	if correct:
-		item_label.text = "Дұрыс!  ✓\n%s" % name
+		item_label.text = tr("Дұрыс!  ✓\n%s") % name
 	else:
-		item_label.text = "Қате!  ✗\nБұл: %s" % name
+		item_label.text = tr("Қате!  ✗\nБұл: %s") % name
 
 	btn_a.text = ""
 	btn_b.text = ""
@@ -89,7 +89,7 @@ func _build_options(item: ClothingItem) -> Array[String]:
 	var correct := item.get_name_for_lang(lang)
 	var wrongs: Array[String]
 
-	wrongs = item.wrong_answers_kz.duplicate()
+	wrongs = item.get_wrong_answers_for_lang(lang).duplicate()
 
 	while wrongs.size() > 2:
 		wrongs.remove_at(randi() % wrongs.size())
@@ -102,8 +102,8 @@ func _build_options(item: ClothingItem) -> Array[String]:
 
 func _slot_name(slot: ClothingItem.SlotType) -> String:
 	match slot:
-		ClothingItem.SlotType.HEAD: return "бас киім"
-		ClothingItem.SlotType.TORSO: return "сырт киім"
-		ClothingItem.SlotType.PANTS: return "шалбар"
-		ClothingItem.SlotType.SHOES: return "аяқ киім"
+		ClothingItem.SlotType.HEAD: return tr("бас киім")
+		ClothingItem.SlotType.TORSO: return tr("сырт киім")
+		ClothingItem.SlotType.PANTS: return tr("шалбар")
+		ClothingItem.SlotType.SHOES: return tr("аяқ киім")
 	return "?"

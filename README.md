@@ -3,7 +3,7 @@
 Казахская игра «соқыртеке» (слепой козёл) в формате конкурентной погони
 с обучающими викторинами о казахской одежде. MVP: человек против ботов.
 
-**Движок:** Godot **4.6.2** (stable). Проект заявлен на 4.6.
+**Движок:** Godot **4.7** (stable) — см. `config/features` в `project.godot`.
 
 ---
 
@@ -26,7 +26,7 @@
 
 ## Требования и запуск
 
-1. Установи **Godot 4.6.2** (stable) — https://godotengine.org/download
+1. Установи **Godot 4.7** (stable) — https://godotengine.org/download
 2. Открой редактор → **Import** → выбери `project.godot`
 3. F5 (Run Project)
 
@@ -64,7 +64,7 @@ sokyroteke/
 │   ├── game_modes/        # режим classic
 │   └── bots/              # bot_easy / bot_medium / bot_hard
 ├── assets/
-│   ├── character/         # пиксель-арт персонажа + одежда (см. README внутри)
+│   ├── character/         # мягкий 2D-мультяшный персонаж + одежда (см. README внутри)
 │   │   ├── base/          # тело (кожа/волосы/лицо)
 │   │   ├── head/ torso/ pants/ shoes/   # слои одежды
 │   │   ├── yurt/          # текстура юрты
@@ -148,7 +148,7 @@ godot --headless --path . --script res://tools/spawn_test.gd
 
 ## Сборка (экспорт)
 
-1. **Editor → Manage Export Templates → Download** (нужна версия 4.6.2).
+1. **Editor → Manage Export Templates → Download** (нужна версия 4.7).
 2. **Project → Export → Add Preset**.
 
 | Платформа | Как |

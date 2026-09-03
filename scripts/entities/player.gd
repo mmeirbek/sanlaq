@@ -5,7 +5,6 @@ extends CharacterBody2D
 @export var is_sokyroteke: bool = false
 @export var is_bot: bool = false
 
-signal caught(target: Player)
 signal stepped(sound_radius: float)
 signal runner_sprint_changed(time_left: float, uses_left: int)
 
@@ -22,12 +21,19 @@ var _in_water: bool = false
 var _mode: GameModeDefinition
 var _controller: PlayerController
 var _visual: CharacterVisual
+var _name_label: Label
 var _shield_timer: float = 0.0
 var _noise_timer: float = 0.0
 var _noise_random: float = 0.0
 var _equipped_items: Dictionary = {}
 var runner_sprint_time := 0.0
 var runner_sprint_uses := RUNNER_SPRINT_USES
+var bot_speed_mult: float = 1.0
+var _footprint_boost: bool = false
+
+const FOOTPRINT_BOOST_MULT := 1.1
+const RUNNER_SPRINT_MULT := 1.55
+const SAPTAMA_ETIK_MULT := 1.08
 
 const OUTFIT_PROFILES := [
 	["head_tymaq_01", "torso_shapan_01", "pants_shalbar_01", "shoes_saptama_etik_01"],
@@ -42,6 +48,7 @@ const OUTFIT_PROFILES := [
 func _ready() -> void:
 	_controller = $PlayerController
 	_visual = $CharacterVisual
+	_name_label = $NameLabel
 	_mode = AssetRegistry.get_default_mode()
 	if _mode == null:
 		_mode = GameModeDefinition.new()
@@ -91,6 +98,7 @@ func revive() -> void:
 	set_deferred("collision_layer", 5)
 	set_deferred("collision_mask", 5)
 	slow_timer = 0.0
+	_shield_timer = 0.0
 	_in_water = false
 	runner_sprint_time = 0.0
 	runner_sprint_uses = RUNNER_SPRINT_USES
@@ -163,10 +171,14 @@ func _physics_process(delta: float) -> void:
 	var player_speed := _mode.player_base_speed
 	if is_sokyroteke:
 		player_speed *= _mode.sokyroteke_speed_mult
+		if _footprint_boost:
+			player_speed *= FOOTPRINT_BOOST_MULT
 	elif sprint:
-		player_speed *= 1.55
+		player_speed *= RUNNER_SPRINT_MULT
 	if _wears("shoes_saptama_etik_01") and not _in_water:
-		player_speed *= 1.08
+		player_speed *= SAPTAMA_ETIK_MULT
+	if is_bot:
+		player_speed *= bot_speed_mult
 
 	if slow_timer > 0:
 		player_speed *= _mode.slow_speed_mult
@@ -206,16 +218,23 @@ func _emit_noise() -> void:
 		radius = 40.0
 	stepped.emit(radius)
 
+func set_display_name(name_text: String) -> void:
+	_name_label.text = name_text
+
+func set_name_label_visible(v: bool) -> void:
+	_name_label.visible = v
+
+func set_bot_speed_mult(m: float) -> void:
+	bot_speed_mult = m
+
+func set_footprint_boost(active: bool) -> void:
+	_footprint_boost = active
+
 func apply_shield(duration: float) -> void:
 	_shield_timer = duration
 
 func has_shield() -> bool:
 	return _shield_timer > 0
-
-func catch_player(target: Player) -> void:
-	if target.has_shield() or not target.is_alive():
-		return
-	caught.emit(target)
 
 func is_alive() -> bool:
 	return not eliminated

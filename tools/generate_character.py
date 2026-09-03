@@ -2,10 +2,12 @@
 """Генератор ассетов персонажа для Соқыртеке.
 Тело: 4 направления x 6 кадров (idle0,1 / walk0..3). Право = зеркало левого.
 Одежда по слотам + превью предметов + бесшовные трава/вода + блоб воды + шаблон.
-Логическая сетка 16x16 -> x4 = 64x64 кадр. Лист = 4 строки x 6 колонок.
+Логическая сетка 16x16 -> рисуется с суперсэмплингом x16, скруглённые силуэты
+с плоским cel-shading, финальный даунскейл LANCZOS до 64x64 (мягкий 2D-мультяшный
+стиль вместо пиксель-арта). Лист = 4 строки x 6 колонок.
 """
 import math, os, random, sys
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 CHAR = os.path.join(ROOT, "assets/character")
@@ -13,8 +15,10 @@ ITEMS_DIR = os.path.join(ROOT, "assets/items")
 TILES = os.path.join(ROOT, "assets/tiles")
 
 SIZE = 16
-SCALE = 4
-FRAME = SIZE * SCALE
+SCALE = 4            # final on-disk scale (frame = 64x64), unchanged — do not break the sheet contract
+SUPER = 16            # internal supersample scale for smooth, anti-aliased drawing
+FRAME = SIZE * SCALE  # 64
+SUPER_FRAME = SIZE * SUPER  # 256, downsampled to FRAME with LANCZOS
 DIRS = ["down", "up", "left", "right"]
 FRAMES = 6
 
@@ -78,51 +82,82 @@ def layout(direction, frame):
                 leg_l=leg_l, leg_r=leg_r, foot_l=foot_l, foot_r=foot_r)
 
 
-def outline_r(d, r, col):
+def darken(color, factor=0.78):
+    r, g, b = color[0], color[1], color[2]
+    a = color[3] if len(color) > 3 else 255
+    return (int(r * factor), int(g * factor), int(b * factor), a)
+
+
+def _super_rect(r):
+    """Logical-grid rect -> supersampled pixel rect."""
     x0, y0, x1, y1 = r
-    d.rectangle((x0 - 1, y0 - 1, x1 + 1, y1 + 1), fill=col)
+    return (x0 * SUPER, y0 * SUPER, x1 * SUPER, y1 * SUPER)
+
+
+def _radius_for(r):
+    x0, y0, x1, y1 = r
+    w, h = abs(x1 - x0), abs(y1 - y0)
+    return max(2, int(min(w, h) * 0.30))
+
+
+def outline_r(d, r, col):
+    """Soft rounded outline behind a part — replaces the old hard 1px rectangle border."""
+    x0, y0, x1, y1 = _super_rect(r)
+    pad = int(SUPER * 0.35)
+    rr = (x0 - pad, y0 - pad, x1 + pad, y1 + pad)
+    d.rounded_rectangle(rr, radius=_radius_for(rr), fill=col)
 
 
 def draw_part(d, r, color):
     outline_r(d, r, OUTLINE)
-    d.rectangle(r, fill=color)
+    sr = _super_rect(r)
+    d.rounded_rectangle(sr, radius=_radius_for(sr), fill=color)
 
 
 def draw_face(d, direction, layout_info, hair_style):
     """Лицо мальчика: глаза + улыбка. Строка глаз = 4, рот = 5 (лоб 3 открыт чёлкой)."""
+    def dot(gx, gy, r_frac=0.14):
+        cx, cy = gx * SUPER, gy * SUPER
+        rad = SUPER * r_frac
+        d.ellipse((cx - rad, cy - rad, cx + rad, cy + rad), fill=EYE)
+
     if direction == "down":
         for ex in (7, 9):
-            d.point((ex, 4), fill=EYE)
-        d.point((8, 5), fill=EYE)
+            dot(ex + 0.5, 4.5)
+        dot(8.5, 5.5, 0.10)
         if hair_style == "fringe":
-            d.point((9, 5), fill=EYE)
+            dot(9.5, 5.5, 0.10)
     elif direction == "left":
-        d.point((8, 4), fill=EYE)
-        for mx in (7, 8):
-            d.point((mx, 5), fill=EYE)
+        dot(8.5, 4.5)
+        dot(7.5, 5.5, 0.10)
+        dot(8.5, 5.5, 0.10)
 
 
-def draw_hair(d, direction, L, hair, hair_style, skin):
+def draw_hair(d, img, direction, L, hair, hair_style, skin):
     """Три силуэта волос делают персонажей различимыми без смены размера кадров."""
     r = L["hair"]
     draw_part(d, r, hair)
     x0, y0, x1, y1 = r
     if direction == "down":
-        # чёлка по центру нижнего ряда волос + убрать линию волос под лицо
-        d.rectangle((x0 + 1, y1, x1 - 1, y1 + 1), fill=skin)
-        d.rectangle((x0 + 1, y1 + 1, x1 - 1, y1 + 2), fill=skin)
+        fx0, fy0 = x0 * SUPER, (y1 - 0.4) * SUPER
+        fx1, fy1 = x1 * SUPER, (y1 + 1.6) * SUPER
+        d.rounded_rectangle((fx0 + SUPER * 0.5, fy0, fx1 - SUPER * 0.5, fy1), radius=int(SUPER * 0.6), fill=skin)
     elif direction == "left":
-        d.rectangle((x0 + 1, y1, x0 + 3, y1 + 1), fill=skin)
-        d.rectangle((x0 + 1, y1 + 1, x0 + 3, y1 + 2), fill=skin)
+        fx0, fy0 = x0 * SUPER, (y1 - 0.4) * SUPER
+        fx1, fy1 = (x0 + 3) * SUPER, (y1 + 1.6) * SUPER
+        d.rounded_rectangle((fx0 + SUPER * 0.4, fy0, fx1, fy1), radius=int(SUPER * 0.5), fill=skin)
     if hair_style == "braid" and direction != "up":
-        d.rectangle((x1 + 1, y0 + 2, x1 + 2, y1 + 3), fill=hair)
-        d.point((x1 + 2, y1 + 4), fill=GOLD)
+        rr = ((x1 + 0.5) * SUPER, (y0 + 2) * SUPER, (x1 + 2.2) * SUPER, (y1 + 3.2) * SUPER)
+        d.rounded_rectangle(rr, radius=int(SUPER * 0.4), fill=hair)
+        cx, cy = (x1 + 2) * SUPER, (y1 + 4) * SUPER
+        d.ellipse((cx - SUPER * 0.16, cy - SUPER * 0.16, cx + SUPER * 0.16, cy + SUPER * 0.16), fill=GOLD)
     elif hair_style == "fringe" and direction == "down":
-        d.rectangle((x0 + 2, y1 - 1, x0 + 4, y1), fill=hair)
+        rr = ((x0 + 1.7) * SUPER, (y1 - 1.3) * SUPER, (x0 + 4.3) * SUPER, (y1 + 0.3) * SUPER)
+        d.rounded_rectangle(rr, radius=int(SUPER * 0.35), fill=hair)
 
 
 def body_frame(direction, frame, variant):
-    img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+    img = Image.new("RGBA", (SUPER_FRAME, SUPER_FRAME), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     L = layout(direction, frame)
     skin = variant["skin"]
@@ -134,16 +169,34 @@ def body_frame(direction, frame, variant):
     for key in ("arm_l", "arm_r"):
         draw_part(d, L[key], skin)
     draw_part(d, L["torso"], skin)
-    # лёгкая тень внизу торса и по низу ног
-    tx0, ty0, tx1, ty1 = L["torso"]
-    d.rectangle((tx0 + 1, ty1 - 2, tx1 - 1, ty1), fill=skin_dark)
+    _shade_bottom_band(img, d, L["torso"], skin_dark, 0.3)
     for key in ("leg_l", "leg_r"):
-        lx0, ly0, lx1, ly1 = L[key]
-        d.rectangle((lx0 + 1, ly1 - 2, lx1 - 1, ly1), fill=skin_dark)
+        _shade_bottom_band(img, d, L[key], skin_dark, 0.22)
     draw_part(d, L["head"], skin)
-    draw_hair(d, direction, L, variant["hair"], variant["hair_style"], skin)
+    draw_hair(d, img, direction, L, variant["hair"], variant["hair_style"], skin)
     draw_face(d, direction, L, variant["hair_style"])
-    return img
+    return img.resize((FRAME, FRAME), Image.LANCZOS)
+
+
+def _shade_bottom_band(img, d, r, shadow_color, frac):
+    """Paints a flat shadow tone along the bottom of an already-drawn rounded part,
+    clipped to that part's own rounded silhouette so the shading never spills past the outline."""
+    x0, y0, x1, y1 = _super_rect(r)
+    w, h = x1 - x0, y1 - y0
+    if w <= 0 or h <= 0:
+        return
+    rad = _radius_for((x0, y0, x1, y1))
+    mask = Image.new("L", (int(w), int(h)), 0)
+    md = ImageDraw.Draw(mask)
+    md.rounded_rectangle((0, 0, w, h), radius=rad, fill=255)
+    band_top = h * (1.0 - frac)
+    band = Image.new("L", (int(w), int(h)), 0)
+    bd = ImageDraw.Draw(band)
+    bd.rectangle((0, band_top, w, h), fill=255)
+    from PIL import ImageChops
+    band = ImageChops.multiply(mask, band)
+    layer = Image.new("RGBA", (int(w), int(h)), shadow_color)
+    img.paste(layer, (int(x0), int(y0)), band)
 
 
 def garment_parts(item, direction, frame):
@@ -183,29 +236,35 @@ def garment_parts(item, direction, frame):
 
 
 def draw_crown(d, r, color):
-    """Шапка-тулья: заливка + контур сверху и по бокам (низ открыт, лицо видно)."""
-    x0, y0, x1, y1 = r
-    d.rectangle(r, fill=color)
-    d.rectangle((x0 - 1, y0 - 1, x1 + 1, y0 - 1), fill=OUTLINE)
-    d.rectangle((x0 - 1, y0 - 1, x0 - 1, y1), fill=OUTLINE)
-    d.rectangle((x1 + 1, y0 - 1, x1 + 1, y1), fill=OUTLINE)
+    """Шапка-тулья: заливка с мягкими скруглёнными краями, низ открыт — лицо видно."""
+    x0, y0, x1, y1 = _super_rect((r[0], r[1], r[2], r[3] + 1))
+    rad = _radius_for((x0, y0, x1, y1))
+    pad = int(SUPER * 0.35)
+    d.rounded_rectangle((x0 - pad, y0 - pad, x1 + pad, y1), radius=rad + pad // 2,
+                         fill=OUTLINE, corners=(True, True, False, False))
+    fx0, fy0, fx1, fy1 = _super_rect(r)
+    d.rounded_rectangle((fx0, fy0, fx1, fy1 + SUPER * 0.4), radius=rad,
+                         fill=color, corners=(True, True, False, False))
 
 
-def draw_piece_outer(d, r, color, right_side):
-    """Платок/борт: заливка + контур только по внешнему краю (к лицу — чисто)."""
-    x0, y0, x1, y1 = r
-    d.rectangle(r, fill=color)
-    d.rectangle((x0 - 1, y0 - 1, x1 + 1, y0 - 1), fill=OUTLINE)
-    d.rectangle((x0 - 1, y1 + 1, x1 + 1, y1 + 1), fill=OUTLINE)
-    if right_side:
-        d.rectangle((x1 + 1, y0 - 1, x1 + 1, y1 + 1), fill=OUTLINE)
-    else:
-        d.rectangle((x0 - 1, y0 - 1, x0 - 1, y1 + 1), fill=OUTLINE)
+def draw_piece_outer(d, r, color, _right_side):
+    """Платок/борт: мягкая скруглённая заливка, край к лицу остаётся чистым."""
+    x0, y0, x1, y1 = _super_rect(r)
+    pad = int(SUPER * 0.3)
+    rad = _radius_for((x0, y0, x1, y1))
+    d.rounded_rectangle((x0 - pad, y0 - pad, x1 + pad, y1 + pad), radius=rad + pad // 2, fill=OUTLINE)
+    d.rounded_rectangle((x0, y0, x1, y1), radius=rad, fill=color)
 
 
 def draw_detail(d, rect, color):
-    """Мелкие вышивки без тяжёлой чёрной рамки — читаются как пиксельный декор."""
-    d.rectangle(rect, fill=color)
+    """Мелкие вышивки — мягкие скруглённые акценты вместо жёстких пиксельных линий."""
+    x0, y0, x1, y1 = _super_rect(rect)
+    if x1 - x0 < 1:
+        x1 = x0 + SUPER * 0.6
+    if y1 - y0 < 1:
+        y1 = y0 + SUPER * 0.6
+    rad = max(2, int(min(x1 - x0, y1 - y0) * 0.4))
+    d.rounded_rectangle((x0, y0, x1, y1), radius=rad, fill=color)
 
 
 def draw_garment_details(d, item, direction, frame):
@@ -267,7 +326,7 @@ def draw_garment_details(d, item, direction, frame):
 
 
 def garment_frame(item, direction, frame):
-    img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+    img = Image.new("RGBA", (SUPER_FRAME, SUPER_FRAME), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     color = item["color"]
     if len(color) == 3:
@@ -277,24 +336,25 @@ def garment_frame(item, direction, frame):
         draw_crown(d, crown, color)
     if item.get("hat") == "wrap":
         for i, r in enumerate(extras):
-            draw_piece_outer(d, r, color, right_side=(i == 1))
+            draw_piece_outer(d, r, color, i == 1)
     else:
         for r in extras:
             draw_part(d, r, color)
+    # Плоская тень снизу каждой крупной части — та же логика, что и на теле.
+    shadow = darken(color)
+    if extras and item.get("hat") != "wrap":
+        for r in extras:
+            _shade_bottom_band(img, d, r, shadow, 0.3)
     draw_garment_details(d, item, direction, frame)
     if item["slot"] == "torso":
         # не перекрывать лицо верхним контуром торса между плечами
         L = layout(direction, frame)
-        top = L["torso"][1] - 1
-        xa = L["arm_l"][2] + 1
-        xb = L["arm_r"][0] - 1
+        top = (L["torso"][1] - 1) * SUPER
+        xa = (L["arm_l"][2] + 1) * SUPER
+        xb = (L["arm_r"][0] - 1) * SUPER
         if xa <= xb:
-            d.rectangle((xa, top, xb, top), fill=(0, 0, 0, 0))
-    return img
-
-
-def upscale(img):
-    return img.resize((FRAME, FRAME), Image.NEAREST)
+            d.rectangle((xa, top, xb, top + SUPER), fill=(0, 0, 0, 0))
+    return img.resize((FRAME, FRAME), Image.LANCZOS)
 
 
 def build_sheet(frame_fn):
@@ -303,14 +363,14 @@ def build_sheet(frame_fn):
         for fi in range(FRAMES):
             # Правая сторона — именно зеркало левой боковой позы, не фронтальной.
             source_direction = "left" if direction == "right" else direction
-            img = upscale(frame_fn(source_direction, fi))
+            img = frame_fn(source_direction, fi)
             if direction == "right":
                 img = img.transpose(Image.FLIP_LEFT_RIGHT)
-            sheet.paste(img, (fi * FRAME, di * FRAME))
+            sheet.paste(img, (fi * FRAME, di * FRAME), img)
     return sheet
 
 
-def gen_character():
+def gen_character(write_previews=True):
     os.makedirs(CHAR, exist_ok=True)
     os.makedirs(os.path.join(CHAR, "base"), exist_ok=True)
     for s in SLOT_FOLDER.values():
@@ -322,11 +382,14 @@ def gen_character():
         folder = SLOT_FOLDER[item["slot"]]
         sheet = build_sheet(lambda d, f, it=item: garment_frame(it, d, f))
         sheet.save(os.path.join(CHAR, folder, "%s.png" % item_id))
-    os.makedirs(ITEMS_DIR, exist_ok=True)
-    for item_id, item in ITEMS.items():
-        g = garment_frame(item, "down", 0)
-        preview = g.resize((128, 128), Image.NEAREST)
-        preview.save(os.path.join(ITEMS_DIR, "%s.png" % item_id))
+    if write_previews:
+        # NOTE: assets/items/*.png previews may be hand-illustrated (e.g. AI-generated) —
+        # only regenerate them here if you actually want to overwrite that art.
+        os.makedirs(ITEMS_DIR, exist_ok=True)
+        for item_id, item in ITEMS.items():
+            g = garment_frame(item, "down", 0)
+            preview = g.resize((128, 128), Image.LANCZOS)
+            preview.save(os.path.join(ITEMS_DIR, "%s.png" % item_id))
     # Шаблон остаётся базовым вариантом для ручной отрисовки поверх него.
     template = build_sheet(lambda d, f: body_frame(d, f, BASE_VARIANTS[0]))
     template.save(os.path.join(CHAR, "TEMPLATE.png"))
@@ -377,7 +440,7 @@ def water_blob():
     md.polygon(pts, fill=255)
     # мягкие края
     for _ in range(3):
-        mask = mask.filter(__import__("PIL.ImageFilter", fromlist=["ImageFilter"]).GaussianBlur(3))
+        mask = mask.filter(ImageFilter.GaussianBlur(3))
     out = Image.new("RGBA", (128, 128), (0, 0, 0, 0))
     out.paste(tex, (0, 0), mask)
     return out
@@ -390,7 +453,8 @@ def gen_tiles():
 
 
 if __name__ == "__main__":
-    gen_character()
-    if "--characters-only" not in sys.argv:
+    skip_tiles = "--characters-only" in sys.argv or "--sheets-only" in sys.argv
+    gen_character(write_previews="--sheets-only" not in sys.argv)
+    if not skip_tiles:
         gen_tiles()
-    print("CHARACTERS DONE" if "--characters-only" in sys.argv else "ALL DONE")
+    print("SHEETS ONLY DONE" if skip_tiles else "ALL DONE")

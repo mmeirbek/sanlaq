@@ -14,6 +14,7 @@ enum Rarity { COMMON, RARE, LEGENDARY }
 @export var rarity: Rarity = Rarity.COMMON
 @export var unlock_by_default: bool = true
 @export var wrong_answers_kz: Array[String] = []
+@export var wrong_answers_en: Array[String] = []
 @export var texture_path: String = ""
 @export var icon_path: String = ""
 @export var reference_photo_path: String = ""
@@ -29,6 +30,11 @@ func get_desc_for_lang(lang: String) -> String:
 	match lang:
 		"en": return desc_en
 		_: return desc_kz
+
+func get_wrong_answers_for_lang(lang: String) -> Array[String]:
+	if lang == "en" and not wrong_answers_en.is_empty():
+		return wrong_answers_en
+	return wrong_answers_kz
 
 func get_slot_folder() -> String:
 	match slot_type:

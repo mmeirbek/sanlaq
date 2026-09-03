@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="САҢЛАҚ / Sañlaq"
-config/version="0.2.0"
 config/description="САҢЛАҚ — казахская игра в ловца «соқыртеке»: соревновательная погоня-прятки с изучением национальной одежды."
+config/version="0.2.0"
 run/main_scene="res://scenes/ui/main_menu.tscn"
 config/features=PackedStringArray("4.7")
 config/icon="res://assets/ui/sanlaq_logo.png"
@@ -41,6 +41,10 @@ enabled=PackedStringArray()
 [gui]
 
 theme/custom="res://resources/ui/sanlaq_theme.tres"
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://assets/i18n/ui_strings.en.translation")
 
 [input]
 

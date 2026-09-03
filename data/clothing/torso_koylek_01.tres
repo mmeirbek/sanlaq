@@ -14,6 +14,7 @@ color = Color(0.2, 0.6, 0.3, 1)
 rarity = 0
 unlock_by_default = true
 wrong_answers_kz = Array[String](["Шапан", "Камзол", "Шалбар"])
+wrong_answers_en = Array[String](["Shapan", "Kamzol", "Shalbar"])
 texture_path = "res://assets/character/torso/torso_koylek_01.png"
 icon_path = "res://assets/items/torso_koylek_01.png"
 reference_photo_path = "res://assets/ui/encyclopedia_photos/koylek.jpg"

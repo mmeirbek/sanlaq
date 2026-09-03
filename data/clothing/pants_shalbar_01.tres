@@ -14,6 +14,7 @@ color = Color(0.25, 0.2, 0.15, 1)
 rarity = 0
 unlock_by_default = true
 wrong_answers_kz = Array[String](["Мәсі", "Шапан", "Кебіс"])
+wrong_answers_en = Array[String](["Masi", "Shapan", "Kebis"])
 texture_path = "res://assets/character/pants/pants_shalbar_01.png"
 icon_path = "res://assets/items/pants_shalbar_01.png"
 reference_photo_path = "res://assets/ui/encyclopedia_photos/shalbar.jpg"

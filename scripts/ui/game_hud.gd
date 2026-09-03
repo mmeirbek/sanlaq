@@ -32,10 +32,10 @@ func update_timer(seconds: float) -> void:
 	_timer_label.text = "%.0f" % maxf(0, seconds)
 
 func update_remaining(alive: int, total: int) -> void:
-	_catches_label.text = "Қалды %d/%d" % [alive, total]
+	_catches_label.text = tr("Қалды %d/%d") % [alive, total]
 
 func update_round(round_num: int, total: int) -> void:
-	_round_label.text = "Кезең %d/%d" % [round_num, total]
+	_round_label.text = tr("Кезең %d/%d") % [round_num, total]
 
 func show_message(text: String, duration: float = 2.0) -> void:
 	if _msg_tween and _msg_tween.is_valid():
@@ -69,11 +69,11 @@ func hide_spectate_bar() -> void:
 	_spectate_bar.visible = false
 
 func show_slow(seconds: float) -> void:
-	_slow_label.text = "БАЯУЛАУ %.0fс" % ceilf(seconds)
+	_slow_label.text = tr("БАЯУЛАУ %.0fс") % ceilf(seconds)
 	_slow_label.visible = true
 
 func update_slow(seconds: float) -> void:
-	_slow_label.text = "БАЯУЛАУ %.0fс" % ceilf(maxf(0, seconds))
+	_slow_label.text = tr("БАЯУЛАУ %.0fс") % ceilf(maxf(0, seconds))
 	_slow_label.visible = true
 
 func hide_slow() -> void:
@@ -84,12 +84,12 @@ func set_objective(text: String) -> void:
 
 func update_runner_sprint(time_left: float, uses_left: int) -> void:
 	if time_left > 0.0:
-		_ability_label.text = "ЖҮГІРУ %.1fс" % time_left
+		_ability_label.text = tr("ЖҮГІРУ %.1fс") % time_left
 	else:
-		_ability_label.text = "SHIFT · ЖҮГІРУ × %d" % uses_left
+		_ability_label.text = tr("SHIFT · ЖҮГІРУ × %d") % uses_left
 
 func update_sokyroteke_echo(time_left: float, uses_left: int) -> void:
 	if time_left > 0.0:
-		_ability_label.text = "ҮН ТЫҢДАУ %.1fс" % time_left
+		_ability_label.text = tr("ҮН ТЫҢДАУ %.1fс") % time_left
 	else:
-		_ability_label.text = "E · ҮН ТЫҢДАУ × %d" % uses_left
+		_ability_label.text = tr("E · ҮН ТЫҢДАУ × %d") % uses_left

@@ -14,6 +14,7 @@ color = Color(0.9, 0.9, 0.9, 1)
 rarity = 1
 unlock_by_default = false
 wrong_answers_kz = Array[String](["Сәукеле", "Тақия", "Бөрік"])
+wrong_answers_en = Array[String](["Saukele", "Takiya", "Borik"])
 texture_path = "res://assets/character/head/head_kimeshek_01.png"
 icon_path = "res://assets/items/head_kimeshek_01.png"
 reference_photo_path = "res://assets/ui/encyclopedia_photos/kimeshek.jpg"

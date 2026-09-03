@@ -1,7 +1,6 @@
 [gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/about.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_ornament.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="3"]
 [ext_resource type="FontFile" path="res://assets/fonts/NotoSans-Bold.ttf" id="4"]
 
@@ -50,23 +49,6 @@ grow_horizontal = 2
 grow_vertical = 2
 variant = 0
 
-[node name="TopOrnament" parent="." instance=ExtResource("2")]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 44.0
-grow_horizontal = 2
-
-[node name="BottomOrnament" parent="." instance=ExtResource("2")]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -44.0
-grow_horizontal = 2
-grow_vertical = 0
-
 [node name="Title" type="Label" parent="."]
 layout_mode = 0
 offset_left = 60.0
@@ -76,29 +58,29 @@ offset_bottom = 100.0
 text = "СОҚЫРТЕКЕ · ОЙЫН ТУРАЛЫ"
 theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
 theme_override_fonts/font = ExtResource("4")
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 34
 
 [node name="Subtitle" type="Label" parent="."]
 layout_mode = 0
 offset_left = 64.0
-offset_top = 103.0
+offset_top = 106.0
 offset_right = 880.0
-offset_bottom = 128.0
+offset_bottom = 129.0
 text = "ОЙЫН · ОҚИҒАЛАР · КИІМ ҚАСИЕТТЕРІ · ҰЛТТЫҚ МҰРА"
 theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 
 [node name="BackBtn" type="Button" parent="."]
 layout_mode = 1
 anchors_preset = 1
 anchor_right = 1.0
-offset_left = -210.0
+offset_left = -220.0
 offset_top = 60.0
 offset_right = -60.0
 offset_bottom = 112.0
 grow_horizontal = 0
 text = "← Артқа"
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 18
 
 [node name="Page" type="PanelContainer" parent="."]
 layout_mode = 0

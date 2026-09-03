@@ -9,6 +9,7 @@ radius = 11.0
 
 [node name="Roof" type="Sprite2D" parent="."]
 z_index = 50
+texture_filter = 2
 texture = ExtResource("1")
 centered = true
 scale = Vector2(0.75, 0.75)
@@ -27,14 +28,6 @@ shape = SubResource("CircleShape2D_wall")
 
 [node name="Wall2" type="CollisionShape2D" parent="Walls"]
 position = Vector2(68.944, 57.879)
-shape = SubResource("CircleShape2D_wall")
-
-[node name="Wall3" type="CollisionShape2D" parent="Walls"]
-position = Vector2(15.627, 88.633)
-shape = SubResource("CircleShape2D_wall")
-
-[node name="Wall4" type="CollisionShape2D" parent="Walls"]
-position = Vector2(-15.627, 88.633)
 shape = SubResource("CircleShape2D_wall")
 
 [node name="Wall5" type="CollisionShape2D" parent="Walls"]

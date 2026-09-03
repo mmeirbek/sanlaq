@@ -8,6 +8,7 @@ var match_mgr: MatchManager
 var map: MapManager
 var vision: VisionSystem
 var sound_system: SoundWaveSystem
+var footprint_system: FootprintSystem
 var game_audio: GameAudio
 var quiz_hud: QuizHUD
 var game_hud: GameHUD
@@ -41,6 +42,7 @@ func _ready() -> void:
 	map = $Map as MapManager
 	vision = _systems.get_node("VisionSystem")
 	sound_system = _systems.get_node("SoundWaveSystem")
+	footprint_system = _systems.get_node("FootprintSystem")
 	game_audio = GameAudio.new()
 	_systems.add_child(game_audio)
 	quiz_hud = $CanvasLayer/QuizHUD
@@ -88,6 +90,8 @@ func _wire_sound_for_players() -> void:
 
 func _on_player_stepped(radius: float, player: Player) -> void:
 	sound_system.emit_noise(player, radius)
+	if not player.is_sokyroteke and not map.is_inside_yurt(player.global_position):
+		footprint_system.leave_print(player.global_position, player.velocity)
 	if player == match_mgr.human_player:
 		game_audio.play_footstep(player.runner_sprint_time > 0.0)
 
@@ -123,6 +127,7 @@ func _spawn_human_player() -> void:
 	p.global_position = map.get_safe_spawn()
 	_players_container.add_child(p)
 	_players.append(p)
+	p.set_display_name(_player_display_name(p))
 
 	if camera:
 		camera.set_target(p)
@@ -161,22 +166,23 @@ func _spawn_bot(idx: int, profile_id: String = "") -> void:
 	p.apply_outfit_profile(idx)
 	_players.append(p)
 	_bots.append(p)
+	p.set_display_name(_player_display_name(p))
 
 func _on_sokyroteke_assigned(player: Player) -> void:
 	if player.is_bot:
 		vision.set_active(false)
-		game_hud.show_message("«%s» — Соқыртеке! Қашыңыз!" % player.bot_name, 3.0)
+		game_hud.show_message(tr("«%s» — Соқыртеке! Қашыңыз!") % player.bot_name, 3.0)
 	else:
 		vision.set_active(true)
 		vision.set_target_position(player.global_position)
-		game_hud.show_message("Сіз — Соқыртеке! Қуып ұстаңыз!", 3.0)
+		game_hud.show_message(tr("Сіз — Соқыртеке! Қуып ұстаңыз!"), 3.0)
 
 func _on_quiz_triggered(catcher: Player, target: Player, item: ClothingItem) -> void:
 	if catcher.is_bot:
 		if target.is_bot:
 			return
 		var name_str := item.get_name_for_lang(GameSettings.get_lang_code())
-		game_hud.show_message("Сізді ұстады! Киім: %s" % name_str, 2.5)
+		game_hud.show_message(tr("Сізді ұстады! Киім: %s") % name_str, 2.5)
 	else:
 		quiz_hud.show_quiz(item, match_mgr.mode.quiz_answer_time)
 
@@ -186,9 +192,9 @@ func _on_quiz_resolved(catcher: Player, target: Player, correct: bool) -> void:
 	if target.is_bot or catcher.is_bot == false:
 		return
 	if correct:
-		game_hud.show_message("«%s» дұрыс тапты — сіз ұсталдыныз!" % catcher.bot_name, 3.0)
+		game_hud.show_message(tr("«%s» дұрыс тапты — сіз ұсталдыныз!") % catcher.bot_name, 3.0)
 	else:
-		game_hud.show_message("«%s» қателесті — қашып кеттіңіз!" % catcher.bot_name, 3.0)
+		game_hud.show_message(tr("«%s» қателесті — қашып кеттіңіз!") % catcher.bot_name, 3.0)
 
 func _on_quiz_answer(correct: bool) -> void:
 	if correct and match_mgr.sokyroteke == match_mgr.human_player:
@@ -200,23 +206,23 @@ func _on_round_started() -> void:
 
 func _on_round_ended(winner: String) -> void:
 	if winner == "sokyroteke":
-		game_hud.show_message("СОҚЫРТЕКЕ ҰТТЫ! Барлығы ұсталды!", 3.0)
+		game_hud.show_message(tr("СОҚЫРТЕКЕ ҰТТЫ! Барлығы ұсталды!"), 3.0)
 	else:
-		game_hud.show_message("ҚАШУШЫЛАР ҰТТЫ! Уақыт бітті!", 3.0)
+		game_hud.show_message(tr("ҚАШУШЫЛАР ҰТТЫ! Уақыт бітті!"), 3.0)
 
 func _on_player_caught(_catcher: Player, target: Player) -> void:
 	game_audio.play_catch()
 	if not target.is_bot:
-		game_hud.show_message("Сізді ұстады!", 2.0)
+		game_hud.show_message(tr("Сізді ұстады!"), 2.0)
 		if GameSettings.screen_shake_enabled:
 			camera.add_shake(4.0)
 
 func _on_player_eliminated(player: Player) -> void:
 	_spawn_pop(player.global_position, Color(1, 0.9, 0.4))
 	if player.is_bot:
-		game_hud.show_message("«%s» ұсталды!" % player.bot_name, 2.5)
+		game_hud.show_message(tr("«%s» ұсталды!") % player.bot_name, 2.5)
 		if match_mgr.sokyroteke == match_mgr.human_player:
-			game_hud.set_objective("МАҚСАТ: %d/%d ҚАШУШЫ ҰСТАЛДЫ" % [match_mgr.eliminated_count, match_mgr.runners_total])
+			game_hud.set_objective(tr("МАҚСАТ: %d/%d ҚАШУШЫ ҰСТАЛДЫ") % [match_mgr.eliminated_count, match_mgr.runners_total])
 	else:
 		game_audio.play_defeat()
 		if GameSettings.screen_shake_enabled:
@@ -227,7 +233,7 @@ func _on_player_eliminated(player: Player) -> void:
 func _on_item_unlocked(item: ClothingItem) -> void:
 	var lang := GameSettings.get_lang_code()
 	var name_str := item.get_name_for_lang(lang)
-	game_hud.show_message("Ашылды: %s!" % name_str, 3.0)
+	game_hud.show_message(tr("Ашылды: %s!") % name_str, 3.0)
 
 func _on_match_ended(results: Dictionary) -> void:
 	var winner: String = results.get("winner", "players")
@@ -239,9 +245,9 @@ func _on_match_ended(results: Dictionary) -> void:
 	results["correct_answers"] = _correct_answers
 	results["career"] = SaveManager.record_match(human_won, _correct_answers)
 	if winner == "sokyroteke":
-		game_hud.show_message("ЖЕҢІС: Соқыртеке!", 2.0)
+		game_hud.show_message(tr("ЖЕҢІС: Соқыртеке!"), 2.0)
 	else:
-		game_hud.show_message("ЖЕҢІС: Қашушылар!", 2.0)
+		game_hud.show_message(tr("ЖЕҢІС: Қашушылар!"), 2.0)
 	if human_won:
 		game_audio.play_victory()
 	else:
@@ -251,10 +257,10 @@ func _on_match_ended(results: Dictionary) -> void:
 
 func _setup_match_features() -> void:
 	if _selected_role == "runner":
-		game_hud.set_objective("МАҚСАТ: УАҚЫТ АЯҚТАЛҒАНША АМАН ҚАЛ")
+		game_hud.set_objective(tr("МАҚСАТ: УАҚЫТ АЯҚТАЛҒАНША АМАН ҚАЛ"))
 		game_hud.update_runner_sprint(0.0, _players[0].runner_sprint_uses)
 	else:
-		game_hud.set_objective("МАҚСАТ: БАРЛЫҚ ҚАШУШЫНЫ ҰСТА")
+		game_hud.set_objective(tr("МАҚСАТ: БАРЛЫҚ ҚАШУШЫНЫ ҰСТА"))
 		game_hud.update_sokyroteke_echo(0.0, _echo_uses)
 
 func _update_match_features(delta: float) -> void:
@@ -271,10 +277,10 @@ func _update_match_features(delta: float) -> void:
 			_fog_time = 6.0
 			_event_wait = 22.0
 			game_audio.play_fog()
-			game_hud.show_message("ТҰМАН ТҮСТІ: КӨРІНІС АЗАЙДЫ", 2.0)
+			game_hud.show_message(tr("ТҰМАН ТҮСТІ: КӨРІНІС АЗАЙДЫ"), 2.0)
 		vision.radius = 65.0 if _fog_time > 0.0 else (180.0 if _echo_time > 0.0 else 100.0)
 	else:
-		game_hud.set_objective("МАҚСАТ: %.0f СЕКУНД АМАН ҚАЛ" % maxf(0.0, match_mgr.round_timer))
+		game_hud.set_objective(tr("МАҚСАТ: %.0f СЕКУНД АМАН ҚАЛ") % maxf(0.0, match_mgr.round_timer))
 		game_hud.update_runner_sprint(_players[0].runner_sprint_time, _players[0].runner_sprint_uses)
 
 func _activate_echo() -> void:
@@ -283,7 +289,7 @@ func _activate_echo() -> void:
 	_echo_uses -= 1
 	_echo_time = 3.0
 	game_audio.play_echo()
-	game_hud.show_message("ҮН ТЫҢДАУ ІСКЕ ҚОСЫЛДЫ", 1.5)
+	game_hud.show_message(tr("ҮН ТЫҢДАУ ІСКЕ ҚОСЫЛДЫ"), 1.5)
 
 func _start_spectate() -> void:
 	_spectating = true
@@ -384,13 +390,20 @@ func _flash(col: Color, strength: float) -> void:
 	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var layer: CanvasLayer = $CanvasLayer
 	layer.add_child(rect)
-	rect.create_tween().tween_property(rect, "color:a", 0.0, 0.35).tween_callback(rect.queue_free)
+	var tw := rect.create_tween()
+	tw.tween_property(rect, "color:a", 0.0, 0.35)
+	tw.tween_callback(rect.queue_free)
 
 func _process(_delta: float) -> void:
 	if match_mgr:
 		_update_match_features(_delta)
 	if match_mgr and match_mgr.sokyroteke:
-		if match_mgr.sokyroteke == match_mgr.human_player:
+		var human_is_sokyroteke := match_mgr.sokyroteke == match_mgr.human_player
+		var fp_radius := FootprintSystem.SIGHT_RADIUS
+		if human_is_sokyroteke and _fog_time > 0.0:
+			fp_radius = 65.0
+		match_mgr.sokyroteke.set_footprint_boost(footprint_system.has_visible_print(match_mgr.sokyroteke.global_position, fp_radius))
+		if human_is_sokyroteke:
 			vision.set_target_position(match_mgr.sokyroteke.global_position)
 			var center := match_mgr.sokyroteke.global_position
 			var light := vision.radius
@@ -400,9 +413,12 @@ func _process(_delta: float) -> void:
 				else:
 					var revealed: bool = float(_yurt_reveal.get(p.player_index, 0.0)) > 0.0
 					p.visible = p.is_alive() and (revealed or (not map.is_inside_yurt(p.global_position) and center.distance_to(p.global_position) <= light * p.get_visibility_multiplier()))
+				# Соқыртеке не должен читать ники — иначе бегунов можно узнать без квиза по одежде.
+				p.set_name_label_visible(false)
 		else:
 			for p in _players:
 				p.visible = p.is_alive()
+				p.set_name_label_visible(p.visible)
 		game_hud.update_timer(match_mgr.round_timer)
 
 		var alive_runners := 0
@@ -426,7 +442,7 @@ func _process(_delta: float) -> void:
 			if remaining <= 0.0 and spent >= YURT_REVEAL_DELAY and p != match_mgr.sokyroteke:
 				_yurt_reveal[p.player_index] = YURT_REVEAL_DURATION
 				if match_mgr.sokyroteke == match_mgr.human_player:
-					game_hud.show_message("«%s» юртада ұзақ — орны ашылды!" % _player_display_name(p), 2.5)
+					game_hud.show_message(tr("«%s» юртада ұзақ — орны ашылды!") % _player_display_name(p), 2.5)
 		else:
 			_yurt_time[p.player_index] = 0.0
 		var reveal := float(_yurt_reveal.get(p.player_index, 0.0))

@@ -18,9 +18,11 @@ func _init() -> void:
 				bad += 1
 				print("[spawn] player inside/near yurt: ", p.global_position, " yurt ", y)
 		for o in map.obstacle_positions:
-			if p.global_position.distance_to(o) < 30.0:
+			# obstacle_positions holds both rocks and logs — use the same clearance
+			# the live spawn logic (_spawn_clear) checks against, not an ad hoc number.
+			if p.global_position.distance_to(o) < MapManager.ROCK_CLEAR:
 				bad += 1
-				print("[spawn] player near rock: ", p.global_position)
+				print("[spawn] player near obstacle (rock or log): ", p.global_position)
 	print("[spawn] bad spawns:", bad)
 	game.queue_free()
 	quit()

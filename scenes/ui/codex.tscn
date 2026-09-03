@@ -1,7 +1,6 @@
 [gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/codex.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_ornament.tscn" id="2"]
 [ext_resource type="FontFile" path="res://assets/fonts/NotoSans-Bold.ttf" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="4"]
 
@@ -27,23 +26,6 @@ grow_horizontal = 2
 grow_vertical = 2
 variant = 2
 
-[node name="TopOrnament" parent="." instance=ExtResource("2")]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 44.0
-grow_horizontal = 2
-
-[node name="BottomOrnament" parent="." instance=ExtResource("2")]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -44.0
-grow_horizontal = 2
-grow_vertical = 0
-
 [node name="Title" type="Label" parent="."]
 layout_mode = 0
 offset_left = 28
@@ -53,25 +35,25 @@ offset_bottom = 104
 text = "МҰРА · КИІМ ЭНЦИКЛОПЕДИЯСЫ"
 theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
 theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 34
 
 [node name="TitleUnderline" type="ColorRect" parent="."]
 layout_mode = 0
 offset_left = 32
-offset_top = 108
+offset_top = 112
 offset_right = 600
-offset_bottom = 111
+offset_bottom = 115
 color = Color(0.851, 0.663, 0.247, 1)
 
 [node name="Subtitle" type="Label" parent="."]
 layout_mode = 0
 offset_left = 32
-offset_top = 114
+offset_top = 119
 offset_right = 600
-offset_bottom = 136
+offset_bottom = 142
 text = "ЗАТТАРДЫ АШ · ТАРИХЫН ТАНЫ"
 theme_override_colors/font_color = Color(0.55, 0.53, 0.5, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 
 [node name="BackBtn" type="Button" parent="."]
 layout_mode = 1
@@ -79,13 +61,13 @@ anchors_preset = 1
 anchor_top = 0
 anchor_right = 1
 anchor_bottom = 0
-offset_left = -190
+offset_left = -188
 offset_top = 60
 offset_right = -28
-offset_bottom = 114
+offset_bottom = 112
 grow_horizontal = 0
 text = "← Артқа"
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 18
 
 [node name="Scroll" type="ScrollContainer" parent="."]
 layout_mode = 1
@@ -143,6 +125,7 @@ theme_override_font_sizes/font_size = 20
 layout_mode = 2
 custom_minimum_size = Vector2(0, 156)
 size_flags_horizontal = 4
+texture_filter = 2
 expand_mode = 1
 stretch_mode = 5
 

@@ -68,6 +68,7 @@ func _make_card(item: ClothingItem) -> Control:
 	tex.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	tex.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	tex.texture = _photo_for(item)
 	if tex.texture == null and not item.icon_path.is_empty():
 		tex.texture = load(item.icon_path) as Texture2D
@@ -146,8 +147,8 @@ func _select(item: ClothingItem) -> void:
 	if unlocked:
 		_detail_name.text = item.get_name_for_lang(lang)
 		_detail_meta.text = "%s · %s" % [
-			SLOT_NAMES.get(item.slot_type, "?"),
-			RARITY_NAMES.get(item.rarity, "?"),
+			tr(SLOT_NAMES.get(item.slot_type, "?")),
+			tr(RARITY_NAMES.get(item.rarity, "?")),
 		]
 		_detail_desc.text = item.get_desc_for_lang(lang)
 	else:

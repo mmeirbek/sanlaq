@@ -1,12 +1,33 @@
 extends Control
 
-@onready var nickname_input: LineEdit = $Margin/VBox/NicknameEdit/NicknameInput
+@onready var nickname_input: LineEdit = $MenuCard/Margin/VBox/NicknameEdit/NicknameInput
+@onready var nickname_warning: Label = $MenuCard/Margin/VBox/NicknameWarning
+@onready var nickname_edit_row: HBoxContainer = $MenuCard/Margin/VBox/NicknameEdit
 @onready var quit_dialog: SanlaqDialog = %QuitDialog
 
 func _ready() -> void:
 	nickname_input.text = SaveManager.nickname
 	quit_dialog.confirmed.connect(func() -> void: SceneRouter.quit())
 	_spawn_mascot()
+
+func _require_nickname() -> bool:
+	var name_text := nickname_input.text.strip_edges()
+	if name_text.is_empty():
+		nickname_warning.visible = true
+		nickname_input.grab_focus()
+		_shake_nickname_field()
+		return false
+	SaveManager.set_nickname(name_text)
+	nickname_warning.visible = false
+	return true
+
+func _shake_nickname_field() -> void:
+	var start_x := nickname_edit_row.position.x
+	var tw := create_tween()
+	for i in 4:
+		var dir := 1 if i % 2 == 0 else -1
+		tw.tween_property(nickname_edit_row, "position:x", start_x + 8 * dir, 0.05)
+	tw.tween_property(nickname_edit_row, "position:x", start_x, 0.05)
 
 func _spawn_mascot() -> void:
 	var visual := _make_hero_character(Vector2(946, 390), 4.4, Vector2.LEFT)
@@ -27,10 +48,9 @@ func _on_nickname_changed(new_text: String) -> void:
 	SaveManager.set_nickname(new_text.strip_edges())
 
 func _on_play_pressed() -> void:
+	if not _require_nickname():
+		return
 	SceneRouter.go_to_lobby({"mode": "classic", "bots": 3})
-
-func _on_play_vs_bots_pressed() -> void:
-	SceneRouter.go_to_lobby({"mode": "vs_bots", "bots": 3})
 
 func _on_wardrobe_pressed() -> void:
 	SceneRouter.go_to_wardrobe()

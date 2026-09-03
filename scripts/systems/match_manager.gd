@@ -125,6 +125,8 @@ func on_player_touches_sokyroteke(player: Player) -> void:
 		return
 	if player.eliminated:
 		return
+	if player.has_shield():
+		return
 	if sokyroteke.is_slowed():
 		return
 
@@ -158,15 +160,15 @@ func _trigger_quiz(target: Player) -> void:
 		submit_quiz_answer(randf() < chance)
 
 func _bot_correct_chance() -> float:
-	var base_chance := 0.4
+	var base_chance := 0.65
 	var agent := sokyroteke.get_node_or_null("BotAgent") as BotAgent
 	if agent and agent.bot_profile:
 		match agent.bot_profile.difficulty:
-			BotProfile.Difficulty.EASY: base_chance = 0.3
-			BotProfile.Difficulty.MEDIUM: base_chance = 0.5
-			BotProfile.Difficulty.HARD: base_chance = 0.7
+			BotProfile.Difficulty.EASY: base_chance = 0.55
+			BotProfile.Difficulty.MEDIUM: base_chance = 0.7
+			BotProfile.Difficulty.HARD: base_chance = 0.9
 	var extra_players := maxi(0, players.size() - 2)
-	return maxf(0.1, base_chance - float(extra_players) * 0.05)
+	return maxf(0.35, base_chance - float(extra_players) * 0.02)
 
 func submit_quiz_answer(correct: bool) -> void:
 	quiz_active = false
@@ -189,6 +191,9 @@ func submit_quiz_answer(correct: bool) -> void:
 			_end_round(true)
 	else:
 		sokyroteke.apply_slow(mode.slow_duration)
+		if _last_target:
+			_last_target.apply_shield(mode.shield_duration)
+			catch_cooldown = maxf(catch_cooldown, mode.shield_duration)
 
 	current_state = MatchState.PLAYING
 	match_state_changed.emit(current_state)
