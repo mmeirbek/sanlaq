@@ -194,6 +194,25 @@ func play_splash() -> void:
 	_queue_voice(180.0, 0.22, 0.30, true)
 	_queue_voice(90.0, 0.34, 0.18, true)
 
+## Ноты карточек в режиме «Абай айтады»: своя высота на каждую позицию сетки,
+## как в классическом Simon — по звуку последовательность запоминается легче.
+const CARD_TONES := [262.0, 294.0, 330.0, 392.0, 440.0, 523.0]
+
+func play_card_tone(index: int) -> void:
+	_queue_voice(CARD_TONES[posmod(index, CARD_TONES.size())], 0.30, 0.26, false)
+
+## Озвучка слова, если для него уже записан файл; иначе — тон по позиции карточки.
+func play_word(sound_path: String, index: int) -> void:
+	if not sound_path.is_empty() and ResourceLoader.exists(sound_path):
+		var stream := load(sound_path) as AudioStream
+		if stream:
+			var pl := _acquire_player()
+			pl.stream = stream
+			pl.volume_db = GameSettings.get_sfx_volume_db()
+			pl.play()
+			return
+	play_card_tone(index)
+
 func play_defeat() -> void:
 	if _play_named("defeat"):
 		return

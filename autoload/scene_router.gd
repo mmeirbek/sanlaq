@@ -8,6 +8,8 @@ const SCENE_RESULTS := "res://scenes/ui/results.tscn"
 const SCENE_CODEX := "res://scenes/ui/codex.tscn"
 const SCENE_ABOUT := "res://scenes/ui/about.tscn"
 const SCENE_SETTINGS := "res://scenes/ui/settings.tscn"
+const SCENE_MODE_SELECT := "res://scenes/ui/mode_select.tscn"
+const SCENE_ABAI_SAYS := "res://scenes/ui/abai_says.tscn"
 
 var _pending_game_data: Dictionary = {}
 var _pending_results: Dictionary = {}
@@ -41,6 +43,12 @@ func go_to_about() -> void:
 
 func go_to_settings() -> void:
 	_change_scene(SCENE_SETTINGS)
+
+func go_to_mode_select() -> void:
+	_change_scene(SCENE_MODE_SELECT)
+
+func go_to_abai_says() -> void:
+	_change_scene(SCENE_ABAI_SAYS)
 
 func get_pending_game_data() -> Dictionary:
 	var data := _pending_game_data

@@ -84,7 +84,7 @@ func _on_play_pressed() -> void:
 	if not _require_nickname():
 		return
 	Telemetry.log_event("button_press", {"button": "play"})
-	SceneRouter.go_to_lobby({"mode": "classic", "bots": 3})
+	SceneRouter.go_to_mode_select()
 
 func _on_wardrobe_pressed() -> void:
 	Telemetry.log_event("button_press", {"button": "wardrobe"})

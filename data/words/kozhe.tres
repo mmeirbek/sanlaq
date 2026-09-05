@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="GameWord" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/game_word.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "kozhe"
+category = "food"
+name_kz = "Көже"
+name_en = "Kozhe"
+icon_path = "res://assets/words/food/kozhe.png"
+sound_path = ""

@@ -177,3 +177,30 @@ RANK: %s · KNOWLEDGE: +%d · WINS: %d · STREAK: %d
 Бұл: %s","Wrong!  ✗
 This is: %s"
 Ойын түрі: %s,Ойын түрі: %s,Game mode: %s
+ОЙЫН РЕЖІМДЕРІ,ОЙЫН РЕЖІМДЕРІ,GAME MODES
+РЕЖИМДІ ТАҢДА · ОЙЫНДЫ БАСТА,РЕЖИМДІ ТАҢДА · ОЙЫНДЫ БАСТА,PICK A MODE · START PLAYING
+ҚУУ ОЙЫНЫ,ҚУУ ОЙЫНЫ,CHASE GAME
+Соқыртеке,Соқыртеке,Sokyroteke
+"Соқыртеке қашушыларды қуып ұстайды, ұсталған ойыншының киімін тану керек. Боттарға қарсы ойналады.","Соқыртеке қашушыларды қуып ұстайды, ұсталған ойыншының киімін тану керек. Боттарға қарсы ойналады.",The sokyroteke chases the runners and must recognise the clothing of whoever is caught. Played against bots.
+ЖАДЫ ОЙЫНЫ,ЖАДЫ ОЙЫНЫ,MEMORY GAME
+Абай айтады,Абай айтады,Abai Says
+"Абай ұлттық тағамдардың тізбегін көрсетеді, оны дәл сол ретпен қайталау керек. 2-4 ойыншы, бір құрылғыны кезекпен беріп ойнайды.","Абай ұлттық тағамдардың тізбегін көрсетеді, оны дәл сол ретпен қайталау керек. 2-4 ойыншы, бір құрылғыны кезекпен беріп ойнайды.",Abai shows a sequence of national dishes and you must repeat it in the same order. 2-4 players passing one device.
+АБАЙ АЙТАДЫ,АБАЙ АЙТАДЫ,ABAI SAYS
+ТІЗБЕКТІ ЕСТЕ САҚТА · ДӘЛ СОЛ РЕТПЕН ҚАЙТАЛА,ТІЗБЕКТІ ЕСТЕ САҚТА · ДӘЛ СОЛ РЕТПЕН ҚАЙТАЛА,MEMORIZE THE SEQUENCE · REPEAT IT EXACTLY
+ДАЙЫНДЫҚ,ДАЙЫНДЫҚ,SETUP
+Ойыншы саны,Ойыншы саны,Number of players
+Бір құрылғыны кезекпен беріп ойнайсыздар. Әр раундта тізбек бір элементке ұзарады.,Бір құрылғыны кезекпен беріп ойнайсыздар. Әр раундта тізбек бір элементке ұзарады.,You pass one device around in turn. Each round the sequence grows by one item.
+КЕЗЕК,КЕЗЕК,TURN
+Құрылғыны осы ойыншыға беріңіз. Дайын болғанда «Дайын» түймесін өзі бассын.,Құрылғыны осы ойыншыға беріңіз. Дайын болғанда «Дайын» түймесін өзі бассын.,Pass the device to this player. Let them press Ready themselves when set.
+ДАЙЫН,ДАЙЫН,READY
+ЖЕҢІМПАЗ,ЖЕҢІМПАЗ,WINNER
+ТЕҢ ТҮСТІ,ТЕҢ ТҮСТІ,TIE
+ТАҒЫ ОЙНАУ,ТАҒЫ ОЙНАУ,PLAY AGAIN
+Ойыншы %d,Ойыншы %d,Player %d
+%d-РАУНД,%d-РАУНД,ROUND %d
+Абай көрсетіп жатыр — есте сақтаңыз,Абай көрсетіп жатыр — есте сақтаңыз,Abai is showing — memorize it
+%s — қайталаңыз,%s — қайталаңыз,%s — repeat the sequence
+Дұрыс!,Дұрыс!,Correct!
+Қате!,Қате!,Wrong!
+Жеткен раунд: %d,Жеткен раунд: %d,Rounds reached: %d
+Сөздер табылмады,Сөздер табылмады,No words found
