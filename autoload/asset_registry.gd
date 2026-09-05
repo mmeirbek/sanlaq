@@ -23,13 +23,19 @@ func _scan_data_folder(subfolder: String) -> void:
 	dir.list_dir_begin()
 	var file_name := dir.get_next()
 	while file_name != "":
-		if not dir.current_is_dir() and file_name.ends_with(".tres"):
-			var full_path := "res://data/%s/%s" % [subfolder, file_name]
-			var res := load(full_path) as Resource
-			if res == null:
-				push_warning("AssetRegistry: failed to load %s" % full_path)
-			else:
-				_register_resource(res, subfolder)
+		# Экспортированная сборка хранит .tres как бинарь и оставляет "имя.tres.remap"
+		# вместо "имя.tres" — в редакторе такого суффикса нет, поэтому снимаем его перед
+		# проверкой расширения, чтобы сканирование находило ресурсы в обоих случаях.
+		if not dir.current_is_dir():
+			var base_name := file_name.trim_suffix(".remap")
+			if base_name.ends_with(".tres"):
+				var full_path := "res://data/%s/%s" % [subfolder, base_name]
+				var res := load(full_path) as Resource
+				if res == null:
+					push_warning("AssetRegistry: failed to load %s" % full_path)
+					Telemetry.log_error("failed to load %s" % full_path, "asset_registry")
+				else:
+					_register_resource(res, subfolder)
 		file_name = dir.get_next()
 	dir.list_dir_end()
 
