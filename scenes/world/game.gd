@@ -93,7 +93,10 @@ func _on_player_stepped(radius: float, player: Player) -> void:
 	if not player.is_sokyroteke and not map.is_inside_yurt(player.global_position):
 		footprint_system.leave_print(player.global_position, player.velocity)
 	if player == match_mgr.human_player:
-		game_audio.play_footstep(player.runner_sprint_time > 0.0)
+		if map.is_water(player.global_position):
+			game_audio.play_splash()
+		else:
+			game_audio.play_footstep(player.runner_sprint_time > 0.0)
 
 func _on_runner_sprint_changed(time_left: float, _uses_left: int, player: Player) -> void:
 	if player == match_mgr.human_player and time_left >= Player.RUNNER_SPRINT_DURATION:
@@ -466,10 +469,9 @@ func _process(_delta: float) -> void:
 			var in_water := map.is_water(human.global_position)
 			var in_yurt := map.is_inside_yurt(human.global_position)
 			if in_water and not _prev_human_water:
+				# Звук всплеска идёт по шагам (_on_player_stepped) — привязан к реальной
+				# ходьбе, а не к самому факту стояния в воде.
 				_spawn_zone_puff(human.global_position, Color(0.35, 0.6, 0.9, 0.7), 20)
-				game_audio.start_zone_loop("splash")
-			if not in_water and _prev_human_water:
-				game_audio.stop_zone_loop("splash")
 			if in_yurt and not _prev_human_yurt:
 				_spawn_zone_puff(human.global_position, Color(0.8, 0.62, 0.4, 0.85), 16)
 				game_audio.start_zone_loop("yurt")

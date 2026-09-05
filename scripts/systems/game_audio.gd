@@ -132,6 +132,8 @@ func _get_stream(cue: String) -> AudioStream:
 					break
 		if stream != null:
 			break
+	if stream == null:
+		Telemetry.log_error("no audio file found for cue, falling back to synth", "game_audio:" + cue)
 	_streams[cue] = stream
 	return stream
 

@@ -87,13 +87,21 @@ func _register_occupied(pos: Vector2, radius: float) -> void:
 	_occupied.append({"pos": pos, "radius": radius})
 
 func _avoid_occupied(pos: Vector2, radius: float) -> Vector2:
-	for entry in _occupied:
-		var min_dist: float = radius + float(entry["radius"])
-		var to_pos: Vector2 = pos - (entry["pos"] as Vector2)
-		var dist := to_pos.length()
-		if dist < min_dist:
-			var dir := to_pos.normalized() if dist > 0.01 else Vector2.RIGHT
-			pos = (entry["pos"] as Vector2) + dir * min_dist
+	# Один проход по _occupied может вытолкнуть pos из одного пересечения прямо в
+	# соседнее (особенно ближе к концу построения карты, когда занято уже много мест) —
+	# повторяем, пока не перестанет двигаться, чтобы гарантированно не осталось наложений.
+	for _pass in 8:
+		var moved := false
+		for entry in _occupied:
+			var min_dist: float = radius + float(entry["radius"])
+			var to_pos: Vector2 = pos - (entry["pos"] as Vector2)
+			var dist := to_pos.length()
+			if dist < min_dist:
+				var dir := to_pos.normalized() if dist > 0.01 else Vector2.RIGHT
+				pos = (entry["pos"] as Vector2) + dir * min_dist
+				moved = true
+		if not moved:
+			break
 	return pos
 
 ## Places a decorative or solid prop, keeping it clear of yurts, other props, and map bounds.

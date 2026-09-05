@@ -6,6 +6,7 @@ const NOTES := [220.0, 261.63, 293.66, 329.63, 392.0, 329.63, 293.66, 261.63]
 const MUSIC_DIR := "res://assets/audio/music/"
 const MUSIC_EXTS := ["ogg", "mp3", "wav"]
 const TRACK_PATHS := [
+	"res://assets/audio/music/kazahskaya_-_muzyka_(SkySound7.com).mp3",
 	"res://assets/audio/menu_music.ogg",
 	"res://assets/audio/menu_music.mp3",
 	"res://assets/audio/menu_music.wav",
@@ -39,8 +40,11 @@ func _try_start_track() -> bool:
 	if dir == null:
 		return false
 	for file: String in dir.get_files():
-		if file.get_extension().to_lower() in MUSIC_EXTS:
-			if _try_play_file(MUSIC_DIR + file):
+		# Экспортированная сборка хранит файл как "трек.mp3.remap" вместо "трек.mp3" —
+		# снимаем суффикс перед проверкой расширения (тот же фикс, что в asset_registry.gd).
+		var base_name := file.trim_suffix(".remap")
+		if base_name.get_extension().to_lower() in MUSIC_EXTS:
+			if _try_play_file(MUSIC_DIR + base_name):
 				return true
 	return false
 
