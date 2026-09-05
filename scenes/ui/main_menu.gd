@@ -8,7 +8,41 @@ extends Control
 func _ready() -> void:
 	nickname_input.text = SaveManager.nickname
 	quit_dialog.confirmed.connect(func() -> void: SceneRouter.quit())
+	Telemetry.license_denied.connect(_on_license_denied)
 	_spawn_mascot()
+
+func _on_license_denied(reason: String) -> void:
+	var overlay := ColorRect.new()
+	overlay.color = SanlaqDesignTokens.NAVY_DARK
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	overlay.z_index = 4096
+
+	var box := VBoxContainer.new()
+	box.set_anchors_preset(Control.PRESET_CENTER)
+	box.custom_minimum_size = Vector2(560, 0)
+	box.position -= box.custom_minimum_size * 0.5
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_theme_constant_override("separation", SanlaqDesignTokens.SPACING_MEDIUM)
+	overlay.add_child(box)
+
+	var title := Label.new()
+	title.text = tr("СТАНЦИЯ БҰҒАТТАЛДЫ")
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_color_override("font_color", SanlaqDesignTokens.GOLD)
+	title.add_theme_font_size_override("font_size", SanlaqDesignTokens.FONT_SIZE_TITLE)
+	box.add_child(title)
+
+	var reason_text := tr("Бұл құрылғылар саны лимитінен асып кетті.") if reason == "device_limit" else tr("Лицензия жойылды.")
+	var message := Label.new()
+	message.text = "%s\n%s" % [reason_text, tr("Ұйымдастырушыға хабарласыңыз.")]
+	message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	message.autowrap_mode = TextServer.AUTOWRAP_WORD
+	message.add_theme_color_override("font_color", SanlaqDesignTokens.CREAM)
+	message.add_theme_font_size_override("font_size", SanlaqDesignTokens.FONT_SIZE_BODY)
+	box.add_child(message)
+
+	add_child(overlay)
 
 func _require_nickname() -> bool:
 	var name_text := nickname_input.text.strip_edges()

@@ -11,11 +11,14 @@ const MAX_QUEUE_LOCAL := 500  # не даём файлу расти бескон
 
 const ENDPOINT_URL := "https://script.google.com/macros/s/AKfycbzcWNnnXMXUEXwAXGq-srpvnYQ_uYJvVQ0zHVekg1aYHtAnXltyBShvnGHhA95dlM7I/exec"
 
+signal license_denied(reason: String)
+
 var station_id: String = ""
 var venue_label: String = "unlabeled"
 
 var _session_start_unix: int = 0
 var _http: HTTPRequest
+var _license_http: HTTPRequest
 var _flush_timer: float = 0.0
 var _flushing: bool = false
 
@@ -24,8 +27,37 @@ func _ready() -> void:
 	_http = HTTPRequest.new()
 	add_child(_http)
 	_http.request_completed.connect(_on_flush_response)
+	_license_http = HTTPRequest.new()
+	add_child(_license_http)
+	_license_http.request_completed.connect(_on_license_response)
 	_session_start_unix = Time.get_unix_time_from_system()
 	log_event("session_start")
+	_check_license()
+
+## venue_label, заданный при установке станции (--venue=... / ?venue=...), одновременно
+## служит лицензионным ключом: сервер сверяет его с листом "licenses" в таблице и считает
+## число разных station_id, уже отметившихся под этим ключом (лист "stations").
+## Если venue_label не найден в "licenses" вообще — станция считается демо/неоформленной
+## и не блокируется. Блокируем только по явному ответу "ok": false — любая сетевая
+## ошибка/таймаут молча игнорируется, чтобы обрыв связи не отключил оплаченную станцию.
+func _check_license() -> void:
+	if ENDPOINT_URL.is_empty() or venue_label.is_empty() or venue_label == "unlabeled":
+		return
+	var body := JSON.stringify({
+		"action": "register",
+		"license_key": venue_label,
+		"station_id": station_id,
+	})
+	_license_http.request(ENDPOINT_URL, ["Content-Type: text/plain"], HTTPClient.METHOD_POST, body)
+
+func _on_license_response(result: int, code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
+	if result != HTTPRequest.RESULT_SUCCESS or code != 200:
+		return
+	var data: Variant = JSON.parse_string(body.get_string_from_utf8())
+	if data is Dictionary and data.get("ok", true) == false:
+		var reason: String = data.get("reason", "unknown")
+		log_event("license_denied", {"reason": reason})
+		license_denied.emit(reason)
 
 func _process(delta: float) -> void:
 	_flush_timer -= delta
