@@ -39,6 +39,9 @@ jobs:
       - name: Import resources
         run: godot --headless --import --path .
 
+      - name: Run togyz qumalaq rules tests
+        run: godot --headless --path . --script tools/togyz_rules_test.gd
+
       - name: Export web build
         run: |
           mkdir -p export/web

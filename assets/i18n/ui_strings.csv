@@ -204,3 +204,23 @@ This is: %s"
 Қате!,Қате!,Wrong!
 Жеткен раунд: %d,Жеткен раунд: %d,Rounds reached: %d
 Сөздер табылмады,Сөздер табылмады,No words found
+ТАҚТА ОЙЫНЫ,ТАҚТА ОЙЫНЫ,BOARD GAME
+Тоғыз құмалақ,Тоғыз құмалақ,Togyz Qumalaq
+"Ұлттық логикалық ойын: құмалақтарды тарат, қарсыластың отауын ұтып ал, 82 құмалақ жина. Адаммен де, компьютермен де ойналады.","Ұлттық логикалық ойын: құмалақтарды тарат, қарсыластың отауын ұтып ал, 82 құмалақ жина. Адаммен де, компьютермен де ойналады.","A national logic game: sow the balls, capture the opponent's pit and collect 82 balls. Playable against a person or the computer."
+ТОҒЫЗ ҚҰМАЛАҚ,ТОҒЫЗ ҚҰМАЛАҚ,TOGYZ QUMALAQ
+ҰЛТТЫҚ ЛОГИКАЛЫҚ ОЙЫН · 82 ҚҰМАЛАҚ ЖИНАҒАН ҰТАДЫ,ҰЛТТЫҚ ЛОГИКАЛЫҚ ОЙЫН · 82 ҚҰМАЛАҚ ЖИНАҒАН ҰТАДЫ,NATIONAL LOGIC GAME · FIRST TO 82 BALLS WINS
+Кіммен ойнайсыз?,Кіммен ойнайсыз?,Who are you playing against?
+АДАММЕН ОЙНАУ,АДАММЕН ОЙНАУ,PLAY A PERSON
+КОМПЬЮТЕРМЕН ОЙНАУ,КОМПЬЮТЕРМЕН ОЙНАУ,PLAY THE COMPUTER
+Өз жағыңыздағы бос емес отауды таңдаңыз. Соңғы құмалақ қарсыласта жұп сан жасаса — бәрін қазаныңызға аласыз.,Өз жағыңыздағы бос емес отауды таңдаңыз. Соңғы құмалақ қарсыласта жұп сан жасаса — бәрін қазаныңызға аласыз.,"Pick a non-empty pit on your own side. If your last ball makes an even count on the opponent's side, you take that pit."
+ҚАЗАН,ҚАЗАН,KAZAN
+Сіз,Сіз,You
+Компьютер,Компьютер,Computer
+тұздық,тұздық,tuzdyk
+Кезек: %s,Кезек: %s,Turn: %s
+Компьютер ойлап жатыр…,Компьютер ойлап жатыр…,The computer is thinking…
+Бұл отаудан жүре алмайсыз,Бұл отаудан жүре алмайсыз,You cannot move from that pit
+%s тұздық алды!,%s тұздық алды!,%s took a tuzdyk!
+%s %d құмалақ ұтып алды,%s %d құмалақ ұтып алды,%s captured %d balls
+Атсырау: қалған құмалақтар қазанға түсті,Атсырау: қалған құмалақтар қазанға түсті,Atsyrau: the remaining balls go to the kazan
+Тең ойын,Тең ойын,Draw

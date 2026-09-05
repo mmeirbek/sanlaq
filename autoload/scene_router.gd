@@ -10,6 +10,7 @@ const SCENE_ABOUT := "res://scenes/ui/about.tscn"
 const SCENE_SETTINGS := "res://scenes/ui/settings.tscn"
 const SCENE_MODE_SELECT := "res://scenes/ui/mode_select.tscn"
 const SCENE_ABAI_SAYS := "res://scenes/ui/abai_says.tscn"
+const SCENE_TOGYZ_QUMALAQ := "res://scenes/ui/togyz_qumalaq.tscn"
 
 var _pending_game_data: Dictionary = {}
 var _pending_results: Dictionary = {}
@@ -49,6 +50,9 @@ func go_to_mode_select() -> void:
 
 func go_to_abai_says() -> void:
 	_change_scene(SCENE_ABAI_SAYS)
+
+func go_to_togyz_qumalaq() -> void:
+	_change_scene(SCENE_TOGYZ_QUMALAQ)
 
 func get_pending_game_data() -> Dictionary:
 	var data := _pending_game_data

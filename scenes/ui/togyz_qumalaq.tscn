@@ -1,0 +1,350 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/togyz_qumalaq.gd" id="1"]
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSans-Bold.ttf" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 26.0
+content_margin_top = 24.0
+content_margin_right = 26.0
+content_margin_bottom = 24.0
+bg_color = Color(0.984, 0.969, 0.933, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.918, 0.761, 0.357, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+shadow_color = Color(0.039, 0.169, 0.239, 0.22)
+shadow_size = 12
+shadow_offset = Vector2(0, 5)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary"]
+content_margin_left = 18.0
+content_margin_top = 10.0
+content_margin_right = 18.0
+content_margin_bottom = 10.0
+bg_color = Color(0.918, 0.761, 0.357, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.851, 0.663, 0.247, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kazan"]
+content_margin_left = 10.0
+content_margin_top = 12.0
+content_margin_right = 10.0
+content_margin_bottom = 12.0
+bg_color = Color(0.929, 0.847, 0.69, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.635, 0.416, 0.18, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[node name="TogyzQumalaq" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" parent="." instance=ExtResource("4")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+variant = 0
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 34.0
+offset_right = 700.0
+offset_bottom = 82.0
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 32
+text = "ТОҒЫЗ ҚҰМАЛАҚ"
+
+[node name="TitleUnderline" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 44.0
+offset_top = 86.0
+offset_right = 470.0
+offset_bottom = 89.0
+color = Color(0.851, 0.663, 0.247, 1)
+
+[node name="Subtitle" type="Label" parent="."]
+layout_mode = 0
+offset_left = 44.0
+offset_top = 93.0
+offset_right = 760.0
+offset_bottom = 115.0
+theme_override_colors/font_color = Color(0.55, 0.53, 0.5, 1)
+theme_override_font_sizes/font_size = 15
+text = "ҰЛТТЫҚ ЛОГИКАЛЫҚ ОЙЫН · 82 ҚҰМАЛАҚ ЖИНАҒАН ҰТАДЫ"
+
+[node name="BackBtn" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_right = 1.0
+offset_left = -176.0
+offset_top = 36.0
+offset_right = -28.0
+offset_bottom = 84.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 18
+text = "← Артқа"
+
+[node name="BoardPanel" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TurnLabel" type="Label" parent="BoardPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 136.0
+offset_bottom = 172.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 24
+text = "—"
+horizontal_alignment = 1
+
+[node name="LeftKazan" type="PanelContainer" parent="BoardPanel"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 20.0
+offset_top = 208.0
+offset_right = 124.0
+offset_bottom = 416.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_kazan")
+
+[node name="VBox" type="VBoxContainer" parent="BoardPanel/LeftKazan"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="LeftOwner" type="Label" parent="BoardPanel/LeftKazan/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.26, 0.11, 1)
+theme_override_font_sizes/font_size = 14
+text = "ҚАЗАН"
+horizontal_alignment = 1
+
+[node name="LeftCount" type="Label" parent="BoardPanel/LeftKazan/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 34
+text = "0"
+horizontal_alignment = 1
+
+[node name="RightKazan" type="PanelContainer" parent="BoardPanel"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1156.0
+offset_top = 208.0
+offset_right = 1260.0
+offset_bottom = 416.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_kazan")
+
+[node name="VBox" type="VBoxContainer" parent="BoardPanel/RightKazan"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="RightOwner" type="Label" parent="BoardPanel/RightKazan/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.26, 0.11, 1)
+theme_override_font_sizes/font_size = 14
+text = "ҚАЗАН"
+horizontal_alignment = 1
+
+[node name="RightCount" type="Label" parent="BoardPanel/RightKazan/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 34
+text = "0"
+horizontal_alignment = 1
+
+[node name="TopRow" type="HBoxContainer" parent="BoardPanel"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 140.0
+offset_top = 208.0
+offset_right = 1140.0
+offset_bottom = 304.0
+theme_override_constants/separation = 8
+
+[node name="BottomRow" type="HBoxContainer" parent="BoardPanel"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 140.0
+offset_top = 320.0
+offset_right = 1140.0
+offset_bottom = 416.0
+theme_override_constants/separation = 8
+
+[node name="StatusLabel" type="Label" parent="BoardPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 430.0
+offset_bottom = 466.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.64, 0.35, 0.08, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 20
+text = ""
+horizontal_alignment = 1
+
+[node name="SetupPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 370.0
+offset_top = 210.0
+offset_right = 910.0
+offset_bottom = 500.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBox" type="VBoxContainer" parent="SetupPanel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Kicker" type="Label" parent="SetupPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 15
+text = "ДАЙЫНДЫҚ"
+horizontal_alignment = 1
+
+[node name="Question" type="Label" parent="SetupPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 28
+text = "Кіммен ойнайсыз?"
+horizontal_alignment = 1
+
+[node name="VsHumanBtn" type="Button" parent="SetupPanel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 62)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_font_sizes/font_size = 21
+theme_override_styles/normal = SubResource("StyleBoxFlat_primary")
+text = "АДАММЕН ОЙНАУ"
+
+[node name="VsBotBtn" type="Button" parent="SetupPanel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 62)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_font_sizes/font_size = 21
+theme_override_styles/normal = SubResource("StyleBoxFlat_primary")
+text = "КОМПЬЮТЕРМЕН ОЙНАУ"
+
+[node name="Hint" type="Label" parent="SetupPanel/VBox"]
+layout_mode = 2
+autowrap_mode = 2
+theme_override_colors/font_color = Color(0.28, 0.25, 0.22, 1)
+theme_override_font_sizes/font_size = 15
+text = "Өз жағыңыздағы бос емес отауды таңдаңыз. Соңғы құмалақ қарсыласта жұп сан жасаса — бәрін қазаныңызға аласыз."
+horizontal_alignment = 1
+
+[node name="EndPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_left = 380.0
+offset_top = 200.0
+offset_right = 900.0
+offset_bottom = 510.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBox" type="VBoxContainer" parent="EndPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="EndKicker" type="Label" parent="EndPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 15
+text = "ЖЕҢІМПАЗ"
+horizontal_alignment = 1
+
+[node name="WinnerLabel" type="Label" parent="EndPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 32
+text = "—"
+horizontal_alignment = 1
+
+[node name="ScoreLabel" type="Label" parent="EndPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.28, 0.25, 0.22, 1)
+theme_override_font_sizes/font_size = 22
+text = "—"
+horizontal_alignment = 1
+
+[node name="AgainBtn" type="Button" parent="EndPanel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_font_sizes/font_size = 21
+theme_override_styles/normal = SubResource("StyleBoxFlat_primary")
+text = "ТАҒЫ ОЙНАУ"
+
+[node name="MenuBtn" type="Button" parent="EndPanel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "БАС МӘЗІРГЕ"
