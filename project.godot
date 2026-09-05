@@ -24,6 +24,7 @@ SaveManager="*res://autoload/save_manager.gd"
 GameSettings="*res://autoload/game_settings.gd"
 MusicAudio="*res://autoload/music_audio.gd"
 SceneRouter="*res://autoload/scene_router.gd"
+Telemetry="*res://autoload/telemetry.gd"
 
 [display]
 
@@ -41,11 +42,6 @@ enabled=PackedStringArray()
 [gui]
 
 theme/custom="res://resources/ui/sanlaq_theme.tres"
-
-[internationalization]
-
-locale/translations=PackedStringArray("res://assets/i18n/ui_strings.en.translation", "res://assets/i18n/ui_strings.kk.translation")
-locale/fallback="kk"
 
 [input]
 
@@ -118,6 +114,11 @@ sprint={
 [input_devices]
 
 pointing/emulate_touch_from_mouse=true
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://assets/i18n/ui_strings.en.translation", "res://assets/i18n/ui_strings.kk.translation")
+locale/fallback="kk"
 
 [rendering]
 

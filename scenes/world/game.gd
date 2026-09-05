@@ -97,6 +97,7 @@ func _on_player_stepped(radius: float, player: Player) -> void:
 
 func _on_runner_sprint_changed(time_left: float, _uses_left: int, player: Player) -> void:
 	if player == match_mgr.human_player and time_left >= Player.RUNNER_SPRINT_DURATION:
+		Telemetry.log_event("ability_used", {"ability": "sprint"})
 		game_audio.play_sprint()
 
 func _wire_catch_areas() -> void:
@@ -244,6 +245,12 @@ func _on_match_ended(results: Dictionary) -> void:
 	results["human_won"] = human_won
 	results["correct_answers"] = _correct_answers
 	results["career"] = SaveManager.record_match(human_won, _correct_answers)
+	Telemetry.log_event("round_result", {
+		"role": _selected_role,
+		"bots": _bots.size(),
+		"human_won": human_won,
+		"correct_answers": _correct_answers,
+	})
 	if winner == "sokyroteke":
 		game_hud.show_message(tr("ЖЕҢІС: Соқыртеке!"), 2.0)
 	else:
@@ -288,6 +295,7 @@ func _activate_echo() -> void:
 		return
 	_echo_uses -= 1
 	_echo_time = 3.0
+	Telemetry.log_event("ability_used", {"ability": "echo"})
 	game_audio.play_echo()
 	game_hud.show_message(tr("ҮН ТЫҢДАУ ІСКЕ ҚОСЫЛДЫ"), 1.5)
 

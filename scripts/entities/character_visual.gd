@@ -46,6 +46,8 @@ func _apply_base_variant() -> void:
 	var base_tex := load(BASE_SHEETS[_base_variant]) as Texture2D
 	if base_tex:
 		_base.sprite_frames = _build_frames(base_tex)
+	else:
+		Telemetry.log_error("base sheet failed to load: %s" % BASE_SHEETS[_base_variant], "character_visual")
 
 func set_clothing(slot: ClothingItem.SlotType, item: ClothingItem) -> void:
 	if not is_node_ready():
@@ -65,6 +67,7 @@ func _apply_clothing(slot: ClothingItem.SlotType, item: ClothingItem) -> void:
 			layer.frame = 0
 			_apply_animation()
 			return
+		Telemetry.log_error("clothing sheet failed to load: %s" % item.texture_path, "character_visual")
 	layer.sprite_frames = null
 	layer.visible = false
 

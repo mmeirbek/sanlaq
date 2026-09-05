@@ -56,6 +56,8 @@ func get_pending_results() -> Dictionary:
 	return data
 
 func quit() -> void:
+	Telemetry.log_event("session_end", {"seconds_played": Telemetry.session_seconds()})
+	Telemetry.flush()
 	get_tree().quit()
 
 func _change_scene(to: String) -> void:
@@ -64,5 +66,7 @@ func _change_scene(to: String) -> void:
 		from = get_tree().current_scene.scene_file_path
 	if from == to:
 		return
-	get_tree().change_scene_to_file(to)
+	var err := get_tree().change_scene_to_file(to)
+	if err != OK:
+		Telemetry.log_error("change_scene_to_file failed with error %d" % err, to)
 	scene_changed.emit(from, to)

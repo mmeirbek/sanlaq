@@ -80,6 +80,7 @@ func _physics_process(delta: float) -> void:
 
 	if _current_state != BotState.HIDE:
 		dir = _avoid_obstacles(dir)
+		dir = _avoid_other_bots(dir)
 
 	if dir.length() > 1.0:
 		dir = dir.normalized()
@@ -174,10 +175,15 @@ func _pick_new_wander_target() -> void:
 			randf_range(b.position.y + 80, b.end.y - 80)
 		)
 
+const SOKYROTEKE_BOT_SPEED_MULT := 0.92  # чуть баяулатады — тек бот соқыртекеге, ойыншыға тимейді
+
 func _process_sokyroteke(delta: float) -> void:
-	_player.set_bot_speed_mult(1.0)
+	_player.set_bot_speed_mult(SOKYROTEKE_BOT_SPEED_MULT)
 	if _last_seen_timer > 0.0:
 		_last_seen_timer -= delta
+
+	var dir := Vector2.ZERO
+	var sprint := false
 
 	for p in _match_mgr.players:
 		if p == _player or not p.is_alive():
@@ -192,7 +198,9 @@ func _process_sokyroteke(delta: float) -> void:
 		if to_p.length() < detection_range:
 			_last_seen_pos = p.global_position
 			_last_seen_timer = MEMORY_DURATION
-			_player._controller.set_remote_input(to_p.normalized(), true)
+			dir = to_p.normalized()
+			sprint = true
+			_player._controller.set_remote_input(_avoid_obstacles(dir), sprint)
 			return
 
 	if _last_seen_timer > 0.0:
@@ -200,11 +208,14 @@ func _process_sokyroteke(delta: float) -> void:
 		# instantly forgetting and picking a fresh random point the moment they duck away.
 		var to_last := _last_seen_pos - _player.global_position
 		if to_last.length() > 16.0:
-			_player._controller.set_remote_input(to_last.normalized(), true)
+			dir = to_last.normalized()
+			_player._controller.set_remote_input(_avoid_obstacles(dir), true)
 			return
 
-	var dir := (_map.get_random_spawn() - _player.global_position).normalized()
-	_player._controller.set_remote_input(dir, false)
+	dir = (_map.get_random_spawn() - _player.global_position).normalized()
+	# A blind beeline toward the target can wedge the seeker against a rock/yurt with
+	# nothing to route around it — this is what made it look "stuck in one place".
+	_player._controller.set_remote_input(_avoid_obstacles(dir), false)
 
 func _avoid_obstacles(dir: Vector2) -> Vector2:
 	if dir.length() < 0.1:
@@ -223,4 +234,19 @@ func _avoid_obstacles(dir: Vector2) -> Vector2:
 		if dist < 125.0:
 			var away := -to_yurt.normalized()
 			dir = dir * 0.6 + away * 0.4
+	return dir
+
+func _avoid_other_bots(dir: Vector2) -> Vector2:
+	if dir.length() < 0.1:
+		return dir
+	# Wandering/fleeing bots have no personal space otherwise and end up clumped
+	# together in a corner or doorway, which reads as "stuck to each other".
+	for p in _match_mgr.players:
+		if p == _player or not p.is_alive():
+			continue
+		var to_p := p.global_position - _player.global_position
+		var dist := to_p.length()
+		if dist > 0.01 and dist < 46.0:
+			var away := -to_p.normalized()
+			dir = dir * 0.5 + away * 0.5
 	return dir

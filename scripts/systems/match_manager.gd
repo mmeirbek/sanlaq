@@ -66,6 +66,9 @@ func _start_new_round() -> void:
 	headstart_timer = mode.headstart_secs
 	round_timer = mode.round_base_time + mode.time_per_runner * maxi(0, runners_total - 1)
 
+	# Соқыртеке "жабады көзін": қалғандары тарап үлгергенше қуа алмайды.
+	sokyroteke.set_frozen(true)
+
 	current_state = MatchState.COUNTDOWN
 	match_state_changed.emit(current_state)
 	round_started.emit()
@@ -98,6 +101,7 @@ func _process(delta: float) -> void:
 	if current_state == MatchState.COUNTDOWN:
 		headstart_timer -= delta
 		if headstart_timer <= 0:
+			sokyroteke.set_frozen(false)
 			current_state = MatchState.PLAYING
 			match_state_changed.emit(current_state)
 		return

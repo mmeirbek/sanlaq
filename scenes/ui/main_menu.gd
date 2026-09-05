@@ -49,19 +49,25 @@ func _on_nickname_changed(new_text: String) -> void:
 func _on_play_pressed() -> void:
 	if not _require_nickname():
 		return
+	Telemetry.log_event("button_press", {"button": "play"})
 	SceneRouter.go_to_lobby({"mode": "classic", "bots": 3})
 
 func _on_wardrobe_pressed() -> void:
+	Telemetry.log_event("button_press", {"button": "wardrobe"})
 	SceneRouter.go_to_wardrobe()
 
 func _on_codex_pressed() -> void:
+	Telemetry.log_event("button_press", {"button": "codex"})
 	SceneRouter.go_to_codex()
 
 func _on_about_pressed() -> void:
+	Telemetry.log_event("button_press", {"button": "about"})
 	SceneRouter.go_to_about()
 
 func _on_settings_pressed() -> void:
+	Telemetry.log_event("button_press", {"button": "settings"})
 	SceneRouter.go_to_settings()
 
 func _on_quit_pressed() -> void:
+	Telemetry.log_event("button_press", {"button": "quit"})
 	quit_dialog.open()

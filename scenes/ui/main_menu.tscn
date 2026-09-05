@@ -279,13 +279,6 @@ horizontal_alignment = 2
 
 [node name="QuitDialog" parent="." unique_id=1981012805 instance=ExtResource("5")]
 unique_name_in_owner = true
-layout_mode = 1
-offset_left = 33.0
-offset_top = 930.0
-offset_right = 33.0
-offset_bottom = 930.0
-grow_horizontal = 2
-grow_vertical = 2
 dialog_title = "Шығу"
 dialog_message = "Ойыннан шығасыз ба?"
 
