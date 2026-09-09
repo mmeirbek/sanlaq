@@ -169,7 +169,9 @@ func _can_take_tuzdyk(index: int, mover: int) -> bool:
 	return true
 
 func _finish_turn(mover: int, result: Dictionary) -> void:
-	if kazan[mover] >= WIN_SCORE:
+	# Проверяем оба казана, а не только казан ходившего: соперник может добрать
+	# до 82 на чужом ходу, если раздача прошла через его тұздық.
+	if kazan[mover] >= WIN_SCORE or kazan[opponent_of(mover)] >= WIN_SCORE:
 		_end_game(result)
 		return
 

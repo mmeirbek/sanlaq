@@ -20,6 +20,9 @@ const SCENES := [
 	"res://scenes/ui/settings.tscn",
 	"res://scenes/ui/results.tscn",
 	"res://scenes/ui/about.tscn",
+	"res://scenes/ui/mode_select.tscn",
+	"res://scenes/ui/abai_says.tscn",
+	"res://scenes/ui/togyz_qumalaq.tscn",
 ]
 
 const LEAF_TYPES := ["Button", "CheckButton", "Label", "LineEdit", "HSlider", "TextureRect", "RichTextLabel"]

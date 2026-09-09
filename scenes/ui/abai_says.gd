@@ -61,7 +61,7 @@ func _ready() -> void:
 	_ready_btn.pressed.connect(_on_ready_pressed)
 	_again_btn.pressed.connect(_reset_to_setup)
 	_menu_btn.pressed.connect(func() -> void: SceneRouter.go_to_main_menu())
-	_back_btn.pressed.connect(func() -> void: SceneRouter.go_to_main_menu())
+	_back_btn.pressed.connect(func() -> void: SceneRouter.go_to_mode_select())
 	_show_only(_setup_panel)
 
 func _start_game(player_count: int) -> void:

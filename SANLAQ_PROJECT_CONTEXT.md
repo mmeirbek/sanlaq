@@ -184,6 +184,38 @@ The player currently has:
 
 The project also uses a separate character visual structure.
 
+## Game modes (added after this document was first written)
+
+SAÑLAQ is no longer a single-mode game. The main menu's **ОЙНАУ** button opens a
+**mode select screen** (`scenes/ui/mode_select.tscn`), which is the only entry
+point into gameplay. Three modes exist:
+
+| Mode | Scene | Rules / logic | Spec file |
+|------|-------|---------------|-----------|
+| **Соқыртеке** — chase, the original mode | `scenes/world/game.tscn` | `scripts/systems/match_manager.gd` | this document |
+| **Абай айтады** — memory, 2-4 players pass-and-play | `scenes/ui/abai_says.tscn` | in the screen script; content in `data/words/` | `Abai_aitady_mode_spec_1.md` |
+| **Тоғыз құмалақ** — board game, vs human or bot | `scenes/ui/togyz_qumalaq.tscn` | `scripts/core/game_board.gd` + `scripts/ai/togyz_bot.gd` | `Togyz_qumalaq_mode_spec.md` |
+
+Navigation for every mode goes through `autoload/scene_router.gd`
+(`go_to_mode_select()`, `go_to_abai_says()`, `go_to_togyz_qumalaq()`). Modes are
+**self-contained**: each has its own scene and script and shares no runtime state
+with the chase mode. Adding a mode therefore never requires touching
+`match_manager.gd`.
+
+**Architectural rule established by Тоғыз құмалақ, to be followed by future modes:**
+game rules live in a plain `RefCounted` class with no reference to nodes.
+`GameBoard.apply_move()` returns a description of the move (where each ball
+landed, capture, tұздық, atsyrau, game-over state) and the screen builds the
+animation from it. This is what makes the rules testable headless, without
+instantiating any scene — see `tools/togyz_rules_test.gd`.
+
+**Automated tests gate CI** (`.github/workflows/pages.yml`) before the web
+export: `tools/togyz_rules_test.gd` (every rule + 300 random self-play games)
+and `tools/modes_smoke_test.gd` (mode screens boot, buttons wired, a full match
+runs through real button presses). Both exit 1 on failure. Do not add a mode
+without extending `modes_smoke_test.gd` and the `SCENES` list in
+`tools/ui_audit.gd`.
+
 ---
 
 # 8. Character Visual Architecture
@@ -512,7 +544,14 @@ The AI assistant should assume that the following systems may already exist and 
 - catch mechanics;
 - bots;
 - character visual instantiation;
-- basic gameplay flow.
+- basic gameplay flow;
+- the mode select screen and two complete extra modes
+  (**Абай айтады**, **Тоғыз құмалақ**) — see section 7;
+- KZ/EN localization through `TranslationServer`
+  (`assets/i18n/ui_strings.csv`, keys are the Kazakh strings, used via `tr()`);
+- telemetry and per-station licensing (`autoload/telemetry.gd`);
+- audio: music plus sfx files, with the rest synthesized in
+  `scripts/systems/game_audio.gd`.
 
 **Do not recreate these systems blindly.**
 
@@ -850,10 +889,16 @@ But these are **future possibilities**, not current requirements.
 PROJECT: SAÑLAQ
 TYPE: 2D Mobile Game
 ENGINE: Godot
-GENRE: Social / Chase / Party-style gameplay
-CULTURAL BASIS: Kazakh traditional game “Соқыртеке”
+GENRE: Collection of Kazakh traditional games
+CULTURAL BASIS: “Соқыртеке” (chase) + “Тоғыз құмалақ” (board) + memory mode
 
-CORE GAMEPLAY:
+MODES (entered from the mode select screen):
+Соқыртеке — chase, human vs bots
+Абай айтады — memory, 2-4 players pass-and-play
+Тоғыз құмалақ — board game, vs human or bot
+Ақ сүйек — planned, not started
+
+CHASE MODE GAMEPLAY:
 Role assignment
 → Movement
 → Chase
@@ -880,8 +925,17 @@ CLOTHING VARIANTS:
 UI POLISH:
 ███░░░░░░░  Later
 
+ABAI AITADY MODE:
+██████████  Complete (word voice-over files still missing)
+
+TOGYZ QUMALAQ MODE:
+██████████  Complete (single bot difficulty)
+
+LOCALIZATION (KZ/EN):
+██████████  Complete
+
 AUDIO:
-██░░░░░░░░  Later
+██████░░░░  Music + sfx in place, rest synthesized
 
 ADVANCED FEATURES:
 ░░░░░░░░░░  Future
@@ -922,9 +976,12 @@ Instead:
 5. inspect the `Player` implementation;
 6. inspect `CharacterVisual`;
 7. inspect current asset directories;
-8. determine the exact current state;
-9. compare it with this document;
-10. only then begin implementation.
+8. read `Abai_aitady_mode_spec_1.md` and `Togyz_qumalaq_mode_spec.md` —
+   they are the specs for the two modes added after this document was written,
+   and section 7 above lists where their code lives;
+9. determine the exact current state;
+10. compare it with this document;
+11. only then begin implementation.
 
 If the repository differs from this document, **the actual repository is the source of truth for implementation details**, while this file is the source of truth for product vision and requirements.
 

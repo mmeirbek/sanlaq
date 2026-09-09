@@ -24,6 +24,7 @@ func _init() -> void:
 	_test_ball_into_tuzdyk_goes_to_owner()
 	_test_atsyrau_sweeps_the_rest()
 	_test_win_at_82()
+	_test_win_at_82_for_the_other_player()
 	_test_random_self_play()
 
 	print("[test] " + ("TOGYZ RULES OK" if fails == 0 else "TOGYZ RULES FAILED (%d)" % fails))
@@ -159,6 +160,16 @@ func _test_win_at_82() -> void:
 	_check(b.kazan[0] == 82, "набрано 82, в казане %d" % b.kazan[0])
 	_check(b.is_over(), "партия завершается при 82+")
 	_check(b.winner() == 0, "победитель определён верно")
+
+## Соперник может добрать до 82 не своим ходом: шар, упавший в его тұздық во время
+## чужой раздачи, уходит ему в казан. Партия обязана остановиться сразу же.
+func _test_win_at_82_for_the_other_player() -> void:
+	var b = _board({0: 3, 5: 1, 9: 5}, 0, 81)
+	b.tuzdyk_owner[2] = 1
+	b.apply_move(0)
+	_check(b.kazan[1] == 82, "соперник добрал 82 через свой тұздық, у него %d" % b.kazan[1])
+	_check(b.is_over(), "партия остановилась, хотя 82 набрал не ходивший")
+	_check(b.winner() == 1, "победителем признан набравший 82, получено %d" % b.winner())
 
 func _test_random_self_play() -> void:
 	seed(20260905)

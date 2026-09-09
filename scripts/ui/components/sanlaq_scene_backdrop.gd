@@ -1,7 +1,7 @@
 class_name SanlaqSceneBackdrop
 extends Control
 
-enum Variant { LOBBY, WARDROBE, CODEX, RESULTS, SETTINGS }
+enum Variant { LOBBY, WARDROBE, CODEX, RESULTS, SETTINGS, ABAI, TOGYZ }
 @export var variant: Variant = Variant.LOBBY
 
 const TEXTURES := {
@@ -10,6 +10,8 @@ const TEXTURES := {
 	Variant.CODEX: "res://assets/ui/backgrounds/bg_codex.jpg",
 	Variant.RESULTS: "res://assets/ui/backgrounds/bg_results.jpg",
 	Variant.SETTINGS: "res://assets/ui/backgrounds/bg_settings.jpg",
+	Variant.ABAI: "res://assets/ui/backgrounds/bg_abai.jpg",
+	Variant.TOGYZ: "res://assets/ui/backgrounds/bg_togyz.jpg",
 }
 
 var _texture: Texture2D
