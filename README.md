@@ -11,7 +11,9 @@
 ## Что это за игра
 
 Из главного меню кнопка **ОЙНАУ** ведёт на **экран выбора режима**
-(`scenes/ui/mode_select.tscn`), откуда открывается один из трёх режимов.
+(`scenes/ui/mode_select.tscn`). Оттуда любой режим открывается не сразу, а через
+**экран-объяснение** (`scenes/ui/mode_briefing.tscn`): как играется и каким
+навыкам учит, на казахском или английском, с голосовым сопровождением.
 
 ### 1. Соқыртеке — погоня (человек против ботов)
 
@@ -27,6 +29,21 @@
   (следишь за ботами: клик по игроку / Tab / стрелки / кнопки ◀▶).
 - Вода замедляет всех. Юрты можно обходить и прятаться внутри (купол скрывает от ловца).
 - Правильный ответ в квизе **разблокирует предмет одежды** в шкафу.
+
+### Экран-объяснение перед каждым режимом
+
+Один общий экран для всех режимов, содержание берётся из ресурса `ModeBriefing`
+в `data/briefings/<режим>.tres` — код на новый режим менять не нужно.
+
+- Слева «ҚАЛАЙ ОЙНАЛАДЫ» — пронумерованные шаги, справа «НЕНІ ҮЙРЕТЕДІ» — навыки.
+- Текст локализуется обычным `tr()`: строки в `.tres` хранятся по-казахски и они
+  же являются ключами в `assets/i18n/ui_strings.csv`.
+- **Озвучка** идёт строка за строкой, подсвечивая читаемую. Источник выбирается
+  так же, как для звуковых эффектов: записанный файл → системный синтезатор речи
+  → тишина (подсветка всё равно идёт в темпе чтения). Файлы лежат в
+  `assets/audio/voice/<kk|en>/`, подробности — в README внутри этой папки.
+- По клику на строку озвучка перескакивает на неё; кнопка слева внизу
+  останавливает и запускает заново. «ОЙНАУ» доступна сразу — слушать необязательно.
 
 ### 2. Абай айтады — память (2-4 игрока, pass-and-play)
 
@@ -82,21 +99,25 @@ sokyroteke/
 │   ├── telemetry.gd       # события + лицензирование станций
 │   └── scene_router.gd    # навигация между сценами + передача данных
 ├── scenes/
-│   ├── ui/                # main_menu, mode_select, abai_says, togyz_qumalaq,
-│   │                      # wardrobe (шкаф), lobby, results, codex, settings, about
+│   ├── ui/                # main_menu, mode_select, mode_briefing, abai_says,
+│   │                      # togyz_qumalaq, wardrobe, lobby, results, codex,
+│   │                      # settings, about
 │   ├── world/             # game.tscn (основная сцена), map_steppe_village, yurt
 │   └── entities/          # player.tscn, character_visual.tscn
 ├── scripts/
 │   ├── core/              # ресурсы данных: ClothingItem, MapDefinition, GameModeDefinition,
-│   │                      # BotProfile, GameWord + движок правил GameBoard (тоғыз)
+│   │                      # BotProfile, GameWord, ModeBriefing
+│   │                      # + движок правил GameBoard (тоғыз)
 │   ├── entities/          # player.gd, player_controller.gd, character_visual.gd
-│   ├── systems/           # match_manager, map_manager, vision, sound_wave, camera
+│   ├── systems/           # match_manager, map_manager, vision, sound_wave, camera,
+│   │                      # game_audio, narration (озвучка брифингов)
 │   ├── ai/                # bot_agent.gd (FSM ботов погони), togyz_bot.gd
 │   └── ui/                # game_hud, quiz_hud, wardrobe, touch_controls
 ├── data/                  # контент в ресурсах .tres (менять без кода!)
 │   ├── clothing/          # 13 предметов одежды
 │   ├── maps/              # карта steppe_village
 │   ├── words/             # 8 национальных блюд для «Абай айтады» (GameWord)
+│   ├── briefings/         # объяснения режимов: как играется и чему учит
 │   ├── game_modes/        # настройки режима погони classic
 │   └── bots/              # bot_easy / bot_medium / bot_hard
 ├── assets/
@@ -107,9 +128,13 @@ sokyroteke/
 │   │   └── TEMPLATE.png   # сетка 4x6 для перерисовки
 │   ├── items/             # превью предметов 128x128 (квиз/шкаф)
 │   ├── tiles/             # ground, water_blob, rock (Kenney CC0)
+│   ├── audio/voice/       # озвучка объяснений: kk/ и en/ (см. README внутри)
+│   ├── i18n/              # ui_strings.csv — вся локализация KZ/EN
 │   └── character/README.md
 └── tools/
     ├── generate_character.py  # генератор всех ассетов персонажа/одежды/текстур
+    ├── generate_voice_lines.py # озвучка объяснений через системный синтезатор
+    ├── screenshot_screens.gd  # PNG со всех экранов для проверки глазами
     ├── smoke_test.gd          # проверка загрузки сцен
     ├── mechanics_test.gd      # проверка механики поимки
     ├── spawn_test.gd          # проверка безопасного спавна
@@ -178,9 +203,16 @@ icon_path    = "res://assets/items/head_borik_02.png"
   (таймер, число поимок, множители, длительность квиза, замедление).
 - **Новый режим целиком**: сцена + скрипт в `scenes/ui/`, константа и
   `go_to_*()` в `autoload/scene_router.gd`, карточка на `mode_select.tscn`
-  с кнопкой, вариант фона в `SanlaqSceneBackdrop.Variant`, сцена в `SCENES`
-  внутри `tools/ui_audit.gd` и проверки в `tools/modes_smoke_test.gd`.
+  с кнопкой, `ModeBriefing` в `data/briefings/` и маршрут в `ROUTES` внутри
+  `scenes/ui/mode_briefing.gd`, вариант фона в `SanlaqSceneBackdrop.Variant`,
+  сцена в `SCENES` внутри `tools/ui_audit.gd` и проверки в
+  `tools/modes_smoke_test.gd`.
   Правила выносить в отдельный класс без ссылок на ноды — как `GameBoard`.
+- **Объяснение режима**: правь `data/briefings/<режим>.tres` — шаги
+  `how_to_play` и навыки `skills`. Каждую новую строку добавь в
+  `assets/i18n/ui_strings.csv` с английским переводом и перегенерируй озвучку
+  (`python3 tools/generate_voice_lines.py`). `modes_smoke_test.gd` уронит сборку,
+  если строка осталась без перевода или без озвучки.
 - **Новое слово для «Абай айтады»**: `GameWord` в `data/words/`
   (id, category, name_kz/en, icon_path, sound_path) + иконка в `assets/words/food/`.
   `AssetRegistry` подхватит на старте, код менять не нужно.
@@ -204,13 +236,21 @@ godot --headless --path . --script tools/smoke_test.gd
 godot --headless --path . --script tools/mechanics_test.gd
 godot --headless --path . --script tools/spawn_test.gd
 godot --headless --path . --script tools/ui_audit.gd
+
+# скриншоты всех экранов в tools/preview/screens/ — НЕ headless, нужен рендер
+godot --path . --resolution 1280x720 --script tools/screenshot_screens.gd
 ```
 
 `togyz_rules_test.gd` проверяет каждое правило по отдельности плюс гоняет
 300 случайных партий: сумма шаров всегда 162, зависших позиций нет, все партии
 завершаются. `modes_smoke_test.gd` поднимает сцены режимов и прогоняет полный
-цикл партии через реальные нажатия кнопок. Оба запускаются в GitHub Actions
-перед экспортом (`.github/workflows/pages.yml`).
+цикл партии через реальные нажатия кнопок, а заодно проверяет экраны-объяснения:
+что каждая строка переведена на английский и озвучена на обоих языках и что
+озвучка сама идёт по строкам. Оба запускаются в GitHub Actions перед экспортом
+(`.github/workflows/pages.yml`).
+
+`ui_audit.gd` ловит перекрытия контролов, но не видит, например, тёмный
+заголовок на тёмном фоне — для этого есть `screenshot_screens.gd`.
 
 ---
 
@@ -262,6 +302,8 @@ godot --headless --path . --script tools/ui_audit.gd
 
 **Общее**
 
+- ✅ Экраны-объяснения перед каждым режимом: как играется и чему учит,
+  KZ/EN, с озвучкой на обоих языках
 - ✅ Локализация KZ/EN через TranslationServer (`assets/i18n/ui_strings.csv`)
 - ✅ Звук: музыка + sfx-файлы, остальное синтезируется в `game_audio.gd`
 - 🔶 Режим «Ақ сүйек» из плана ещё не начат

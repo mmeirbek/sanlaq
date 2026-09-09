@@ -21,6 +21,7 @@ const SCENES := [
 	"res://scenes/ui/results.tscn",
 	"res://scenes/ui/about.tscn",
 	"res://scenes/ui/mode_select.tscn",
+	"res://scenes/ui/mode_briefing.tscn",
 	"res://scenes/ui/abai_says.tscn",
 	"res://scenes/ui/togyz_qumalaq.tscn",
 ]
@@ -64,6 +65,12 @@ func _audit_scene(scene_path: String) -> void:
 	if pack == null:
 		print("  ERROR: could not load scene")
 		return
+	# Брифинг общий для всех режимов и содержание берёт из того, что ему передал
+	# экран выбора, — иначе он уйдёт обратно и аудировать будет нечего. Автолоад
+	# берём из дерева: по имени он в --script-скрипте ещё не зарегистрирован.
+	if scene_path.ends_with("mode_briefing.tscn"):
+		root.get_node("/root/SceneRouter").set_pending_briefing("togyz_qumalaq")
+
 	var inst := pack.instantiate()
 	root.add_child(inst)
 	root.size = Vector2i(1280, 720)

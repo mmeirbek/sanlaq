@@ -13,10 +13,17 @@ func _init() -> void:
 	root.size = Vector2i(1280, 720)
 	await process_frame
 	await _test_mode_select()
+	await _test_briefings()
 	await _test_abai()
 	await _test_togyz()
 	print("[test] " + ("MODES OK" if fails == 0 else "MODES FAILED (%d)" % fails))
 	quit(1 if fails > 0 else 0)
+
+## Автолоады недоступны по имени в скрипте, запущенном через --script: он
+## компилируется раньше, чем они регистрируются как глобальные идентификаторы.
+## Внутри сцен они работают как обычно, а здесь берём их из дерева.
+func _autoload(singleton: String) -> Node:
+	return root.get_node_or_null("/root/" + singleton)
 
 func _check(cond: bool, msg: String) -> void:
 	if cond:
@@ -64,6 +71,102 @@ func _test_mode_select() -> void:
 		return
 	for btn_name in ["%ChasePlayBtn", "%AbaiPlayBtn", "%TogyzPlayBtn", "%BackBtn"]:
 		_check(_connected(n, btn_name), "выбор режима: %s подключена" % btn_name)
+	await _drop(n)
+
+# --- Экраны-объяснения перед режимами ---------------------------------------
+
+func _test_briefings() -> void:
+	for mode_id in ["sokyroteke", "abai_says", "togyz_qumalaq"]:
+		await _test_briefing(mode_id)
+	await _test_narration_advances()
+
+## Главное в озвучке — что она сама двигается по строкам. Проверяем на одной
+## короткой строке, чтобы тест не ждал полминуты.
+func _test_narration_advances() -> void:
+	_autoload("SceneRouter").set_pending_briefing("togyz_qumalaq")
+	var n := await _mount("res://scenes/ui/mode_briefing.tscn")
+	if n == null:
+		return
+	var last := int(n.get("_spoken").size()) - 2
+	n.call("_speak_line", last)
+	_check(int(n.get("_current_line")) == last, "озвучка: встали на предпоследнюю строку")
+
+	# Опрашиваем, а не ждём фиксированное время: под настоящим звуком строка
+	# длится секунды, под пустым аудиодрайвером CI — доли секунды, и в обоих
+	# случаях цепочка обязана пройти через следующую строку.
+	var seen := {}
+	for _tick in 120:
+		seen[int(n.get("_current_line"))] = true
+		if seen.has(-1):
+			break
+		await create_timer(0.1).timeout
+	_check(seen.has(last + 1),
+		"озвучка: сама перешла на следующую строку (%d)" % (last + 1))
+	_check(seen.has(-1), "озвучка: дошла до конца списка и остановилась")
+	await _drop(n)
+
+func _test_briefing(mode_id: String) -> void:
+	var brief: ModeBriefing = _autoload("AssetRegistry").get_briefing(mode_id)
+	_check(brief != null, "брифинг: ресурс режима %s найден" % mode_id)
+	if brief == null:
+		return
+	_check(not brief.how_to_play.is_empty(), "%s: есть шаги «как играется»" % mode_id)
+	_check(not brief.skills.is_empty(), "%s: есть пункты «чему учит»" % mode_id)
+
+	# Обе локали должны давать текст, и английская — отличаться от казахской,
+	# иначе перевода на самом деле нет и tr() вернул ключ.
+	var untranslated: Array[String] = []
+	var lines := brief.spoken_lines()
+	lines.append(brief.title)
+	lines.append(brief.kicker)
+	TranslationServer.set_locale("en")
+	for line in lines:
+		if tr(line) == line:
+			untranslated.append(line)
+	TranslationServer.set_locale("kk")
+	_check(untranslated.is_empty(),
+		"%s: все строки переведены на английский (без перевода: %d)" % [mode_id, untranslated.size()])
+	for line in untranslated:
+		print("[test]    .. нет перевода: ", line.substr(0, 60))
+
+	# Озвучка: файл на каждую строку, на обоих языках.
+	var missing_voice := 0
+	for lang in ["kk", "en"]:
+		for i in brief.spoken_lines().size():
+			var path := "res://assets/audio/voice/%s/%s.wav" % [lang, brief.voice_id(i)]
+			if not ResourceLoader.exists(path):
+				missing_voice += 1
+				print("[test]    .. нет озвучки: ", path)
+	_check(missing_voice == 0, "%s: озвучены все строки на kk и en (нет: %d)" % [mode_id, missing_voice])
+
+	_autoload("SceneRouter").set_pending_briefing(mode_id)
+	var n := await _mount("res://scenes/ui/mode_briefing.tscn")
+	if n == null:
+		return
+	_check_backdrop(n, brief.backdrop as SanlaqSceneBackdrop.Variant, mode_id + " (брифинг)")
+	_check((n.get_node("%Title") as Label).text == tr(brief.title),
+		"%s: заголовок брифинга подставлен" % mode_id)
+	var steps: VBoxContainer = n.get_node("%StepsBox")
+	var skills: VBoxContainer = n.get_node("%SkillsBox")
+	_check(steps.get_child_count() == brief.how_to_play.size(),
+		"%s: показаны все шаги, получено %d" % [mode_id, steps.get_child_count()])
+	_check(skills.get_child_count() == brief.skills.size(),
+		"%s: показаны все навыки, получено %d" % [mode_id, skills.get_child_count()])
+	_check(_connected(n, "%StartBtn"), "%s: кнопка «ОЙНАУ» подключена" % mode_id)
+	_check(_connected(n, "%BackBtn"), "%s: кнопка «Артқа» подключена" % mode_id)
+	_check((n.get_node("%VoiceBtn") as Button).visible,
+		"%s: кнопка озвучки показана — голос найден" % mode_id)
+
+	# Файл озвучки должен не просто лежать на диске, а грузиться как аудиопоток.
+	var first_voice := load("res://assets/audio/voice/kk/%s.wav" % brief.voice_id(0))
+	_check(first_voice is AudioStream, "%s: файл озвучки грузится как аудиопоток" % mode_id)
+
+	# Клик по строке переводит озвучку на неё, кнопка — останавливает.
+	n.call("_speak_line", 2)
+	_check(int(n.get("_current_line")) == 2, "%s: клик по строке переводит озвучку на неё" % mode_id)
+	_check(bool(n.get("_playing")), "%s: озвучка идёт" % mode_id)
+	(n.get_node("%VoiceBtn") as Button).pressed.emit()
+	_check(not bool(n.get("_playing")), "%s: кнопка останавливает озвучку" % mode_id)
 	await _drop(n)
 
 # --- Абай айтады -------------------------------------------------------------

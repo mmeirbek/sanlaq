@@ -10,6 +10,7 @@ var bot_profiles: Array[BotProfile] = []
 var game_words: Array[GameWord] = []
 var game_words_by_id: Dictionary = {}
 var game_words_by_category: Dictionary = {}
+var briefings_by_id: Dictionary = {}
 
 func _ready() -> void:
 	_scan_data_folder("clothing")
@@ -17,6 +18,7 @@ func _ready() -> void:
 	_scan_data_folder("game_modes")
 	_scan_data_folder("bots")
 	_scan_data_folder("words")
+	_scan_data_folder("briefings")
 
 func _scan_data_folder(subfolder: String) -> void:
 	var dir := DirAccess.open("res://data/%s" % subfolder)
@@ -62,6 +64,9 @@ func _register_resource(res: Resource, subfolder: String) -> void:
 		"bots":
 			if res is BotProfile:
 				bot_profiles.append(res)
+		"briefings":
+			if res is ModeBriefing:
+				briefings_by_id[res.id] = res
 		"words":
 			if res is GameWord:
 				game_words.append(res)
@@ -103,6 +108,9 @@ func get_words(category: String = "food") -> Array[GameWord]:
 
 func get_word_by_id(word_id: String) -> GameWord:
 	return game_words_by_id.get(word_id, null)
+
+func get_briefing(mode_id: String) -> ModeBriefing:
+	return briefings_by_id.get(mode_id, null)
 
 func get_random_bot_profile() -> BotProfile:
 	if bot_profiles.is_empty():

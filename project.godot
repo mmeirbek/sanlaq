@@ -17,6 +17,12 @@ run/main_scene="res://scenes/ui/main_menu.tscn"
 config/features=PackedStringArray("4.7")
 config/icon="res://assets/ui/sanlaq_logo.png"
 
+[audio]
+
+; Нужно для запасного варианта озвучки брифинга: если записанного файла нет,
+; строку читает системный синтезатор речи (см. scripts/systems/narration.gd).
+general/text_to_speech=true
+
 [autoload]
 
 AssetRegistry="*res://autoload/asset_registry.gd"
@@ -42,6 +48,15 @@ enabled=PackedStringArray()
 [gui]
 
 theme/custom="res://resources/ui/sanlaq_theme.tres"
+
+[importer_defaults]
+
+; Озвучка брифингов синтезируется утилитой `say`, а она оставляет тишину в
+; начале и в конце. Обрезаем её при импорте, чтобы строки читались подряд без
+; провалов. Настройка живёт здесь, а не в .import: те не коммитятся.
+wav={
+"edit/trim": true
+}
 
 [input]
 

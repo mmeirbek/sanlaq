@@ -13,14 +13,16 @@ func _ready() -> void:
 	_togyz_btn.pressed.connect(_on_togyz_pressed)
 	_back_btn.pressed.connect(func() -> void: SceneRouter.go_to_main_menu())
 
+## Каждый режим открывается через экран-объяснение: он рассказывает, как играть
+## и чему учит, и уже оттуда уводит в саму игру.
 func _on_chase_pressed() -> void:
 	Telemetry.log_event("button_press", {"button": "mode_sokyroteke"})
-	SceneRouter.go_to_lobby({"mode": "classic", "bots": 3})
+	SceneRouter.go_to_mode_briefing("sokyroteke")
 
 func _on_abai_pressed() -> void:
 	Telemetry.log_event("button_press", {"button": "mode_abai_says"})
-	SceneRouter.go_to_abai_says()
+	SceneRouter.go_to_mode_briefing("abai_says")
 
 func _on_togyz_pressed() -> void:
 	Telemetry.log_event("button_press", {"button": "mode_togyz_qumalaq"})
-	SceneRouter.go_to_togyz_qumalaq()
+	SceneRouter.go_to_mode_briefing("togyz_qumalaq")

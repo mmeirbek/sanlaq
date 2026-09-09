@@ -224,3 +224,29 @@ This is: %s"
 %s %d құмалақ ұтып алды,%s %d құмалақ ұтып алды,%s captured %d balls
 Атсырау: қалған құмалақтар қазанға түсті,Атсырау: қалған құмалақтар қазанға түсті,Atsyrau: the remaining balls go to the kazan
 Тең ойын,Тең ойын,Draw
+ҚАЛАЙ ОЙНАЛАДЫ,ҚАЛАЙ ОЙНАЛАДЫ,HOW TO PLAY
+НЕНІ ҮЙРЕТЕДІ,НЕНІ ҮЙРЕТЕДІ,WHAT IT TEACHES
+ОЙЫН РЕЖІМІ,ОЙЫН РЕЖІМІ,GAME MODE
+Дыбыстық сүйемелдеу,Дыбыстық сүйемелдеу,Play narration
+Дыбысты тоқтату,Дыбысты тоқтату,Stop narration
+"Соқыртекенің көзі байлаулы: жарық шеңберінен тыс қашушыларды көрмейді, тек дыбысты естиді.","Соқыртекенің көзі байлаулы: жарық шеңберінен тыс қашушыларды көрмейді, тек дыбысты естиді.",The blind goat's eyes are covered: it cannot see runners outside the ring of light and only hears them.
+Қашушыны қуып жетіп ұстаңыз. Ұстаған сәтте оның үстіндегі киімді суреттен тану керек.,Қашушыны қуып жетіп ұстаңыз. Ұстаған сәтте оның үстіндегі киімді суреттен тану керек.,Chase a runner down and tag them. At the moment of the tag you must identify the clothing they are wearing from a picture.
+"Дұрыс жауап — ойыншы ойыннан шығады, ал сол киім гардеробтан ашылады. Қате жауап — бес секунд баяулау.","Дұрыс жауап — ойыншы ойыннан шығады, ал сол киім гардеробтан ашылады. Қате жауап — бес секунд баяулау.",A correct answer knocks that player out and unlocks the item in your wardrobe. A wrong answer slows you down for five seconds.
+"Су бәрін баяулатады, киіз үй ішіне кіріп жасырынуға болады. Тоқсан секунд ішінде бәрін ұстаңыз.","Су бәрін баяулатады, киіз үй ішіне кіріп жасырынуға болады. Тоқсан секунд ішінде бәрін ұстаңыз.","Water slows everyone down, and you can hide inside a yurt. Catch them all within ninety seconds."
+"Ұлттық киім атауларын танып, есте сақтауға үйретеді.","Ұлттық киім атауларын танып, есте сақтауға үйретеді.",Teaches you to recognise and remember the names of traditional clothing.
+Кеңістікте бағдарлау мен жылдам шешім қабылдауды жаттықтырады.,Кеңістікте бағдарлау мен жылдам шешім қабылдауды жаттықтырады.,Trains spatial awareness and fast decision-making.
+"Мұқият тыңдап, байқағыштықты дамытады.","Мұқият тыңдап, байқағыштықты дамытады.",Develops careful listening and observation.
+"Абай тағам карточкаларын бір-бірлеп жандырып, тізбек көрсетеді. Мұқият қараңыз.","Абай тағам карточкаларын бір-бірлеп жандырып, тізбек көрсетеді. Мұқият қараңыз.",Abai lights up the food cards one by one to show a sequence. Watch closely.
+Сол тізбекті дәл сол ретпен қайталаңыз: карточкаларды кезегімен басасыз.,Сол тізбекті дәл сол ретпен қайталаңыз: карточкаларды кезегімен басасыз.,Repeat that sequence in exactly the same order by tapping the cards one after another.
+"Әр раундта тізбек бір карточкаға ұзарады, сондықтан есте сақтау қиындай береді.","Әр раундта тізбек бір карточкаға ұзарады, сондықтан есте сақтау қиындай береді.","Each round the sequence grows by one card, so remembering it keeps getting harder."
+Құрылғыны кезекпен беріңіз. Бір раундта қателескендер раунд соңында бірге шығады.,Құрылғыны кезекпен беріңіз. Бір раундта қателескендер раунд соңында бірге шығады.,Pass the device around in turn. Everyone who slips up during a round drops out together at the end of it.
+"Ұлттық тағам атауларын танып, есте сақтауға үйретеді.","Ұлттық тағам атауларын танып, есте сақтауға үйретеді.",Teaches you to recognise and remember the names of national dishes.
+Қысқа мерзімді жады мен зейінді жаттықтырады.,Қысқа мерзімді жады мен зейінді жаттықтырады.,Trains short-term memory and attention.
+"Кезекті күтіп, бірге ойнау мәдениетін қалыптастырады.","Кезекті күтіп, бірге ойнау мәдениетін қалыптастырады.",Builds the habit of waiting your turn and playing together.
+"Әр отауда тоғыз құмалақтан. Өз отауыңызды таңдап, ішінде бір құмалақ қалдырып, қалғанын сағат тіліне қарсы таратасыз.","Әр отауда тоғыз құмалақтан. Өз отауыңызды таңдап, ішінде бір құмалақ қалдырып, қалғанын сағат тіліне қарсы таратасыз.","Every pit starts with nine balls. Pick one of your own pits, leave a single ball in it and sow the rest counter-clockwise."
+"Соңғы құмалақ қарсыластың отауына түсіп, ондағы сан жұп болса, сол отаудағы бүкіл құмалақ қазаныңызға кетеді.","Соңғы құмалақ қарсыластың отауына түсіп, ондағы сан жұп болса, сол отаудағы бүкіл құмалақ қазаныңызға кетеді.","If your last ball lands in an opponent's pit and makes the count there even, every ball in that pit goes to your kazan."
+"Егер сол отауда дәл үш құмалақ болса, оны тұздық етіп аласыз. Тұздық әр ойыншыда біреу ғана, тоғызыншы отау тұздық бола алмайды.","Егер сол отауда дәл үш құмалақ болса, оны тұздық етіп аласыз. Тұздық әр ойыншыда біреу ғана, тоғызыншы отау тұздық бола алмайды.","If it leaves exactly three balls there, you claim that pit as your tuzdyk. Each player may hold only one tuzdyk, and the ninth pit can never become one."
+Қазанына сексен екі құмалақ жинаған ойыншы жеңеді.,Қазанына сексен екі құмалақ жинаған ойыншы жеңеді.,The player who gathers eighty-two balls in their kazan wins.
+Санауды және бірнеше жүріс алдын ала есептеуді үйретеді.,Санауды және бірнеше жүріс алдын ала есептеуді үйретеді.,Teaches counting and calculating several moves ahead.
+Стратегиялық ойлау мен шыдамдылықты дамытады.,Стратегиялық ойлау мен шыдамдылықты дамытады.,Develops strategic thinking and patience.
+Ұлттық логикалық ойын дәстүрімен таныстырады.,Ұлттық логикалық ойын дәстүрімен таныстырады.,Introduces the tradition of the national logic game.

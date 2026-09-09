@@ -3,6 +3,8 @@
 *.import
 *.translation
 export/
+# Скриншоты экранов для ревью — расходный материал (tools/screenshot_screens.gd)
+tools/preview/screens/
 build/
 *.tmp
 .DS_Store
