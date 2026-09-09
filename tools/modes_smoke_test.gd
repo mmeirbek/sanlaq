@@ -83,9 +83,14 @@ func _test_briefings() -> void:
 ## Главное в озвучке — что она сама двигается по строкам. Проверяем на одной
 ## короткой строке, чтобы тест не ждал полминуты.
 func _test_narration_advances() -> void:
+	var settings := _autoload("GameSettings")
+	var was_enabled: bool = settings.briefing_voice_enabled
+	settings.set_briefing_voice_enabled(true)
+
 	_autoload("SceneRouter").set_pending_briefing("togyz_qumalaq")
 	var n := await _mount("res://scenes/ui/mode_briefing.tscn")
 	if n == null:
+		settings.set_briefing_voice_enabled(was_enabled)
 		return
 	var last := int(n.get("_spoken").size()) - 2
 	n.call("_speak_line", last)
@@ -104,6 +109,7 @@ func _test_narration_advances() -> void:
 		"озвучка: сама перешла на следующую строку (%d)" % (last + 1))
 	_check(seen.has(-1), "озвучка: дошла до конца списка и остановилась")
 	await _drop(n)
+	settings.set_briefing_voice_enabled(was_enabled)
 
 func _test_briefing(mode_id: String) -> void:
 	var brief: ModeBriefing = _autoload("AssetRegistry").get_briefing(mode_id)
@@ -139,9 +145,14 @@ func _test_briefing(mode_id: String) -> void:
 				print("[test]    .. нет озвучки: ", path)
 	_check(missing_voice == 0, "%s: озвучены все строки на kk и en (нет: %d)" % [mode_id, missing_voice])
 
+	var settings := _autoload("GameSettings")
+	var was_enabled: bool = settings.briefing_voice_enabled
+	settings.set_briefing_voice_enabled(false)
+
 	_autoload("SceneRouter").set_pending_briefing(mode_id)
 	var n := await _mount("res://scenes/ui/mode_briefing.tscn")
 	if n == null:
+		settings.set_briefing_voice_enabled(was_enabled)
 		return
 	_check_backdrop(n, brief.backdrop as SanlaqSceneBackdrop.Variant, mode_id + " (брифинг)")
 	_check((n.get_node("%Title") as Label).text == tr(brief.title),
@@ -177,13 +188,29 @@ func _test_briefing(mode_id: String) -> void:
 	var first_voice := load("res://assets/audio/voice/kk/%s.wav" % brief.voice_id(0))
 	_check(first_voice is AudioStream, "%s: файл озвучки грузится как аудиопоток" % mode_id)
 
-	# Клик по строке переводит озвучку на неё, кнопка — останавливает.
-	n.call("_speak_line", 2)
+	var voice_btn := n.get_node("%VoiceBtn") as CheckButton
+	# По умолчанию экран молчит, и переключатель это показывает.
+	_check(not bool(n.get("_playing")), "%s: по умолчанию озвучка молчит" % mode_id)
+	_check(not voice_btn.button_pressed, "%s: переключатель озвучки выключен" % mode_id)
+	# И клик по строке тоже молчит, пока озвучка выключена.
+	n.call("_on_line_pressed", 2)
+	_check(not bool(n.get("_playing")), "%s: клик по строке молчит при выключенной озвучке" % mode_id)
+
+	# Включаем: читает и запоминается для всех режимов.
+	voice_btn.button_pressed = true
+	_check(bool(n.get("_playing")), "%s: включённая озвучка начинает читать" % mode_id)
+	_check(settings.briefing_voice_enabled, "%s: выбор сохранён в настройках" % mode_id)
+	n.call("_on_line_pressed", 2)
 	_check(int(n.get("_current_line")) == 2, "%s: клик по строке переводит озвучку на неё" % mode_id)
-	_check(bool(n.get("_playing")), "%s: озвучка идёт" % mode_id)
-	(n.get_node("%VoiceBtn") as Button).pressed.emit()
-	_check(not bool(n.get("_playing")), "%s: кнопка останавливает озвучку" % mode_id)
+
+	# Выключаем: замолкает и снова запоминается.
+	voice_btn.button_pressed = false
+	_check(not bool(n.get("_playing")), "%s: выключённая озвучка замолкает" % mode_id)
+	_check(not settings.briefing_voice_enabled, "%s: выключение тоже сохранено" % mode_id)
+
 	await _drop(n)
+	# Тест не должен менять настройки игрока.
+	settings.set_briefing_voice_enabled(was_enabled)
 
 # --- Абай айтады -------------------------------------------------------------
 

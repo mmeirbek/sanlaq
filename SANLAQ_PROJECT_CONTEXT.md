@@ -210,7 +210,12 @@ cannot break them, and they change together with the rules. `STEPS_DRAWN` in
 that script records how many steps each mode's diagram covers, and the mode
 tests fail the build if a briefing gains a step the diagram cannot draw.
 
-Narration picks its source the same way sound effects do: a recorded file in
+Narration is **off by default** — the briefing is meant to be readable in
+silence. A toggle on the screen turns it on and the choice is remembered
+(`briefing_voice_enabled` in the player's settings), so it then applies to every
+mode's briefing until switched off again.
+
+When on, narration picks its source the same way sound effects do: a recorded file in
 `assets/audio/voice/<kk|en>/` if there is one, otherwise the system speech
 synthesizer, otherwise silence with the on-screen highlight still stepping
 through the lines at reading speed. The files that ship with the project were

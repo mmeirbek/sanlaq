@@ -8,6 +8,9 @@ var audio_music_volume: float = 0.7
 var audio_sfx_enabled: bool = true
 var audio_music_enabled: bool = true
 var screen_shake_enabled: bool = true
+## Озвучка экранов-объяснений. По умолчанию выключена: объяснение читается
+## глазами, а голос включается по желанию и дальше работает во всех режимах.
+var briefing_voice_enabled: bool = false
 var show_player_names: bool = true
 
 func _ready() -> void:
@@ -42,6 +45,7 @@ func _apply_saved_settings() -> void:
 	audio_sfx_enabled = SaveManager.get_setting("sfx_enabled", true)
 	audio_music_enabled = SaveManager.get_setting("music_enabled", true)
 	screen_shake_enabled = SaveManager.get_setting("screen_shake_enabled", true)
+	briefing_voice_enabled = SaveManager.get_setting("briefing_voice_enabled", false)
 	show_player_names = SaveManager.get_setting("show_player_names", true)
 	_apply_language()
 
@@ -60,6 +64,10 @@ func set_sfx_volume(volume: float) -> void:
 func set_music_volume(volume: float) -> void:
 	audio_music_volume = clampf(volume, 0.0, 1.0)
 	SaveManager.set_setting("music_volume", audio_music_volume)
+
+func set_briefing_voice_enabled(enabled: bool) -> void:
+	briefing_voice_enabled = enabled
+	SaveManager.set_setting("briefing_voice_enabled", enabled)
 
 func set_screen_shake_enabled(enabled: bool) -> void:
 	screen_shake_enabled = enabled

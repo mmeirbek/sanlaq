@@ -162,7 +162,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="VoiceBtn" type="Button" parent="."]
+[node name="VoiceBtn" type="CheckButton" parent="."]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 44.0

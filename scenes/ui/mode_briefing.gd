@@ -6,9 +6,10 @@ extends Control
 ## Текст локализуется обычным `tr()`: строки в ресурсе хранятся по-казахски и
 ## они же являются ключами в `assets/i18n/ui_strings.csv`.
 ##
-## Озвучка идёт строка за строкой, подсвечивая ту, которую читают. Если голоса
-## нет вовсе, подсветка всё равно проходит по строкам в темпе чтения — экран
-## одинаково работает и со звуком, и без него.
+## Озвучка по умолчанию выключена: объяснение читается глазами. Включённая
+## запоминается в настройках и дальше работает во всех режимах. Когда она идёт,
+## подсвечивается читаемая строка; если голоса нет вовсе, подсветка всё равно
+## проходит по строкам в темпе чтения — экран работает и со звуком, и без него.
 
 ## Куда вести после брифинга.
 const ROUTES := {
@@ -29,7 +30,7 @@ var _playing: bool = false
 @onready var _title: Label = %Title
 @onready var _steps_box: VBoxContainer = %StepsBox
 @onready var _skills_box: VBoxContainer = %SkillsBox
-@onready var _voice_btn: Button = %VoiceBtn
+@onready var _voice_btn: CheckButton = %VoiceBtn
 @onready var _start_btn: Button = %StartBtn
 @onready var _back_btn: Button = %BackBtn
 
@@ -40,7 +41,9 @@ func _ready() -> void:
 
 	_start_btn.pressed.connect(_on_start_pressed)
 	_back_btn.pressed.connect(_on_back_pressed)
-	_voice_btn.pressed.connect(_on_voice_pressed)
+	# Состояние ставим до подключения сигнала, иначе он сработает на установке.
+	_voice_btn.button_pressed = GameSettings.briefing_voice_enabled
+	_voice_btn.toggled.connect(_on_voice_toggled)
 
 	_briefing = AssetRegistry.get_briefing(SceneRouter.get_pending_briefing())
 	if _briefing == null:
@@ -54,7 +57,8 @@ func _ready() -> void:
 	_title.text = tr(_briefing.title)
 	_build_lines()
 	Telemetry.log_event("briefing_open", {"mode": _briefing.id})
-	_start_narration()
+	if GameSettings.briefing_voice_enabled:
+		_start_narration()
 
 func _build_lines() -> void:
 	for box: VBoxContainer in [_steps_box, _skills_box]:
@@ -119,7 +123,7 @@ func _make_line(marker: String, source: String, index: int, diagram_step: int = 
 	click.focus_mode = Control.FOCUS_NONE
 	click.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	click.set_anchors_preset(Control.PRESET_FULL_RECT)
-	click.pressed.connect(_speak_line.bind(index))
+	click.pressed.connect(_on_line_pressed.bind(index))
 
 	var host := MarginContainer.new()
 	host.add_child(row)
@@ -145,12 +149,10 @@ func _speak_line(index: int) -> void:
 	if index < 0 or index >= _spoken.size():
 		_current_line = -1
 		_playing = false
-		_update_voice_btn()
 		return
 	_playing = true
 	_current_line = index
 	_set_line_active(index, true)
-	_update_voice_btn()
 	_narration.speak(_briefing.voice_id(index), tr(_spoken[index]))
 
 func _on_line_finished() -> void:
@@ -163,16 +165,22 @@ func _stop_narration() -> void:
 	_set_line_active(_current_line, false)
 	_current_line = -1
 	_playing = false
-	_update_voice_btn()
 
-func _update_voice_btn() -> void:
-	_voice_btn.text = tr("Дыбысты тоқтату") if _playing else tr("Дыбыстық сүйемелдеу")
+## Клик по строке переслушивает её — но только когда озвучка включена: иначе
+## экран молчит целиком, и голос из ниоткуда был бы неожиданным.
+func _on_line_pressed(index: int) -> void:
+	if not GameSettings.briefing_voice_enabled:
+		return
+	_speak_line(index)
 
-func _on_voice_pressed() -> void:
-	if _playing:
-		_stop_narration()
-	else:
+## Переключатель — это настройка, а не разовое действие: выбор запоминается и
+## действует на объяснения всех режимов.
+func _on_voice_toggled(enabled: bool) -> void:
+	GameSettings.set_briefing_voice_enabled(enabled)
+	if enabled:
 		_start_narration()
+	else:
+		_stop_narration()
 
 func _on_start_pressed() -> void:
 	_stop_narration()
