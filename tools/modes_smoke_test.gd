@@ -150,6 +150,22 @@ func _test_briefing(mode_id: String) -> void:
 	var skills: VBoxContainer = n.get_node("%SkillsBox")
 	_check(steps.get_child_count() == brief.how_to_play.size(),
 		"%s: показаны все шаги, получено %d" % [mode_id, steps.get_child_count()])
+
+	# У каждого шага своя схема, и схема умеет нарисовать ровно столько шагов,
+	# сколько их в ресурсе — иначе лишний шаг получил бы чужую картинку.
+	var drawn: int = StepDiagram.STEPS_DRAWN.get(mode_id, 0)
+	_check(drawn == brief.how_to_play.size(),
+		"%s: схема покрывает все шаги (умеет %d, шагов %d)" % [mode_id, drawn, brief.how_to_play.size()])
+	var diagrams := 0
+	for row in steps.get_children():
+		for node in row.get_children():
+			for leaf in node.get_children():
+				if leaf is StepDiagram:
+					diagrams += 1
+					_check((leaf as StepDiagram).mode_id == mode_id,
+						"%s: схема знает свой режим" % mode_id)
+	_check(diagrams == brief.how_to_play.size(),
+		"%s: схема стоит у каждого шага, найдено %d" % [mode_id, diagrams])
 	_check(skills.get_child_count() == brief.skills.size(),
 		"%s: показаны все навыки, получено %d" % [mode_id, skills.get_child_count()])
 	_check(_connected(n, "%StartBtn"), "%s: кнопка «ОЙНАУ» подключена" % mode_id)

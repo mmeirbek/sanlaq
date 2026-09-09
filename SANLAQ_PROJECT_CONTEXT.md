@@ -202,6 +202,14 @@ and what skills it teaches, in Kazakh or English, read aloud line by line. One
 screen serves all modes; the content is a `ModeBriefing` resource in
 `data/briefings/<mode>.tres`, so adding a mode's briefing takes no new code.
 
+Each step of "how it is played" carries its own **diagram** of that step —
+which pit is chosen and how many balls are in it, which card is lit, what the
+catcher can and cannot see. These are drawn in code (`StepDiagram`), not stored
+as images: they show exact game state, contain no words at all so localization
+cannot break them, and they change together with the rules. `STEPS_DRAWN` in
+that script records how many steps each mode's diagram covers, and the mode
+tests fail the build if a briefing gains a step the diagram cannot draw.
+
 Narration picks its source the same way sound effects do: a recorded file in
 `assets/audio/voice/<kk|en>/` if there is one, otherwise the system speech
 synthesizer, otherwise silence with the on-screen highlight still stepping

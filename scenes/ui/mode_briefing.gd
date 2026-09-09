@@ -65,7 +65,7 @@ func _build_lines() -> void:
 	_spoken = _briefing.spoken_lines()
 
 	for i in _briefing.how_to_play.size():
-		_steps_box.add_child(_make_line(str(i + 1), _briefing.how_to_play[i], _line_labels.size()))
+		_steps_box.add_child(_make_line(str(i + 1), _briefing.how_to_play[i], _line_labels.size(), i))
 	for i in _briefing.skills.size():
 		_skills_box.add_child(_make_line("•", _briefing.skills[i], _line_labels.size()))
 
@@ -75,9 +75,13 @@ func _build_lines() -> void:
 		ids.append(_briefing.voice_id(i))
 	_voice_btn.visible = _narration.has_voice(ids)
 
-## Строка объяснения: номер (или буллет) слева, текст справа. По клику озвучка
-## перескакивает на эту строку — так можно переслушать любой пункт.
-func _make_line(marker: String, source: String, index: int) -> Control:
+## Строка объяснения: номер (или буллет), затем — для шагов «как играется» —
+## схема этого шага, затем текст. По клику озвучка перескакивает на эту строку,
+## так что любой пункт можно переслушать.
+##
+## `diagram_step` — номер шага для схемы; -1 у пунктов «чему учит», им схема не
+## нужна: они про навык, а не про действие на доске.
+func _make_line(marker: String, source: String, index: int, diagram_step: int = -1) -> Control:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 12)
 
@@ -93,10 +97,18 @@ func _make_line(marker: String, source: String, index: int) -> Control:
 	num.add_theme_color_override("font_color", SanlaqDesignTokens.GOLD_DARK)
 	row.add_child(num)
 
+	if diagram_step >= 0:
+		var diagram := StepDiagram.new()
+		diagram.mode_id = _briefing.id
+		diagram.step = diagram_step
+		diagram.custom_minimum_size = Vector2(176, 88)
+		row.add_child(diagram)
+
 	var text := Label.new()
 	text.text = tr(source)
 	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER if diagram_step >= 0 else VERTICAL_ALIGNMENT_TOP
 	text.add_theme_font_size_override("font_size", 17)
 	text.add_theme_color_override("font_color", SanlaqDesignTokens.NAVY)
 	row.add_child(text)

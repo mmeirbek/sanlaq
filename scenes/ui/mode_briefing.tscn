@@ -106,8 +106,8 @@ text = "← Артқа"
 layout_mode = 0
 offset_left = 44.0
 offset_top = 140.0
-offset_right = 764.0
-offset_bottom = 594.0
+offset_right = 900.0
+offset_bottom = 616.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="VBox" type="VBoxContainer" parent="PlayCard"]
@@ -130,14 +130,14 @@ horizontal_scroll_mode = 0
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 
 [node name="SkillsCard" type="PanelContainer" parent="."]
 layout_mode = 0
-offset_left = 790.0
+offset_left = 920.0
 offset_top = 140.0
 offset_right = 1236.0
-offset_bottom = 594.0
+offset_bottom = 616.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="VBox" type="VBoxContainer" parent="SkillsCard"]
@@ -166,9 +166,9 @@ theme_override_constants/separation = 10
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 44.0
-offset_top = 616.0
+offset_top = 630.0
 offset_right = 344.0
-offset_bottom = 672.0
+offset_bottom = 686.0
 theme_override_font_sizes/font_size = 18
 text = "Дыбыстық сүйемелдеу"
 
@@ -176,9 +176,9 @@ text = "Дыбыстық сүйемелдеу"
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 936.0
-offset_top = 612.0
+offset_top = 626.0
 offset_right = 1236.0
-offset_bottom = 676.0
+offset_bottom = 690.0
 theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
 theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxFlat_primary")
