@@ -20,14 +20,22 @@ func _ready() -> void:
 	_sfx_slider.value = GameSettings.audio_sfx_volume * 100.0
 	_shake_toggle.button_pressed = GameSettings.screen_shake_enabled
 	_names_toggle.button_pressed = GameSettings.show_player_names
-	_music_toggle.toggled.connect(GameSettings.set_music_enabled)
-	_sfx_toggle.toggled.connect(GameSettings.set_sfx_enabled)
+	_music_toggle.toggled.connect(_on_music_enabled)
+	_sfx_toggle.toggled.connect(_on_sfx_enabled)
 	_music_slider.value_changed.connect(_on_music_volume_changed)
 	_sfx_slider.value_changed.connect(_on_sfx_volume_changed)
 	_shake_toggle.toggled.connect(GameSettings.set_screen_shake_enabled)
 	_names_toggle.toggled.connect(GameSettings.set_show_player_names)
 	_back_btn.pressed.connect(func() -> void: SceneRouter.go_to_main_menu())
 	_lang_btn.pressed.connect(_on_language_pressed)
+	_refresh()
+
+func _on_music_enabled(enabled: bool) -> void:
+	GameSettings.set_music_enabled(enabled)
+	_refresh()
+
+func _on_sfx_enabled(enabled: bool) -> void:
+	GameSettings.set_sfx_enabled(enabled)
 	_refresh()
 
 func _on_language_pressed() -> void:
@@ -43,6 +51,10 @@ func _on_sfx_volume_changed(value: float) -> void:
 	_refresh()
 
 func _refresh() -> void:
+	# Ползунок выключенного канала гасим: полная золотая заливка под выключенным
+	# тумблером читается как «звук есть».
+	_set_slider_dimmed(_music_slider, _music_value, not GameSettings.audio_music_enabled)
+	_set_slider_dimmed(_sfx_slider, _sfx_value, not GameSettings.audio_sfx_enabled)
 	_lang_btn.text = "ENG / АҒЫЛ" if GameSettings.current_language == GameSettings.Language.KZ else "ҚАЗ / KAZ"
 	_music_value.text = "%d%%" % roundi(GameSettings.audio_music_volume * 100.0)
 	_sfx_value.text = "%d%%" % roundi(GameSettings.audio_sfx_volume * 100.0)
@@ -53,3 +65,8 @@ func _refresh() -> void:
 		int(career.get("knowledge", 0)), wins, int(career.get("streak", 0)), int(career.get("best_streak", 0)),
 		RankSystem.progress_text(wins),
 	]
+
+func _set_slider_dimmed(slider: HSlider, value_label: Label, dimmed: bool) -> void:
+	var alpha := 0.4 if dimmed else 1.0
+	slider.modulate = Color(1, 1, 1, alpha)
+	value_label.modulate = Color(1, 1, 1, alpha)

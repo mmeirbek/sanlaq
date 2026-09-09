@@ -105,10 +105,49 @@ func _audit_scene(scene_path: String) -> void:
 					inter.size,
 				])
 	print("  leaf controls found: %d, overlaps: %d" % [leaves.size(), overlap_count])
+	_report_covered_by_panels(inst, leaves)
 
 	root.remove_child(inst)
 	inst.queue_free()
 	await process_frame
+
+## Второй вид беды: контрол не пересекается с другим контролом, но его накрывает
+## панель, нарисованная позже. Так карточка «ОЙЫНҒА» на экране настроек закрывала
+## строку статистики соседней карточки, а проверка выше этого не видела — панели
+## не листья, и в сравнение не попадали.
+func _report_covered_by_panels(root_node: Node, leaves: Array[Control]) -> void:
+	var order: Array[Node] = []
+	_flatten(root_node, order)
+
+	var covered := 0
+	for panel in order:
+		if not (panel is PanelContainer or panel is Panel):
+			continue
+		var panel_ctrl := panel as Control
+		if not panel_ctrl.is_visible_in_tree():
+			continue
+		var panel_rect := panel_ctrl.get_global_rect()
+		for leaf in leaves:
+			if not leaf.is_visible_in_tree():
+				continue
+			# Панель поверх собственного содержимого — это норма.
+			if panel_ctrl.is_ancestor_of(leaf) or leaf.is_ancestor_of(panel_ctrl):
+				continue
+			# Накрывает только то, что нарисовано раньше неё.
+			if order.find(panel) < order.find(leaf):
+				continue
+			var inter := panel_rect.intersection(_visible_rect(leaf))
+			if inter.size.x > TOLERANCE and inter.size.y > TOLERANCE:
+				covered += 1
+				print("  COVERED: [%s]'%s' скрыт панелью '%s' (на %s)" % [
+					leaf.get_class(), _path_of(leaf), _path_of(panel_ctrl), inter.size,
+				])
+	print("  controls covered by later panels: %d" % covered)
+
+func _flatten(node: Node, out: Array[Node]) -> void:
+	out.append(node)
+	for child in node.get_children():
+		_flatten(child, out)
 
 func _is_click_catcher(c: Control) -> bool:
 	return c is Button and (c as Button).flat
