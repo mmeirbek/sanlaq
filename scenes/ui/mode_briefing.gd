@@ -26,8 +26,7 @@ var _current_line: int = -1
 var _playing: bool = false
 
 @onready var _background: SanlaqSceneBackdrop = $Background
-@onready var _kicker: Label = %Kicker
-@onready var _title: Label = %Title
+@onready var _header: SanlaqHeader = %Header
 @onready var _steps_box: VBoxContainer = %StepsBox
 @onready var _skills_box: VBoxContainer = %SkillsBox
 @onready var _voice_btn: CheckButton = %VoiceBtn
@@ -53,8 +52,8 @@ func _ready() -> void:
 		return
 
 	_background.set_variant(_briefing.backdrop as SanlaqSceneBackdrop.Variant)
-	_kicker.text = tr(_briefing.kicker)
-	_title.text = tr(_briefing.title)
+	_header.kicker = _briefing.kicker
+	_header.title = _briefing.title
 	_build_lines()
 	Telemetry.log_event("briefing_open", {"mode": _briefing.id})
 	if GameSettings.briefing_voice_enabled:

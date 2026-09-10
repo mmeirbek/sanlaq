@@ -13,7 +13,6 @@ var _mannequin: Node2D
 var _item_buttons: Array[Button] = []
 var _tab_buttons: Array[Button] = []
 
-@onready var _title: Label = %Title
 @onready var _slot_tabs: HBoxContainer = %Tabs
 @onready var _items_grid: GridContainer = %Items
 @onready var _effect_label: Label = %EffectLabel
@@ -22,7 +21,6 @@ var _tab_buttons: Array[Button] = []
 @onready var _mannequin_slot: Control = %MannequinSlot
 
 func _ready() -> void:
-	_title.text = "КИІМ ШКАФЫ"
 	_build_tabs()
 	_build_back_button()
 	_build_mannequin()

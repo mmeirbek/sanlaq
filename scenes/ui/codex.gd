@@ -18,22 +18,54 @@ var _selected_id: String = ""
 ## id предмета -> части карточки, которые перекрашиваются при выборе.
 var _cards: Dictionary = {}
 
-@onready var _grid: GridContainer = $Scroll/Grid
-@onready var _detail_icon: TextureRect = $DetailPanel/Margin/VBox/Icon
-@onready var _detail_name: Label = $DetailPanel/Margin/VBox/NameLabel
-@onready var _detail_meta: Label = $DetailPanel/Margin/VBox/MetaLabel
-@onready var _detail_desc: Label = $DetailPanel/Margin/VBox/DescLabel
-@onready var _photo_credit: Label = $DetailPanel/Margin/VBox/PhotoCredit
-@onready var _back_btn: Button = $BackBtn
+## Какой раздел коллекции открыт. Все тринадцать предметов сразу в сетку не
+## помещались — приходилось прокручивать, а половина карточек была за краем.
+var _current_slot: ClothingItem.SlotType = ClothingItem.SlotType.HEAD
+var _tab_buttons: Array[Button] = []
+
+@onready var _grid: GridContainer = %Grid
+@onready var _tabs: HBoxContainer = %Tabs
+@onready var _detail_icon: TextureRect = %Icon
+@onready var _detail_name: Label = %NameLabel
+@onready var _detail_meta: Label = %MetaLabel
+@onready var _detail_desc: Label = %DescLabel
+@onready var _photo_credit: Label = %PhotoCredit
+@onready var _back_btn: Button = %BackBtn
 
 func _ready() -> void:
 	_back_btn.pressed.connect(func() -> void: SceneRouter.go_to_main_menu())
+	_build_tabs()
+	_show_slot(_current_slot)
+
+func _build_tabs() -> void:
+	for slot in ClothingItem.SlotType.values():
+		var btn := Button.new()
+		btn.text = SLOT_NAMES.get(slot, str(slot))
+		btn.custom_minimum_size = Vector2(0, 38)
+		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn.toggle_mode = true
+		btn.focus_mode = Control.FOCUS_NONE
+		btn.add_theme_font_size_override("font_size", 15)
+		btn.pressed.connect(_show_slot.bind(slot as ClothingItem.SlotType))
+		_tabs.add_child(btn)
+		_tab_buttons.append(btn)
+
+func _show_slot(slot: ClothingItem.SlotType) -> void:
+	_current_slot = slot
+	for i in _tab_buttons.size():
+		_tab_buttons[i].button_pressed = i == int(slot)
 	_build_grid()
 
 func _build_grid() -> void:
+	for c in _grid.get_children():
+		_grid.remove_child(c)
+		c.queue_free()
+	_cards.clear()
+	_selected_id = ""
+
 	var first_item: ClothingItem = null
 	var first_unlocked: ClothingItem = null
-	for item in AssetRegistry.clothing_items:
+	for item in AssetRegistry.get_clothing(_current_slot):
 		_grid.add_child(_make_card(item))
 		if first_item == null:
 			first_item = item
@@ -48,7 +80,7 @@ func _build_grid() -> void:
 
 func _make_card(item: ClothingItem) -> Control:
 	var card := Control.new()
-	card.custom_minimum_size = Vector2(160, 204)
+	card.custom_minimum_size = Vector2(160, 174)
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	card.tooltip_text = item.get_name_for_lang(GameSettings.get_lang_code())
 
@@ -70,15 +102,18 @@ func _make_card(item: ClothingItem) -> Control:
 	# Every card owns a clear photo area. The image comes from this exact item's
 	# reference_photo_path; only a missing file falls back to the small item icon.
 	var photo_frame := PanelContainer.new()
-	photo_frame.custom_minimum_size = Vector2(136, 104)
-	photo_frame.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	photo_frame.custom_minimum_size = Vector2(0, 112)
+	photo_frame.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	photo_frame.clip_contents = true
 	photo_frame.add_theme_stylebox_override("panel", _photo_style())
 
 	var tex := TextureRect.new()
-	tex.custom_minimum_size = Vector2(136, 104)
+	tex.custom_minimum_size = Vector2(0, 106)
 	tex.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	# Кадрируем по рамке, а не вписываем: так все снимки читаются одним рядом,
+	# без разнобоя полей у портретных и ландшафтных.
+	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	tex.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	tex.texture = _photo_for(item)
 	if tex.texture == null and not item.icon_path.is_empty():

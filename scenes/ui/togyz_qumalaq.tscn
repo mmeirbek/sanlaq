@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/togyz_qumalaq.gd" id="1"]
 [ext_resource type="FontFile" path="res://assets/fonts/NotoSans-Bold.ttf" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_header.tscn" id="2"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 content_margin_left = 26.0
@@ -57,36 +58,17 @@ grow_horizontal = 2
 grow_vertical = 2
 variant = 6
 
-[node name="Title" type="Label" parent="."]
-theme_type_variation = &"ScreenTitle"
-layout_mode = 0
-offset_left = 40.0
-offset_top = 34.0
-offset_right = 700.0
-offset_bottom = 82.0
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 32
-text = "ТОҒЫЗ ҚҰМАЛАҚ"
-
-[node name="TitleUnderline" type="ColorRect" parent="."]
-layout_mode = 0
+[node name="Header" parent="." instance=ExtResource("2")]
+layout_mode = 1
+anchors_preset = 0
 offset_left = 44.0
-offset_top = 86.0
-offset_right = 470.0
-offset_bottom = 89.0
-color = Color(0.851, 0.663, 0.247, 1)
-
-[node name="Subtitle" type="Label" parent="."]
-theme_type_variation = &"ScreenSubtitle"
-layout_mode = 0
-offset_left = 44.0
-offset_top = 93.0
-offset_right = 760.0
-offset_bottom = 115.0
-theme_override_colors/font_color = Color(0.55, 0.53, 0.5, 1)
-theme_override_font_sizes/font_size = 15
-text = "ҰЛТТЫҚ ЛОГИКАЛЫҚ ОЙЫН · 82 ҚҰМАЛАҚ ЖИНАҒАН ҰТАДЫ"
+offset_top = 48.0
+offset_right = 44.0
+offset_bottom = 48.0
+grow_horizontal = 1
+grow_vertical = 1
+title = "ТОҒЫЗ ҚҰМАЛАҚ"
+subtitle = "ҰЛТТЫҚ ЛОГИКАЛЫҚ ОЙЫН · 82 ҚҰМАЛАҚ ЖИНАҒАН ҰТАДЫ"
 
 [node name="BackBtn" type="Button" parent="."]
 unique_name_in_owner = true

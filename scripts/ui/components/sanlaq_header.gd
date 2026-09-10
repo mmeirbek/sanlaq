@@ -10,6 +10,11 @@ extends PanelContainer
 ## Панель сжимается по содержимому, поэтому длина строки и язык на раскладку не
 ## влияют — при переключении на английский шапка просто станет уже или шире.
 
+## Надпись-категория над заголовком. Пустая — строка не показывается.
+@export var kicker: String = "":
+	set(value):
+		kicker = value
+		_apply()
 @export var title: String = "":
 	set(value):
 		title = value
@@ -19,6 +24,7 @@ extends PanelContainer
 		subtitle = value
 		_apply()
 
+@onready var _kicker_label: Label = $Margin/VBox/Kicker
 @onready var _title_label: Label = $Margin/VBox/Title
 @onready var _subtitle_label: Label = $Margin/VBox/Subtitle
 
@@ -30,6 +36,8 @@ func _ready() -> void:
 func _apply() -> void:
 	if _title_label == null:
 		return
+	_kicker_label.text = kicker
+	_kicker_label.visible = not kicker.is_empty()
 	_title_label.text = title
 	_subtitle_label.text = subtitle
 	_subtitle_label.visible = not subtitle.is_empty()

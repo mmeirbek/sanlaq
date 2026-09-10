@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/mode_briefing.gd" id="1"]
 [ext_resource type="FontFile" path="res://assets/fonts/NotoSans-Bold.ttf" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_header.tscn" id="2"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 content_margin_left = 24.0
@@ -41,39 +42,16 @@ grow_horizontal = 2
 grow_vertical = 2
 variant = 0
 
-[node name="Kicker" type="Label" parent="."]
-theme_type_variation = &"ScreenKicker"
+[node name="Header" parent="." instance=ExtResource("2")]
 unique_name_in_owner = true
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 0
 offset_left = 44.0
 offset_top = 40.0
-offset_right = 700.0
-offset_bottom = 62.0
-theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 15
-text = "ОЙЫН РЕЖІМІ"
-
-[node name="Title" type="Label" parent="."]
-theme_type_variation = &"ScreenTitle"
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 40.0
-offset_top = 64.0
-offset_right = 760.0
-offset_bottom = 108.0
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 34
-text = "Режим"
-
-[node name="TitleUnderline" type="ColorRect" parent="."]
-layout_mode = 0
-offset_left = 44.0
-offset_top = 112.0
-offset_right = 600.0
-offset_bottom = 115.0
-color = Color(0.851, 0.663, 0.247, 1)
+offset_right = 44.0
+offset_bottom = 40.0
+grow_horizontal = 1
+grow_vertical = 1
 
 [node name="BackBtn" type="Button" parent="."]
 unique_name_in_owner = true
@@ -91,7 +69,7 @@ text = "← Артқа"
 [node name="PlayCard" type="PanelContainer" parent="."]
 layout_mode = 0
 offset_left = 44.0
-offset_top = 140.0
+offset_top = 162.0
 offset_right = 900.0
 offset_bottom = 616.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
@@ -121,7 +99,7 @@ theme_override_constants/separation = 8
 [node name="SkillsCard" type="PanelContainer" parent="."]
 layout_mode = 0
 offset_left = 920.0
-offset_top = 140.0
+offset_top = 162.0
 offset_right = 1236.0
 offset_bottom = 616.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
