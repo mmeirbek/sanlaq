@@ -21,6 +21,8 @@ const TEXTURES := {
 const WASH := {
 	Variant.ABAI: 0.62,
 	Variant.TOGYZ: 0.5,
+	Variant.CODEX: 0.55,
+	Variant.WARDROBE: 0.45,
 }
 
 var _texture: Texture2D

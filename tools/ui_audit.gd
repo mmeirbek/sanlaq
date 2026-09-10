@@ -106,6 +106,7 @@ func _audit_scene(scene_path: String) -> void:
 				])
 	print("  leaf controls found: %d, overlaps: %d" % [leaves.size(), overlap_count])
 	_report_covered_by_panels(inst, leaves)
+	_report_button_contrast(inst)
 
 	root.remove_child(inst)
 	inst.queue_free()
@@ -143,6 +144,61 @@ func _report_covered_by_panels(root_node: Node, leaves: Array[Control]) -> void:
 					leaf.get_class(), _path_of(leaf), _path_of(panel_ctrl), inter.size,
 				])
 	print("  controls covered by later panels: %d" % covered)
+
+## Третий вид беды: кнопка переопределяет часть цветов, но не все, и в каком-то
+## состоянии текст совпадает с фоном — нажал, и надпись пропала. Тема сама по
+## себе согласована, ломают именно точечные theme_override на сценах.
+const BUTTON_STATES := [
+	["normal", "font_color"],
+	["hover", "font_hover_color"],
+	["pressed", "font_pressed_color"],
+	["disabled", "font_disabled_color"],
+]
+## Ниже этого отношения яркостей надпись перестаёт читаться. У кнопок шрифт
+## крупный, поэтому берём порог мягче рекомендованных для мелкого текста 4.5.
+const MIN_CONTRAST := 2.5
+
+func _report_button_contrast(root_node: Node) -> void:
+	var order: Array[Node] = []
+	_flatten(root_node, order)
+
+	var bad := 0
+	for node in order:
+		if not (node is Button):
+			continue
+		var btn := node as Button
+		if btn.flat:
+			continue  # прозрачные перехватчики кликов, у них надписи нет
+		for state in BUTTON_STATES:
+			# Тип не указываем намеренно: с явным типом Godot смотрит только в
+			# тему и проходит мимо theme_override на самой кнопке — а ломают
+			# как раз они.
+			var box := btn.get_theme_stylebox(state[0])
+			if not (box is StyleBoxFlat):
+				continue
+			var flat := box as StyleBoxFlat
+			if not flat.draw_center:
+				continue  # рамка фокуса, фона у неё нет
+			var bg: Color = flat.bg_color
+			var fg: Color = btn.get_theme_color(state[1])
+			var ratio := _contrast(bg, fg)
+			if ratio < MIN_CONTRAST:
+				bad += 1
+				print("  LOW CONTRAST: '%s' в состоянии %s — текст %s на фоне %s (%.2f)" % [
+					_path_of(btn), state[0], fg.to_html(false), bg.to_html(false), ratio,
+				])
+	print("  buttons with unreadable states: %d" % bad)
+
+func _contrast(a: Color, b: Color) -> float:
+	var la := _luminance(a)
+	var lb := _luminance(b)
+	return (maxf(la, lb) + 0.05) / (minf(la, lb) + 0.05)
+
+func _luminance(c: Color) -> float:
+	return 0.2126 * _channel(c.r) + 0.7152 * _channel(c.g) + 0.0722 * _channel(c.b)
+
+func _channel(v: float) -> float:
+	return v / 12.92 if v <= 0.03928 else pow((v + 0.055) / 1.055, 2.4)
 
 func _flatten(node: Node, out: Array[Node]) -> void:
 	out.append(node)

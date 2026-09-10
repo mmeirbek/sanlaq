@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/mode_briefing.gd" id="1"]
 [ext_resource type="FontFile" path="res://assets/fonts/NotoSans-Bold.ttf" id="3"]
@@ -22,22 +22,6 @@ corner_radius_bottom_left = 18
 shadow_color = Color(0.039, 0.169, 0.239, 0.2)
 shadow_size = 10
 shadow_offset = Vector2(0, 5)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary"]
-content_margin_left = 22.0
-content_margin_top = 12.0
-content_margin_right = 22.0
-content_margin_bottom = 12.0
-bg_color = Color(0.918, 0.761, 0.357, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.851, 0.663, 0.247, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
 
 [node name="ModeBriefing" type="Control"]
 layout_mode = 3
@@ -179,7 +163,6 @@ offset_left = 936.0
 offset_top = 626.0
 offset_right = 1236.0
 offset_bottom = 690.0
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_type_variation = &"PrimaryButton"
 theme_override_font_sizes/font_size = 22
-theme_override_styles/normal = SubResource("StyleBoxFlat_primary")
 text = "ОЙНАУ"

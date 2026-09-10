@@ -52,7 +52,7 @@ offset_top = 119
 offset_right = 600
 offset_bottom = 142
 text = "ЗАТТАРДЫ АШ · ТАРИХЫН ТАНЫ"
-theme_override_colors/font_color = Color(0.55, 0.53, 0.5, 1)
+theme_override_colors/font_color = Color(0.33, 0.31, 0.28, 1)
 theme_override_font_sizes/font_size = 16
 
 [node name="BackBtn" type="Button" parent="."]
@@ -73,7 +73,7 @@ theme_override_font_sizes/font_size = 18
 layout_mode = 1
 anchors_preset = 15
 anchor_top = 0.0
-anchor_right = 0.7
+anchor_right = 0.66
 anchor_bottom = 1.0
 anchor_left = 0.0
 offset_top = 146
@@ -87,7 +87,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 14
 theme_override_constants/v_separation = 14
-columns = 5
+columns = 4
 
 [node name="DetailPanel" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -95,7 +95,7 @@ anchors_preset = 15
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-anchor_left = 0.72
+anchor_left = 0.68
 offset_left = 0
 offset_top = 146
 offset_right = -28
@@ -118,7 +118,7 @@ theme_override_constants/separation = 12
 layout_mode = 2
 text = "Киім туралы"
 horizontal_alignment = 1
-theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
+theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
 theme_override_font_sizes/font_size = 20
 
 [node name="Icon" type="TextureRect" parent="DetailPanel/Margin/VBox"]
@@ -164,7 +164,7 @@ color = Color(0.851, 0.663, 0.247, 0.7)
 [node name="LoreTitle" type="Label" parent="DetailPanel/Margin/VBox"]
 layout_mode = 2
 text = "БІЛІМ БҰРЫШЫ"
-theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
+theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
 theme_override_fonts/font = ExtResource("3")
 theme_override_font_sizes/font_size = 15
 

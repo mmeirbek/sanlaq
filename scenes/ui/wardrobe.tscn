@@ -97,7 +97,7 @@ offset_left = 44.0
 offset_top = 106.0
 offset_right = 590.0
 offset_bottom = 132.0
-theme_override_colors/font_color = Color(0.55, 0.53, 0.5, 1)
+theme_override_colors/font_color = Color(0.33, 0.31, 0.28, 1)
 theme_override_font_sizes/font_size = 16
 text = "КИІМДІ ТАҢДА · ОБРАЗЫҢДЫ ҚҰР"
 
@@ -115,7 +115,7 @@ offset_left = 22.0
 offset_top = 18.0
 offset_right = 470.0
 offset_bottom = 46.0
-theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
+theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
 theme_override_fonts/font = ExtResource("3")
 theme_override_font_sizes/font_size = 16
 text = "СЫНАП КӨРУ"
@@ -126,7 +126,7 @@ offset_left = 74.0
 offset_top = 638.0
 offset_right = 574.0
 offset_bottom = 682.0
-theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
+theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
 theme_override_font_sizes/font_size = 18
 text = "СІЗДІҢ КЕЙПІҢІЗ"
 horizontal_alignment = 1
@@ -161,7 +161,7 @@ theme_override_constants/separation = 8
 
 [node name="CollectionKicker" type="Label" parent="RightPanel/Margin/VBox" unique_id=1789399434]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
+theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
 theme_override_fonts/font = ExtResource("3")
 theme_override_font_sizes/font_size = 15
 text = "КОЛЛЕКЦИЯ"
@@ -201,7 +201,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="InfoPanel" type="PanelContainer" parent="RightPanel/Margin/VBox" unique_id=1709245776]
-custom_minimum_size = Vector2(0, 68)
+custom_minimum_size = Vector2(0, 104)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_info")
 

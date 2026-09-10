@@ -2,12 +2,12 @@ extends Control
 
 const RARITY_NAMES := {0: "Кәдімгі", 1: "Сирек", 2: "Аңыз"}
 const RARITY_COLORS := {
-	0: Color("b9b0a0"),
-	1: SanlaqDesignTokens.GOLD,
+	0: Color("7d766a"),
+	1: Color("a36b24"),
 	2: SanlaqDesignTokens.RED_ACCENT,
 }
 const SLOT_NAMES := {0: "Бас киім", 1: "Сырт киім", 2: "Шалбар", 3: "Аяқ киім"}
-const LOCKED_COLOR := Color("b9b0a0")
+const LOCKED_COLOR := Color("857d70")
 
 @onready var _grid: GridContainer = $Scroll/Grid
 @onready var _detail_icon: TextureRect = $DetailPanel/Margin/VBox/Icon
@@ -82,7 +82,7 @@ func _make_card(item: ClothingItem) -> Control:
 	name_lbl.add_theme_font_size_override("font_size", 14)
 	name_lbl.text = item.get_name_for_lang(GameSettings.get_lang_code()) if unlocked else "???"
 	if not unlocked:
-		name_lbl.add_theme_color_override("font_color", Color(0.55, 0.53, 0.5, 1))
+		name_lbl.add_theme_color_override("font_color", Color(0.42, 0.40, 0.36, 1))
 	box.add_child(name_lbl)
 
 	var status := Label.new()
@@ -93,7 +93,7 @@ func _make_card(item: ClothingItem) -> Control:
 		status.add_theme_color_override("font_color", rarity_col)
 	else:
 		status.text = "жабық · квизде аш"
-		status.add_theme_color_override("font_color", Color(0.55, 0.53, 0.5, 1))
+		status.add_theme_color_override("font_color", Color(0.42, 0.40, 0.36, 1))
 	box.add_child(status)
 
 	panel.add_child(box)

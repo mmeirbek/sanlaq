@@ -127,7 +127,7 @@ func _refresh_items() -> void:
 		selected = items[0]
 	if selected:
 		var lang := GameSettings.get_lang_code()
-		var status := tr("[color=#d9a93f](✓ жабдықталған)[/color]") if selected.id == equipped_id else ""
+		var status := tr("[color=#a36b24](✓ жабдықталған)[/color]") if selected.id == equipped_id else ""
 		_effect_label.text = tr("ҚАСИЕТІ: %s") % _effect_for(selected.id)
 		_info_label.text = "[b]%s[/b]\n%s\n%s" % [
 			selected.get_name_for_lang(lang),
