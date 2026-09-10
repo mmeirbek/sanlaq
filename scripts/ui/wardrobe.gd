@@ -8,25 +8,18 @@ const SLOT_NAMES := {
 	3: "Аяқ киім",
 }
 
-const SLOT_TITLES := {
-	0: "Бас киім",
-	1: "Сырт киім",
-	2: "Шалбар",
-	3: "Аяқ киім",
-}
-
 var _current_slot: ClothingItem.SlotType = ClothingItem.SlotType.HEAD
 var _mannequin: Node2D
 var _item_buttons: Array[Button] = []
 var _tab_buttons: Array[Button] = []
 
-@onready var _title: Label = $Title
-@onready var _slot_tabs: HBoxContainer = $RightPanel/Margin/VBox/Tabs
-@onready var _items_grid: GridContainer = $RightPanel/Margin/VBox/Scroll/Items
-@onready var _effect_label: Label = $RightPanel/Margin/VBox/EffectPanel/EffectLabel
-@onready var _info_label: RichTextLabel = $RightPanel/Margin/VBox/InfoPanel/Info
-@onready var _back_btn: Button = $BackBtn
-@onready var _slot_title: Label = $RightPanel/Margin/VBox/SlotTitle
+@onready var _title: Label = %Title
+@onready var _slot_tabs: HBoxContainer = %Tabs
+@onready var _items_grid: GridContainer = %Items
+@onready var _effect_label: Label = %EffectLabel
+@onready var _info_label: RichTextLabel = %Info
+@onready var _back_btn: Button = %BackBtn
+@onready var _mannequin_slot: Control = %MannequinSlot
 
 func _ready() -> void:
 	_title.text = "КИІМ ШКАФЫ"
@@ -54,11 +47,23 @@ func _build_back_button() -> void:
 func _build_mannequin() -> void:
 	var pack := load("res://scenes/entities/character_visual.tscn") as PackedScene
 	_mannequin = pack.instantiate() as Node2D
-	_mannequin.scale = Vector2(5, 5)
-	_mannequin.position = Vector2(324, 420)
-	add_child(_mannequin)
+	_mannequin_slot.add_child(_mannequin)
 	(_mannequin as CharacterVisual).set_direction(Vector2.DOWN)
+	_mannequin_slot.resized.connect(_fit_mannequin)
+	_fit_mannequin()
 	_apply_equipped_outfit()
+
+## Манекен рисуется вокруг своей точки, поэтому ставим его в центр ячейки и
+## подбираем масштаб под её высоту — карточка меняет размер вместе с экраном.
+func _fit_mannequin() -> void:
+	if _mannequin == null:
+		return
+	var area := _mannequin_slot.size
+	if area.x < 8.0 or area.y < 8.0:
+		return
+	var zoom := clampf(minf(area.x / 88.0, area.y / 82.0), 1.0, 6.0)
+	_mannequin.scale = Vector2(zoom, zoom)
+	(_mannequin as CharacterVisual).set_rest_position(area * 0.5)
 
 func _apply_equipped_outfit() -> void:
 	var visual := _mannequin as CharacterVisual
@@ -69,7 +74,6 @@ func _apply_equipped_outfit() -> void:
 
 func _show_slot(slot: ClothingItem.SlotType) -> void:
 	_current_slot = slot
-	_slot_title.text = SLOT_TITLES.get(slot, "Киім")
 	for i in _tab_buttons.size():
 		_tab_buttons[i].add_theme_stylebox_override("normal", _tab_style(i == int(slot)))
 		_tab_buttons[i].add_theme_stylebox_override("hover", _tab_style(i == int(slot), true))
@@ -84,18 +88,18 @@ func _refresh_items() -> void:
 
 	var items := AssetRegistry.get_clothing(_current_slot)
 	var equipped_id := SaveManager.get_equipped(_current_slot)
-	_items_grid.columns = 2
-	_items_grid.add_theme_constant_override("h_separation", 12)
-	_items_grid.add_theme_constant_override("v_separation", 12)
+	_items_grid.columns = 3
+	_items_grid.add_theme_constant_override("h_separation", 10)
+	_items_grid.add_theme_constant_override("v_separation", 10)
 
 	for item in items:
 		var btn := Button.new()
-		btn.custom_minimum_size = Vector2(0, 146)
+		btn.custom_minimum_size = Vector2(0, 90)
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.focus_mode = Control.FOCUS_NONE
 		btn.icon_alignment = HorizontalAlignment.HORIZONTAL_ALIGNMENT_CENTER
 		btn.vertical_icon_alignment = VerticalAlignment.VERTICAL_ALIGNMENT_TOP
-		btn.add_theme_font_size_override("font_size", 16)
+		btn.add_theme_font_size_override("font_size", 14)
 		btn.add_theme_color_override("font_color", SanlaqDesignTokens.NAVY)
 		btn.add_theme_color_override("font_hover_color", SanlaqDesignTokens.NAVY)
 		btn.expand_icon = true

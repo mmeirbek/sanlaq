@@ -25,6 +25,13 @@ var _pending_clothing: Dictionary = {}
 @onready var _pants: AnimatedSprite2D = $Pants
 @onready var _shoes: AnimatedSprite2D = $Shoes
 
+## Пересадить фигурку на новое место уже после _ready(). Просто присвоить
+## position мало: покачивание каждый кадр считается от _rest_position и вернуло
+## бы фигурку обратно.
+func set_rest_position(where: Vector2) -> void:
+	position = where
+	_rest_position = where
+
 func _ready() -> void:
 	_rest_position = position
 	_layers = [_base, _shoes, _pants, _torso, _head]
