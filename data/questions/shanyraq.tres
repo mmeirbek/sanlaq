@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CultureQuestion" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/culture_question.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "shanyraq"
+question = "Киіз үйдің төбесіндегі шеңбер қалай аталады?"
+options = Array[String](["Шаңырақ", "Уық", "Кереге"])
+correct = 0
+fact = "Шаңырақ — отбасы мен әулет белгісі, Қазақстан елтаңбасында бейнеленген."

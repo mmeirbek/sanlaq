@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CultureQuestion" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/culture_question.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "kiiz_uy"
+question = "Киіз үй неден жасалады?"
+options = Array[String](["Ағаш қаңқа мен киізден", "Тек тастан", "Тек темірден"])
+correct = 0
+fact = "Киіз үйдің қаңқасы ағаштан, жабуы қой жүнінен басылған киізден жасалады."

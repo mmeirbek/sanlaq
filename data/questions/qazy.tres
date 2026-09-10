@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CultureQuestion" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/culture_question.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "qazy"
+question = "Қазы қандай еттен жасалады?"
+options = Array[String](["Жылқы етінен", "Қой етінен", "Сиыр етінен"])
+correct = 0
+fact = "Қазы — жылқының қабырға етінен жасалатын шұжық, дастарқанның сыйлы асы."

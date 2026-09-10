@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CultureQuestion" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/culture_question.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "togyz_win"
+question = "Тоғызқұмалақта жеңу үшін неше құмалақ жинау керек?"
+options = Array[String](["Сексен екі", "Елу", "Жүз"])
+correct = 0
+fact = "Барлығы 162 құмалақ, сондықтан жартысынан көбі — сексен екі — жеңіске жеткізеді."

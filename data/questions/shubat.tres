@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CultureQuestion" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/culture_question.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "shubat"
+question = "Шұбат қандай сүттен жасалады?"
+options = Array[String](["Түйе сүтінен", "Бие сүтінен", "Ешкі сүтінен"])
+correct = 0
+fact = "Шұбат — түйе сүтінен ашытылады, қымызбен қатар дәстүрлі сусын."

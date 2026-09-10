@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CultureQuestion" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/culture_question.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "saukele"
+question = "Сәукеле кімнің бас киімі?"
+options = Array[String](["Қалыңдықтың", "Батырдың", "Шопанның"])
+correct = 0
+fact = "Сәукеле — ұзатылатын қыздың биік бас киімі, асыл таспен әшекейленеді."

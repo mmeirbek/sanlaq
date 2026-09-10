@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CultureQuestion" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/culture_question.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "qonaqasy"
+question = "Қонақасы дегеніміз не?"
+options = Array[String](["Қонаққа арналған дәстүрлі ас", "Той биі", "Жаз айы"])
+correct = 0
+fact = "Қазақта қонақ келсе, қонақасы беру — ежелден келе жатқан қасиетті парыз."

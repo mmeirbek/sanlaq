@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CultureQuestion" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/culture_question.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "qymyz"
+question = "Қымыз қандай сүттен ашытылады?"
+options = Array[String](["Бие сүтінен", "Түйе сүтінен", "Сиыр сүтінен"])
+correct = 0
+fact = "Қымыз — бие сүтінен ашытылатын сусын, жазғы жайлаудың басты сыйы."

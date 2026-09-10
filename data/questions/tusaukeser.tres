@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CultureQuestion" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/culture_question.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "tusaukeser"
+question = "Тұсаукесер қашан жасалады?"
+options = Array[String](["Бала алғаш қадам басқанда", "Үйленгенде", "Туған күнде"])
+correct = 0
+fact = "Баланың тұсауын кеседі — жүрісі жеңіл, жолы ашық болсын деген тілекпен."
