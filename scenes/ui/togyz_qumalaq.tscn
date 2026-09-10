@@ -58,6 +58,7 @@ grow_vertical = 2
 variant = 6
 
 [node name="Title" type="Label" parent="."]
+theme_type_variation = &"ScreenTitle"
 layout_mode = 0
 offset_left = 40.0
 offset_top = 34.0
@@ -77,6 +78,7 @@ offset_bottom = 89.0
 color = Color(0.851, 0.663, 0.247, 1)
 
 [node name="Subtitle" type="Label" parent="."]
+theme_type_variation = &"ScreenSubtitle"
 layout_mode = 0
 offset_left = 44.0
 offset_top = 93.0

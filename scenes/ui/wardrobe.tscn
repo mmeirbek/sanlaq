@@ -73,6 +73,7 @@ grow_vertical = 2
 variant = 1
 
 [node name="Title" type="Label" parent="." unique_id=1871982192]
+theme_type_variation = &"ScreenTitle"
 layout_mode = 0
 offset_left = 40.0
 offset_top = 58.0
@@ -92,6 +93,7 @@ offset_bottom = 141.0
 color = Color(0.851, 0.663, 0.247, 1)
 
 [node name="Subtitle" type="Label" parent="." unique_id=168390849]
+theme_type_variation = &"ScreenSubtitle"
 layout_mode = 0
 offset_left = 44.0
 offset_top = 106.0
@@ -121,6 +123,7 @@ theme_override_font_sizes/font_size = 16
 text = "СЫНАП КӨРУ"
 
 [node name="MannequinCaption" type="Label" parent="." unique_id=412952221]
+theme_type_variation = &"ScreenSubtitle"
 layout_mode = 0
 offset_left = 74.0
 offset_top = 638.0

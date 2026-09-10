@@ -75,6 +75,7 @@ grow_vertical = 2
 variant = 4
 
 [node name="Title" type="Label" parent="." unique_id=529266983]
+theme_type_variation = &"ScreenTitle"
 layout_mode = 0
 offset_left = 88.0
 offset_top = 72.0
@@ -86,6 +87,7 @@ theme_override_font_sizes/font_size = 32
 text = "БАПТАУЛАР"
 
 [node name="Subtitle" type="Label" parent="." unique_id=677379154]
+theme_type_variation = &"ScreenSubtitle"
 layout_mode = 0
 offset_left = 88.0
 offset_top = 117.0

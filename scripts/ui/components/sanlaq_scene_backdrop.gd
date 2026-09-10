@@ -14,17 +14,6 @@ const TEXTURES := {
 	Variant.TOGYZ: "res://assets/ui/backgrounds/bg_togyz.jpg",
 }
 
-## Насколько приглушать фон. Рисованные фоны сцен и так мягкие, а орнаментальные
-## слишком громкие: поверх них не читается тёмный заголовок, да и карточки на
-## них тонут. Кремовая вуаль возвращает их к общему спокойному тону, сохраняя
-## орнамент как фактуру.
-const WASH := {
-	Variant.ABAI: 0.62,
-	Variant.TOGYZ: 0.5,
-	Variant.CODEX: 0.55,
-	Variant.WARDROBE: 0.45,
-}
-
 var _texture: Texture2D
 
 func _ready() -> void:
@@ -49,6 +38,3 @@ func _draw() -> void:
 	if size.x < 2.0 or size.y < 2.0 or _texture == null:
 		return
 	draw_texture_rect(_texture, Rect2(Vector2.ZERO, size), false)
-	var wash: float = WASH.get(variant, 0.0)
-	if wash > 0.0:
-		draw_rect(Rect2(Vector2.ZERO, size), Color(SanlaqDesignTokens.CREAM_LIGHT, wash))

@@ -8,6 +8,15 @@ const RARITY_COLORS := {
 }
 const SLOT_NAMES := {0: "Бас киім", 1: "Сырт киім", 2: "Шалбар", 3: "Аяқ киім"}
 const LOCKED_COLOR := Color("857d70")
+## Спокойная рамка обычной карточки. Редкость раньше красила рамку целиком, и
+## редкие предметы выглядели как выбранные — отличить настоящий выбор было
+## невозможно. Теперь редкость живёт только в подписи и в метке-точке.
+const CARD_BORDER := Color("d8c39a")
+
+## Какая карточка открыта в панели справа.
+var _selected_id: String = ""
+## id предмета -> части карточки, которые перекрашиваются при выборе.
+var _cards: Dictionary = {}
 
 @onready var _grid: GridContainer = $Scroll/Grid
 @onready var _detail_icon: TextureRect = $DetailPanel/Margin/VBox/Icon
@@ -30,6 +39,8 @@ func _build_grid() -> void:
 			first_item = item
 		if first_unlocked == null and SaveManager.is_unlocked(item.id):
 			first_unlocked = item
+	for item_id in _cards:
+		_refresh_card(item_id)
 	if first_unlocked:
 		_select(first_unlocked)
 	elif first_item:
@@ -51,7 +62,7 @@ func _make_card(item: ClothingItem) -> Control:
 	if not unlocked:
 		rarity_col = LOCKED_COLOR
 
-	panel.add_theme_stylebox_override("panel", _card_style(rarity_col))
+	panel.add_theme_stylebox_override("panel", _card_style())
 
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 3)
@@ -81,20 +92,21 @@ func _make_card(item: ClothingItem) -> Control:
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_lbl.add_theme_font_size_override("font_size", 14)
 	name_lbl.text = item.get_name_for_lang(GameSettings.get_lang_code()) if unlocked else "???"
-	if not unlocked:
-		name_lbl.add_theme_color_override("font_color", Color(0.42, 0.40, 0.36, 1))
 	box.add_child(name_lbl)
 
 	var status := Label.new()
 	status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	status.add_theme_font_size_override("font_size", 12)
-	if unlocked:
-		status.text = "✓ ашық"
-		status.add_theme_color_override("font_color", rarity_col)
-	else:
-		status.text = "жабық · квизде аш"
-		status.add_theme_color_override("font_color", Color(0.42, 0.40, 0.36, 1))
+	status.text = "✓ ашық" if unlocked else "жабық · квизде аш"
 	box.add_child(status)
+
+	_cards[item.id] = {
+		"panel": panel,
+		"name": name_lbl,
+		"status": status,
+		"rarity": rarity_col,
+		"unlocked": unlocked,
+	}
 
 	panel.add_child(box)
 
@@ -104,25 +116,57 @@ func _make_card(item: ClothingItem) -> Control:
 	click.focus_mode = Control.FOCUS_NONE
 	click.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	click.pressed.connect(_select.bind(item))
-	click.mouse_entered.connect(func() -> void:
-		panel.add_theme_stylebox_override("panel", _card_style(rarity_col, true)))
-	click.mouse_exited.connect(func() -> void:
-		panel.add_theme_stylebox_override("panel", _card_style(rarity_col)))
+	click.mouse_entered.connect(_refresh_card.bind(item.id, true))
+	click.mouse_exited.connect(_refresh_card.bind(item.id, false))
 	card.add_child(click)
 
 	return card
 
-func _card_style(border_col: Color, hovered: bool = false) -> StyleBoxFlat:
+## Выбранная карточка заливается тёмно-синим: на фоне кремовых соседей её видно
+## сразу и ни с чем не спутать, в отличие от рамки, которая спорила с рамкой
+## редкости.
+func _card_style(selected: bool = false, hovered: bool = false) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color("fffaf0") if hovered else SanlaqDesignTokens.CREAM_LIGHT
-	style.border_color = border_col
-	style.set_border_width_all(3 if hovered else 2)
+	if selected:
+		style.bg_color = SanlaqDesignTokens.NAVY
+		style.border_color = SanlaqDesignTokens.GOLD
+		style.set_border_width_all(4)
+		style.shadow_color = Color(0.04, 0.16, 0.23, 0.34)
+		style.shadow_size = 12
+		style.shadow_offset = Vector2(0, 5)
+	else:
+		style.bg_color = Color("fffaf0") if hovered else SanlaqDesignTokens.CREAM_LIGHT
+		style.border_color = SanlaqDesignTokens.GOLD_DARK if hovered else CARD_BORDER
+		style.set_border_width_all(3 if hovered else 2)
+		style.shadow_color = Color(0.04, 0.16, 0.23, 0.20 if hovered else 0.12)
+		style.shadow_size = 9 if hovered else 6
+		style.shadow_offset = Vector2(0, 4 if hovered else 3)
 	style.set_corner_radius_all(12)
 	style.set_content_margin_all(8)
-	style.shadow_color = Color(0.04, 0.16, 0.23, 0.20 if hovered else 0.12)
-	style.shadow_size = 9 if hovered else 6
-	style.shadow_offset = Vector2(0, 4 if hovered else 3)
 	return style
+
+## Перекрашивает карточку под её текущее состояние: и фон, и подписи, иначе на
+## тёмной заливке остался бы тёмный текст.
+func _refresh_card(item_id: String, hovered: bool = false) -> void:
+	var parts: Dictionary = _cards.get(item_id, {})
+	if parts.is_empty():
+		return
+	var selected := item_id == _selected_id
+	var unlocked: bool = parts["unlocked"]
+	(parts["panel"] as PanelContainer).add_theme_stylebox_override(
+		"panel", _card_style(selected, hovered))
+
+	var name_lbl: Label = parts["name"]
+	var status: Label = parts["status"]
+	if selected:
+		name_lbl.add_theme_color_override("font_color", SanlaqDesignTokens.CREAM_LIGHT)
+		status.add_theme_color_override("font_color", SanlaqDesignTokens.GOLD)
+	elif unlocked:
+		name_lbl.add_theme_color_override("font_color", SanlaqDesignTokens.NAVY)
+		status.add_theme_color_override("font_color", parts["rarity"])
+	else:
+		name_lbl.add_theme_color_override("font_color", Color(0.42, 0.40, 0.36, 1))
+		status.add_theme_color_override("font_color", Color(0.42, 0.40, 0.36, 1))
 
 func _photo_style() -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
@@ -134,6 +178,12 @@ func _photo_style() -> StyleBoxFlat:
 	return style
 
 func _select(item: ClothingItem) -> void:
+	var previous := _selected_id
+	_selected_id = item.id
+	if previous != "" and previous != item.id:
+		_refresh_card(previous)
+	_refresh_card(item.id)
+
 	var lang := GameSettings.get_lang_code()
 	var unlocked := SaveManager.is_unlocked(item.id)
 
