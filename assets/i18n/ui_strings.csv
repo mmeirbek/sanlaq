@@ -321,3 +321,33 @@ This is: %s"
 Ас пісіру үшін,Ас пісіру үшін,Cooking food
 Киім сақтау үшін,Киім сақтау үшін,Storing clothes
 "Бесікке салу — сәбидің алғашқы мерекелерінің бірі, жеке ғұрпы бар.","Бесікке салу — сәбидің алғашқы мерекелерінің бірі, жеке ғұрпы бар.",Placing a baby in the besik is one of its first celebrations and has its own rite.
+ТҮНГІ ОЙЫН,ТҮНГІ ОЙЫН,NIGHT GAME
+Ақ сүйек,Ақ сүйек,Aq Suyek
+СҰРАҚҚА ЖАУАП БЕР · ҚАДАМ ЖИНА · СҮЙЕКТІ ТАП,СҰРАҚҚА ЖАУАП БЕР · ҚАДАМ ЖИНА · СҮЙЕКТІ ТАП,ANSWER · EARN STEPS · FIND THE BONE
+Кезек: Сіз,Кезек: Сіз,Turn: You
+Кезек: Компьютер,Кезек: Компьютер,Turn: Computer
+Қалған қадам: %d,Қалған қадам: %d,Steps left: %d
+ЕСЕП %d : %d,ЕСЕП %d : %d,SCORE %d : %d
+"Көрші отауды таңдап, жүріңіз","Көрші отауды таңдап, жүріңіз",Pick a neighbouring cell and move
+Дұрыс! %d қадам,Дұрыс! %d қадам,Correct! %d steps
+Қате. %d қадам,Қате. %d қадам,Wrong. %d steps
+Компьютер жауап берді,Компьютер жауап берді,The computer answered correctly
+Компьютер қателесті,Компьютер қателесті,The computer got it wrong
+Сіз сүйекті таптыңыз!,Сіз сүйекті таптыңыз!,You found the bone!
+Компьютер сүйекті тапты,Компьютер сүйекті тапты,The computer found the bone
+Тапты!,Тапты!,Found it!
+Өте жақын,Өте жақын,Very close
+Жақын,Жақын,Close
+Алыс емес,Алыс емес,Not far
+Алыс,Алыс,Far
+Түнгі далада бір отауға ақ сүйек жасырылған. Қайда екенін ешкім білмейді.,Түнгі далада бір отауға ақ сүйек жасырылған. Қайда екенін ешкім білмейді.,Somewhere on the night steppe a white bone is hidden in one cell. Nobody knows where.
+"Жүру үшін қадам керек, ал қадамды дәстүр туралы сұраққа жауап бергенде аласыз: дұрыс жауап үш қадам, қате жауап бір қадам береді.","Жүру үшін қадам керек, ал қадамды дәстүр туралы сұраққа жауап бергенде аласыз: дұрыс жауап үш қадам, қате жауап бір қадам береді.","You need steps to move, and you earn them by answering a question about tradition: a correct answer gives three steps, a wrong one gives a single step."
+"Әр қадамда көрші отауға өтесіз, ол отау сүйекке қаншалық жақын екенін айтады: өте жақын, жақын, алыс емес немесе алыс.","Әр қадамда көрші отауға өтесіз, ол отау сүйекке қаншалық жақын екенін айтады: өте жақын, жақын, алыс емес немесе алыс.","Each step takes you to a neighbouring cell, and that cell tells you how near the bone is: very close, close, not far or far."
+Сүйекті бірінші тапқан раундты ұтады. Үш раундтың екеуін ұтқан ойыншы жеңеді.,Сүйекті бірінші тапқан раундты ұтады. Үш раундтың екеуін ұтқан ойыншы жеңеді.,Whoever reaches the bone first wins the round. The player who takes two rounds out of three wins the game.
+"Қазақ салт-дәстүрі туралы білімді еске түсіріп, бекітеді.","Қазақ салт-дәстүрі туралы білімді еске түсіріп, бекітеді.",Recalls and reinforces what you know about Kazakh customs and traditions.
+Кеңістікте бағдарлау мен болжам жасауды үйретеді.,Кеңістікте бағдарлау мен болжам жасауды үйретеді.,Teaches spatial orientation and making an informed guess.
+Аз қадаммен мақсатқа жетуді жоспарлауға жаттықтырады.,Аз қадаммен мақсатқа жетуді жоспарлауға жаттықтырады.,Trains you to plan a route that reaches the goal in as few steps as possible.
+ІЗДЕУ ОЙЫНЫ,ІЗДЕУ ОЙЫНЫ,SEARCH GAME
+"Түнгі далада жасырылған ақ сүйекті іздейсіз. Жүру үшін қадам керек, ал қадамды дәстүр туралы сұраққа жауап бергенде аласыз.","Түнгі далада жасырылған ақ сүйекті іздейсіз. Жүру үшін қадам керек, ал қадамды дәстүр туралы сұраққа жауап бергенде аласыз.","You search the night steppe for a hidden white bone. Moving costs steps, and you earn steps by answering questions about tradition."
+ӘЗІРЛЕНУДЕ,ӘЗІРЛЕНУДЕ,IN PROGRESS
+Бұл режим әлі жетілдірілуде,Бұл режим әлі жетілдірілуде,This mode is still being worked on

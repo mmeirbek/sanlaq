@@ -16,6 +16,7 @@ const SCENES := {
 	"mode_select": "res://scenes/ui/mode_select.tscn",
 	"abai_says": "res://scenes/ui/abai_says.tscn",
 	"togyz_qumalaq": "res://scenes/ui/togyz_qumalaq.tscn",
+	"aq_suyek": "res://scenes/ui/aq_suyek.tscn",
 	"lobby": "res://scenes/ui/lobby.tscn",
 	"wardrobe": "res://scenes/ui/wardrobe.tscn",
 	"codex": "res://scenes/ui/codex.tscn",
@@ -23,7 +24,7 @@ const SCENES := {
 	"about": "res://scenes/ui/about.tscn",
 }
 ## Брифинг общий для всех режимов, поэтому снимается по разу на каждый.
-const BRIEFINGS := ["sokyroteke", "abai_says", "togyz_qumalaq"]
+const BRIEFINGS := ["sokyroteke", "abai_says", "togyz_qumalaq", "aq_suyek"]
 
 func _init() -> void:
 	# Автолоады добавляются в дерево не сразу — ждём, иначе их не найти.

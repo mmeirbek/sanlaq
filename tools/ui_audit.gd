@@ -24,6 +24,7 @@ const SCENES := [
 	"res://scenes/ui/mode_briefing.tscn",
 	"res://scenes/ui/abai_says.tscn",
 	"res://scenes/ui/togyz_qumalaq.tscn",
+	"res://scenes/ui/aq_suyek.tscn",
 ]
 
 const LEAF_TYPES := ["Button", "CheckButton", "Label", "LineEdit", "HSlider", "TextureRect", "RichTextLabel"]

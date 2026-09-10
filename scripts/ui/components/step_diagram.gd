@@ -17,6 +17,7 @@ const STEPS_DRAWN := {
 	"sokyroteke": 4,
 	"abai_says": 4,
 	"togyz_qumalaq": 4,
+	"aq_suyek": 4,
 }
 
 ## Цвета берём из общих токенов, чтобы схема выглядела частью игры, а не вставкой.
@@ -53,6 +54,8 @@ func _draw() -> void:
 			_draw_abai()
 		"sokyroteke":
 			_draw_chase()
+		"aq_suyek":
+			_draw_aq_suyek()
 
 # --- Перевод условных координат в экранные -----------------------------------
 
@@ -303,3 +306,69 @@ func _chase_field() -> void:
 	# Таймер.
 	draw_arc(_p(160.0, 50.0), _s(24.0), -PI * 0.5, PI * 1.1, 40, SanlaqDesignTokens.GOLD, _s(2.4))
 	_text(_p(160.0, 50.0), "90", 18.0, SanlaqDesignTokens.GOLD)
+
+# --- Ақ сүйек ----------------------------------------------------------------
+
+func _draw_aq_suyek() -> void:
+	match step:
+		0:
+			_aq_hidden()
+		1:
+			_aq_question()
+		2:
+			_aq_hints()
+		_:
+			_aq_win()
+
+## Клетка поля: скруглённая ячейка сетки.
+func _aq_cell(cx: float, cy: float, fill: Color, border: Color, width: float = 1.2) -> void:
+	_panel(_rect(cx - 11.0, cy - 11.0, 22.0, 22.0), fill, border, 4.0, width)
+
+## Шаг 1: поле, где-то в нём спрятан сүйек, а игроки стоят по углам.
+func _aq_hidden() -> void:
+	_panel(_rect(0.0, 0.0, 200.0, 100.0), FIELD, FIELD, 8.0, 1.0)
+	for row in 3:
+		for col in 5:
+			var x := 44.0 + col * 26.0
+			var y := 24.0 + row * 26.0
+			_aq_cell(x, y, Color(0.15, 0.30, 0.38), Color(0.26, 0.44, 0.52))
+	# Свои көмбе по разным углам и сүйек между ними.
+	_text(_p(44.0, 76.0), "◆", 15.0, SanlaqDesignTokens.GOLD)
+	_text(_p(148.0, 24.0), "▲", 15.0, Color("b53b3b"))
+	_text(_p(96.0, 50.0), "?", 17.0, SanlaqDesignTokens.CREAM_LIGHT)
+
+## Шаг 2: вопрос о традициях даёт шаги.
+func _aq_question() -> void:
+	_panel(_rect(10.0, 12.0, 108.0, 76.0), SanlaqDesignTokens.CREAM_LIGHT,
+		SanlaqDesignTokens.GOLD, 7.0, 1.5)
+	for i in 3:
+		var chosen := i == 1
+		_panel(_rect(20.0, 26.0 + i * 20.0, 88.0, 15.0),
+			SanlaqDesignTokens.GOLD_PALE if chosen else Color(0.90, 0.86, 0.78),
+			SanlaqDesignTokens.GOLD_DARK if chosen else Color(0.80, 0.74, 0.62), 4.0, 1.0)
+	_check(112.0, 46.0, SanlaqDesignTokens.GREEN_ACCENT)
+	_arrow(124.0, 50.0, 146.0, 50.0, SanlaqDesignTokens.GOLD_DARK)
+	# Три шага за верный ответ.
+	for i in 3:
+		_aq_cell(160.0 + i * 13.0, 50.0, SanlaqDesignTokens.GOLD_PALE,
+			SanlaqDesignTokens.GOLD_DARK, 1.0)
+
+## Шаг 3: чем ближе сүйек, тем горячее клетка.
+func _aq_hints() -> void:
+	var tiers := [
+		Color("3f6f93"), Color("d9a93f"), Color("cf7430"), Color("b53b3b"),
+	]
+	for i in tiers.size():
+		var x := 34.0 + i * 34.0
+		_aq_cell(x, 40.0, Color(tiers[i], 0.35), tiers[i], 2.0)
+	_arrow(34.0, 62.0, 136.0, 62.0, SanlaqDesignTokens.GOLD_DARK)
+	_text(_p(136.0, 82.0), "★", 15.0, SanlaqDesignTokens.GOLD_DARK)
+
+## Шаг 4: кто первым дошёл, тот выиграл раунд.
+func _aq_win() -> void:
+	_aq_cell(70.0, 44.0, Color(0.25, 0.48, 0.25, 0.35), SanlaqDesignTokens.GREEN_ACCENT, 2.5)
+	_text(_p(70.0, 44.0), "★", 16.0, SanlaqDesignTokens.GOLD_DARK)
+	_text(_p(44.0, 44.0), "◆", 15.0, SanlaqDesignTokens.NAVY)
+	_check(70.0, 18.0, SanlaqDesignTokens.GREEN_ACCENT)
+	_panel(_rect(112.0, 30.0, 62.0, 34.0), FIELD, SanlaqDesignTokens.GOLD, 7.0, 2.0)
+	_text(_p(143.0, 47.0), "2 : 1", 16.0, SanlaqDesignTokens.GOLD)

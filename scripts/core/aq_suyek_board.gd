@@ -121,6 +121,8 @@ func can_step(direction: Vector2i) -> bool:
 ##   found      — нашёл ли сүйек
 ##   steps_left — сколько шагов осталось до конца хода
 ##   round_over — закончился ли раунд, и bone — где сүйек на самом деле лежал
+##   final_positions / final_revealed — снимок поля на момент конца раунда:
+##                  сразу после него поле уже пересобрано под следующий
 ##   finished / winner — состояние партии после хода
 func step(direction: Vector2i) -> Dictionary:
 	var result := {
@@ -162,6 +164,11 @@ func _finish_round(winner_of_round: int, result: Dictionary) -> void:
 	scores[winner_of_round] += 1
 	result["round_over"] = true
 	result["bone"] = bone
+	# Снимок доигранного раунда: ниже поле сбрасывается под следующий, а экрану
+	# ещё нужно показать, где сүйек лежал и кто где стоял. Без снимка он
+	# показал бы уже новый, ещё не найденный сүйек — то есть выдал бы ответ.
+	result["final_positions"] = positions.duplicate()
+	result["final_revealed"] = revealed.duplicate()
 	round_index += 1
 
 	if scores[winner_of_round] >= WINS_NEEDED or round_index >= ROUNDS:

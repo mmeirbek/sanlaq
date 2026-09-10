@@ -1,0 +1,276 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/aq_suyek.gd" id="1"]
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSans-Bold.ttf" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_header.tscn" id="2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+content_margin_left = 20.0
+content_margin_top = 18.0
+content_margin_right = 20.0
+content_margin_bottom = 18.0
+bg_color = Color(0.984, 0.969, 0.933, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.918, 0.761, 0.357, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+shadow_color = Color(0.039, 0.169, 0.239, 0.22)
+shadow_size = 10
+shadow_offset = Vector2(0, 5)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wip"]
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
+bg_color = Color(0.71, 0.44, 0.13, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="AqSuyek" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" parent="." instance=ExtResource("4")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+variant = 7
+
+[node name="Header" parent="." instance=ExtResource("2")]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 44.0
+offset_top = 40.0
+offset_right = 44.0
+offset_bottom = 40.0
+grow_horizontal = 1
+grow_vertical = 1
+kicker = "ТҮНГІ ОЙЫН"
+title = "Ақ сүйек"
+subtitle = "СҰРАҚҚА ЖАУАП БЕР · ҚАДАМ ЖИНА · СҮЙЕКТІ ТАП"
+
+[node name="BackBtn" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -204.0
+offset_top = 52.0
+offset_right = -44.0
+offset_bottom = 100.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 18
+text = "← Артқа"
+
+[node name="WipBadge" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -204.0
+offset_top = 110.0
+offset_right = -44.0
+offset_bottom = 140.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_wip")
+
+[node name="Label" type="Label" parent="WipBadge"]
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.984, 0.969, 0.933, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 13
+text = "ӘЗІРЛЕНУДЕ"
+
+[node name="PlayPanel" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 44.0
+offset_top = 178.0
+offset_right = -44.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 1
+theme_override_constants/separation = 24
+
+[node name="BoardCard" type="PanelContainer" parent="PlayPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Margin" type="MarginContainer" parent="PlayPanel/BoardCard"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="PlayPanel/BoardCard/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TurnLabel" type="Label" parent="PlayPanel/BoardCard/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 20
+text = "Кезек: Сіз"
+
+[node name="ScoreLabel" type="Label" parent="PlayPanel/BoardCard/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 15
+text = "ЕСЕП 0 : 0"
+
+[node name="Grid" type="GridContainer" parent="PlayPanel/BoardCard/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 5
+
+[node name="AskCard" type="PanelContainer" parent="PlayPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.25
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Margin" type="MarginContainer" parent="PlayPanel/AskCard"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="PlayPanel/AskCard/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="RoundLabel" type="Label" parent="PlayPanel/AskCard/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 15
+text = "1-РАУНД"
+
+[node name="QuestionLabel" type="Label" parent="PlayPanel/AskCard/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 21
+text = "—"
+
+[node name="Options" type="VBoxContainer" parent="PlayPanel/AskCard/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Spacer" type="Control" parent="PlayPanel/AskCard/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="FactLabel" type="Label" parent="PlayPanel/AskCard/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+theme_override_colors/font_color = Color(0.28, 0.25, 0.22, 1)
+theme_override_font_sizes/font_size = 16
+text = ""
+
+[node name="StatusLabel" type="Label" parent="PlayPanel/AskCard/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 17
+text = ""
+
+[node name="EndPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -150.0
+offset_right = 260.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Margin" type="MarginContainer" parent="EndPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="EndPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="EndKicker" type="Label" parent="EndPanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 16
+text = "ЖЕҢІМПАЗ"
+
+[node name="WinnerLabel" type="Label" parent="EndPanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 30
+text = "—"
+
+[node name="ScoreFinal" type="Label" parent="EndPanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.28, 0.25, 0.22, 1)
+theme_override_font_sizes/font_size = 18
+text = "—"
+
+[node name="AgainBtn" type="Button" parent="EndPanel/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+theme_override_font_sizes/font_size = 21
+text = "ТАҒЫ ОЙНАУ"
+
+[node name="MenuBtn" type="Button" parent="EndPanel/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "БАС МӘЗІРГЕ"

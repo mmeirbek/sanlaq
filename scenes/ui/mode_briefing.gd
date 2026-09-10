@@ -16,6 +16,7 @@ const ROUTES := {
 	"sokyroteke": "chase",
 	"abai_says": "abai",
 	"togyz_qumalaq": "togyz",
+	"aq_suyek": "aqsuyek",
 }
 
 var _briefing: ModeBriefing
@@ -191,6 +192,8 @@ func _on_start_pressed() -> void:
 			SceneRouter.go_to_abai_says()
 		"togyz":
 			SceneRouter.go_to_togyz_qumalaq()
+		"aqsuyek":
+			SceneRouter.go_to_aq_suyek()
 		_:
 			Telemetry.log_error("unknown briefing route for %s" % _briefing.id, "mode_briefing")
 			SceneRouter.go_to_mode_select()

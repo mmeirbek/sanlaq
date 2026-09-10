@@ -22,6 +22,7 @@ func _init() -> void:
 	_test_finding_bone_wins_round()
 	_test_match_ends_at_two_wins()
 	_test_loser_starts_next_round()
+	_test_round_end_snapshot()
 	_test_bot_never_walks_off_grid()
 	_test_random_self_play()
 
@@ -143,6 +144,33 @@ func _test_loser_starts_next_round() -> void:
 	b.step(Vector2i.UP)
 	_check(b.current_player == AqSuyekBoard.BOT, "новый раунд начинает проигравший")
 	_check(b.revealed.is_empty(), "поле в новом раунде чистое")
+
+## Экран показывает итог раунда уже после того, как доска пересобралась под
+## следующий, поэтому разбор хода обязан нести снимок доигранного поля. Без него
+## экран рисовал бы новый, ещё не найденный сүйек — то есть выдавал бы ответ.
+func _test_round_end_snapshot() -> void:
+	var b := AqSuyekBoard.new()
+	# Уводим сүйек в дальний угол: попадись он на первом же шаге, раунд закрылся
+	# бы раньше времени и проверка мерила бы совсем другую ситуацию.
+	b.bone = Vector2i(AqSuyekBoard.GRID - 1, AqSuyekBoard.GRID - 1)
+	b.answer(true)
+	b.step(Vector2i.UP)  # открываем клетку, чтобы снимку было что хранить
+	b.current_player = AqSuyekBoard.HUMAN
+	b.steps[AqSuyekBoard.HUMAN] = 1
+	var was_at: Vector2i = b.positions[AqSuyekBoard.HUMAN]
+	b.bone = was_at + Vector2i.UP
+	var hidden_at: Vector2i = b.bone
+	var res: Dictionary = b.step(Vector2i.UP)
+
+	_check(res["bone"] == hidden_at, "разбор помнит, где сүйек лежал на самом деле")
+	# Сравнивать с новым местом сүйек нельзя: оно случайное и раз в двадцать три
+	# раза совпадёт со старым. Что доска уже пересобралась, видно по көмбе.
+	_check(b.positions[AqSuyekBoard.HUMAN] == Vector2i(0, AqSuyekBoard.GRID - 1),
+		"доска уже вернула обоих в көмбе под новый раунд")
+	var snapshot: Array = res["final_positions"]
+	_check(snapshot[AqSuyekBoard.HUMAN] == hidden_at, "снимок держит нашедшего на сүйек")
+	_check(not res["final_revealed"].is_empty(), "снимок держит открытые клетки")
+	_check(b.revealed.is_empty(), "а доска их уже стёрла — снимок не ссылка на неё")
 
 func _test_bot_never_walks_off_grid() -> void:
 	seed(20260910)
