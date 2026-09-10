@@ -152,6 +152,9 @@ const BUTTON_STATES := [
 	["normal", "font_color"],
 	["hover", "font_hover_color"],
 	["pressed", "font_pressed_color"],
+	# Включённый тумблер под курсором. Забыли задать — и Godot берёт из своей
+	# дефолтной темы пустой фон с белым текстом, кнопка пропадает.
+	["hover_pressed", "font_hover_pressed_color"],
 	["disabled", "font_disabled_color"],
 ]
 ## Ниже этого отношения яркостей надпись перестаёт читаться. У кнопок шрифт
@@ -175,6 +178,11 @@ func _report_button_contrast(root_node: Node) -> void:
 			# как раз они.
 			var box := btn.get_theme_stylebox(state[0])
 			if not (box is StyleBoxFlat):
+				# Состояние не описано в теме: сюда подставился чужой стиль, и
+				# как кнопка будет выглядеть — уже не наше решение.
+				bad += 1
+				print("  UNSTYLED: '%s' — состояние %s не задано в теме" % [
+					_path_of(btn), state[0]])
 				continue
 			var flat := box as StyleBoxFlat
 			if not flat.draw_center:
