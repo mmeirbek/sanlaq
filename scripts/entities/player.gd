@@ -153,7 +153,10 @@ func _physics_process(delta: float) -> void:
 
 	if _shield_timer > 0:
 		_shield_timer -= delta
-		modulate.a = 0.4 + sin(_shield_timer * 10.0) * 0.2
+		if _shield_timer > 0:
+			modulate.a = 0.4 + sin(_shield_timer * 10.0) * 0.2
+		else:
+			modulate.a = 1.0
 
 	var direction := _controller.get_direction()
 	var sprint_requested := _controller.is_sprinting()

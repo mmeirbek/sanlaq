@@ -175,6 +175,8 @@ func _bot_correct_chance() -> float:
 	return maxf(0.35, base_chance - float(extra_players) * 0.02)
 
 func submit_quiz_answer(correct: bool) -> void:
+	if not quiz_active:
+		return
 	quiz_active = false
 	catch_cooldown = 1.0
 
@@ -193,6 +195,7 @@ func submit_quiz_answer(correct: bool) -> void:
 			item_unlocked.emit(_last_quiz_item)
 		if eliminated_count >= runners_total:
 			_end_round(true)
+			return
 	else:
 		sokyroteke.apply_slow(mode.slow_duration)
 		if _last_target:
@@ -203,6 +206,10 @@ func submit_quiz_answer(correct: bool) -> void:
 	match_state_changed.emit(current_state)
 
 func _end_round(sokyroteke_won: bool) -> void:
+	# Раунд заканчивается один раз: иначе таймер, истёкший во время паузы перед
+	# итогами, переписал бы победителя и записал матч повторно.
+	if current_state == MatchState.ROUND_END or current_state == MatchState.MATCH_END:
+		return
 	current_state = MatchState.ROUND_END
 	match_state_changed.emit(current_state)
 
