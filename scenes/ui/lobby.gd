@@ -64,8 +64,9 @@ func _build_players() -> void:
 		child.queue_free()
 	var portrait_scale := 2 if _bots_count + 1 <= LARGE_PORTRAITS_UP_TO else 1
 	_add_portrait(SaveManager.nickname, -1, portrait_scale)
+	# Те же имена, что у ботов в игре, — короткие, помещаются под портретом.
 	for i in _bots_count:
-		_add_portrait(tr("Қарсылас %d") % (i + 1), i, portrait_scale)
+		_add_portrait(Player.bot_name_for(i), i, portrait_scale)
 
 ## Портрет участника: персонаж в одежде и подпись. outfit_index < 0 — сам игрок
 ## в своей экипировке, иначе — набор одежды бота.
@@ -94,6 +95,9 @@ func _add_portrait(player_name: String, outfit_index: int, portrait_scale: int) 
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_label.custom_minimum_size.x = slot_size.x
 	name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	if outfit_index < 0:
+		# Свой портрет — первый и с золотым именем, чтобы найти себя среди ботов.
+		name_label.add_theme_color_override("font_color", UiTokens.GOLD_LIGHT)
 	box.add_child(name_label)
 	_players_row.add_child(box)
 

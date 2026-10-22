@@ -4,12 +4,10 @@ extends Control
 enum Variant { LOBBY, WARDROBE, CODEX, RESULTS, SETTINGS, ABAI, TOGYZ, AQSUYEK }
 @export var variant: Variant = Variant.LOBBY
 
+## Шкаф, энциклопедия, итоги и настройки уже в пиксельном стиле (PixelBackdrop),
+## их старых фонов больше нет; номера вариантов сохранены — их хранят сцены.
 const TEXTURES := {
 	Variant.LOBBY: "res://assets/ui/backgrounds/bg_lobby.jpg",
-	Variant.WARDROBE: "res://assets/ui/backgrounds/bg_wardrobe.jpg",
-	Variant.CODEX: "res://assets/ui/backgrounds/bg_codex.jpg",
-	Variant.RESULTS: "res://assets/ui/backgrounds/bg_results.jpg",
-	Variant.SETTINGS: "res://assets/ui/backgrounds/bg_settings.jpg",
 	Variant.ABAI: "res://assets/ui/backgrounds/bg_abai.jpg",
 	Variant.TOGYZ: "res://assets/ui/backgrounds/bg_togyz.jpg",
 	Variant.AQSUYEK: "res://assets/ui/backgrounds/bg_aq_suyek.jpg",

@@ -5,11 +5,13 @@ extends HBoxContainer
 
 signal slot_selected(slot: ClothingItem.SlotType)
 
+## Грузятся при сборке, а не preload: если вещь удалят из игры, вкладка
+## останется без картинки, а шкаф и энциклопедия — рабочими.
 const ICONS := {
-	ClothingItem.SlotType.HEAD: preload("res://assets/sprites/items/head_borik_01.png"),
-	ClothingItem.SlotType.TORSO: preload("res://assets/sprites/items/torso_koylek_01.png"),
-	ClothingItem.SlotType.PANTS: preload("res://assets/sprites/items/pants_shalbar_01.png"),
-	ClothingItem.SlotType.SHOES: preload("res://assets/sprites/items/shoes_saptama_etik_01.png"),
+	ClothingItem.SlotType.HEAD: "res://assets/sprites/items/head_borik_01.png",
+	ClothingItem.SlotType.TORSO: "res://assets/sprites/items/torso_koylek_01.png",
+	ClothingItem.SlotType.PANTS: "res://assets/sprites/items/pants_shalbar_01.png",
+	ClothingItem.SlotType.SHOES: "res://assets/sprites/items/shoes_saptama_etik_01.png",
 }
 
 var _cards: Dictionary = {}
@@ -29,7 +31,7 @@ func _ready() -> void:
 		card.compact = true
 		card.tooltip_text = hint
 		var icon := TextureRect.new()
-		icon.texture = ICONS[slot]
+		icon.texture = load(ICONS[slot]) as Texture2D if ResourceLoader.exists(ICONS[slot]) else null
 		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(icon)
 		card.pressed.connect(_on_tab_pressed.bind(slot))

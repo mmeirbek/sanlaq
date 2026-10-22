@@ -19,7 +19,6 @@ keys,kk,en
 ДЫБЫС,ДЫБЫС,SOUND
 ДЫБЫС ПЕН ОЙЫНШЫ ПРОФИЛІ,ДЫБЫС ПЕН ОЙЫНШЫ ПРОФИЛІ,SOUND & PLAYER PROFILE
 "Әр заттың тарихын оқып, өз образыңды жина.","Әр заттың тарихын оқып, өз образыңды жина.",Read each item's history and build your own look.
-ЗАТТАРДЫ АШ · ТАРИХЫН ТАНЫ,ЗАТТАРДЫ АШ · ТАРИХЫН ТАНЫ,UNLOCK ITEMS · LEARN THEIR HISTORY
 КИІМ ШКАФЫ,КИІМ ШКАФЫ,WARDROBE
 КИІМДІ ТАҢДА · ОБРАЗЫҢДЫ ҚҰР,КИІМДІ ТАҢДА · ОБРАЗЫҢДЫ ҚҰР,CHOOSE CLOTHING · BUILD YOUR LOOK
 КОЛЛЕКЦИЯ,КОЛЛЕКЦИЯ,COLLECTION
@@ -52,7 +51,7 @@ keys,kk,en
 Шығу,Шығу,Exit
 Экран треморі,Экран треморі,Screen shake
 ҚАЗІРГІ ДӘРЕЖЕ,ҚАЗІРГІ ДӘРЕЖЕ,CURRENT RANK
-ҚАЙТА ОЙНАУ ,ҚАЙТА ОЙНАУ ,PLAY AGAIN 
+ҚАЙТА ОЙНАУ,ҚАЙТА ОЙНАУ,PLAY AGAIN
 ҚАСИЕТІ: —,ҚАСИЕТІ: —,PROPERTY: —
 ҚАШУШЫ БОЛУ,ҚАШУШЫ БОЛУ,BE THE RUNNER
 ҚЫСҚАША ЕРЕЖЕ,ҚЫСҚАША ЕРЕЖЕ,QUICK RULES
@@ -106,15 +105,9 @@ WINS: %d
 CURRENT STREAK: %d
 BEST STREAK: %d
 %s"
-"
-
-ДӘРЕЖЕ: %s · БІЛІМ: +%d · ЖЕҢІС: %d · СЕРИЯ: %d
-%s","
-
-ДӘРЕЖЕ: %s · БІЛІМ: +%d · ЖЕҢІС: %d · СЕРИЯ: %d
-%s","
-
-RANK: %s · KNOWLEDGE: +%d · WINS: %d · STREAK: %d
+"ДӘРЕЖЕ: %s · БІЛІМ: +%d · ЖЕҢІС: %d · СЕРИЯ: %d
+%s","ДӘРЕЖЕ: %s · БІЛІМ: +%d · ЖЕҢІС: %d · СЕРИЯ: %d
+%s","RANK: %s · KNOWLEDGE: +%d · WINS: %d · STREAK: %d
 %s"
 СОҚЫРТЕКЕ ЖЕҢДІ!,СОҚЫРТЕКЕ ЖЕҢДІ!,SOKYROTEKE WINS!
 Соқыртеке барлық қашушыны ұстап алды!,Соқыртеке барлық қашушыны ұстап алды!,The sokyroteke caught all the runners!
@@ -123,7 +116,6 @@ RANK: %s · KNOWLEDGE: +%d · WINS: %d · STREAK: %d
 Боттар: %d,Боттар: %d,Bots: %d
 Боттарға қарсы,Боттарға қарсы,Vs Bots
 Классикалық,Классикалық,Classic
-Қарсылас %d,Қарсылас %d,Opponent %d
 %s ДӘРЕЖЕСІНЕ ДЕЙІН: %d ЖЕҢІС,%s ДӘРЕЖЕСІНЕ ДЕЙІН: %d ЖЕҢІС,%s RANK: %d WINS TO GO
 ШИРАҚ,ШИРАҚ,SHIRAQ (NIMBLE ONE)
 ТОЙ БАСЫ,ТОЙ БАСЫ,TOI BASY (HOST OF HONOR)
@@ -316,3 +308,10 @@ RANK: %s · KNOWLEDGE: +%d · WINS: %d · STREAK: %d
 СІЗ СОҚЫРТЕКЕСІЗ!,СІЗ СОҚЫРТЕКЕСІЗ!,YOU ARE THE SOKYROTEKE!
 СІЗ ҚАШУШЫСЫЗ!,СІЗ ҚАШУШЫСЫЗ!,YOU ARE A RUNNER!
 Бұл: %s,Бұл: %s,It is: %s
+ҰЛТТЫҚ КИІМ · ТАРИХЫН ТАНЫ,ҰЛТТЫҚ КИІМ · ТАРИХЫН ТАНЫ,NATIONAL CLOTHING · LEARN ITS HISTORY
+САҢЛАҚ ТУРАЛЫ,САҢЛАҚ ТУРАЛЫ,ABOUT SANLAQ
+ОЙЫН ЕРЕЖЕСІ · МӘДЕНИ МАЗМҰНЫ,ОЙЫН ЕРЕЖЕСІ · МӘДЕНИ МАЗМҰНЫ,GAME RULES · CULTURAL CONTENT
+СТАНЦИЯ БҰҒАТТАЛДЫ,СТАНЦИЯ БҰҒАТТАЛДЫ,STATION LOCKED
+Бұл құрылғылар саны лимитінен асып кетті.,Бұл құрылғылар саны лимитінен асып кетті.,This station is over the device limit.
+Лицензия жойылды.,Лицензия жойылды.,The license has been revoked.
+Ұйымдастырушыға хабарласыңыз.,Ұйымдастырушыға хабарласыңыз.,Please contact the organizer.

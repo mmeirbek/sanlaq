@@ -11,6 +11,9 @@ const CHARACTER_SCENE := preload("res://scenes/entities/character_visual.tscn")
 @onready var quit_dialog: ConfirmDialog = %QuitDialog
 @onready var _mascot_slot: Control = %MascotSlot
 
+var _shake: Tween
+var _nickname_rest_x := 0.0
+
 var _mascot: CharacterVisual
 
 func _ready() -> void:
@@ -60,14 +63,18 @@ func _require_nickname() -> bool:
 	nickname_warning.visible = false
 	return true
 
-## Поле имени коротко трясётся — шагом в пиксели арта.
+## Поле имени коротко трясётся — шагом в пиксели арта. Повторное нажатие
+## начинает тряску заново с места, а не со сдвинутой позиции.
 func _shake_nickname_field() -> void:
-	var start_x := nickname_input.position.x
+	if _shake and _shake.is_valid():
+		_shake.kill()
+		nickname_input.position.x = _nickname_rest_x
+	_nickname_rest_x = nickname_input.position.x
 	var shake := UiTokens.PIXEL * 4
-	var tw := create_tween()
+	_shake = create_tween()
 	for i in 4:
-		tw.tween_property(nickname_input, "position:x", start_x + shake * (1 if i % 2 == 0 else -1), 0.05)
-	tw.tween_property(nickname_input, "position:x", start_x, 0.05)
+		_shake.tween_property(nickname_input, "position:x", _nickname_rest_x + shake * (1 if i % 2 == 0 else -1), 0.05)
+	_shake.tween_property(nickname_input, "position:x", _nickname_rest_x, 0.05)
 
 func _spawn_mascot() -> void:
 	_mascot = CHARACTER_SCENE.instantiate()

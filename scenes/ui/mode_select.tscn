@@ -183,12 +183,6 @@ script = ExtResource("5_card")
 layout_mode = 2
 mouse_filter = 2
 
-[node name="WipBadge" type="Label" parent="Cards/AqSuyekCard/VBox"]
-layout_mode = 2
-theme_type_variation = &"WarningLabel"
-text = "ӘЗІРЛЕНУДЕ"
-horizontal_alignment = 1
-
 [node name="Art" type="TextureRect" parent="Cards/AqSuyekCard/VBox"]
 layout_mode = 2
 mouse_filter = 2

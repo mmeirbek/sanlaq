@@ -88,7 +88,7 @@ autowrap_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"ButtonLarge"
-text = "ҚАЙТА ОЙНАУ "
+text = "ҚАЙТА ОЙНАУ"
 script = ExtResource("4_button")
 ornate = true
 

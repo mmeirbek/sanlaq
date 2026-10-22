@@ -20,7 +20,7 @@ func _ready() -> void:
 	else:
 		%WinnerLabel.text = tr("ҚАШУШЫЛАР ЖЕҢДІ!")
 		%SubLabel.text = tr("Уақыт бітті — қашушылар аман қалды!")
-	%Stats.text = tr("\n\nДӘРЕЖЕ: %s · БІЛІМ: +%d · ЖЕҢІС: %d · СЕРИЯ: %d\n%s").strip_edges() % [
+	%Stats.text = tr("ДӘРЕЖЕ: %s · БІЛІМ: +%d · ЖЕҢІС: %d · СЕРИЯ: %d\n%s") % [
 		RankSystem.current_rank_name(wins),
 		correct_answers,
 		wins,

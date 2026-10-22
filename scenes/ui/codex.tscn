@@ -41,7 +41,7 @@ offset_bottom = 120.0
 grow_horizontal = 2
 script = ExtResource("4_header")
 title = "МҰРА · КИІМ ЭНЦИКЛОПЕДИЯСЫ"
-subtitle = "ЗАТТАРДЫ АШ · ТАРИХЫН ТАНЫ"
+subtitle = "ҰЛТТЫҚ КИІМ · ТАРИХЫН ТАНЫ"
 
 [node name="Columns" type="HBoxContainer" parent="."]
 layout_mode = 1

@@ -64,7 +64,9 @@ func _show_slot(slot: ClothingItem.SlotType) -> void:
 	%SlotName.text = SLOT_NAMES[slot]
 	_refresh_items()
 
-func _refresh_items() -> void:
+## focus_id — карточка, которой вернуть фокус после пересборки: выбор с
+## клавиатуры не должен терять место в сетке.
+func _refresh_items(focus_id: String = "") -> void:
 	for child in _items_grid.get_children():
 		_items_grid.remove_child(child)
 		child.queue_free()
@@ -75,6 +77,8 @@ func _refresh_items() -> void:
 		card.selected = item.id == equipped_id
 		card.pressed.connect(_equip_item.bind(item))
 		_items_grid.add_child(card)
+		if item.id == focus_id:
+			card.grab_focus()
 	_show_details(AssetRegistry.get_clothing_by_id(equipped_id), equipped_id)
 
 func _show_details(item: ClothingItem, equipped_id: String) -> void:
@@ -98,6 +102,10 @@ func _effect_for(item_id: String) -> String:
 	return tr("Сәндік зат")
 
 func _equip_item(item: ClothingItem) -> void:
+	if item.id == SaveManager.get_equipped(_current_slot):
+		return
+	var focused := get_viewport().gui_get_focus_owner()
+	var had_focus := focused != null and _items_grid.is_ancestor_of(focused)
 	SaveManager.set_equipped(_current_slot, item.id)
 	_apply_equipped_outfit()
-	_refresh_items()
+	_refresh_items(item.id if had_focus else "")

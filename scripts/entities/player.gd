@@ -40,6 +40,8 @@ const FOOTPRINT_BOOST_MULT := 1.1
 const RUNNER_SPRINT_MULT := 1.55
 const SAPTAMA_ETIK_MULT := 1.08
 
+## Имена ботов по порядку — одни и те же в лобби и в игре.
+const BOT_NAMES := ["Айгүл", "Батыр", "Дәулет", "Аружан", "Нұрлан", "Жанар"]
 const OUTFIT_PROFILES := [
 	["head_tymaq_01", "torso_shapan_01", "pants_shalbar_01", "shoes_saptama_etik_01"],
 	["head_takiya_01", "torso_koylek_01", "pants_shalbar_01", "shoes_masi_01"],
@@ -92,6 +94,9 @@ func apply_outfit_profile(profile_index: int) -> void:
 		else:
 			apply_random_outfit()
 			return
+
+static func bot_name_for(bot_index: int) -> String:
+	return BOT_NAMES[posmod(bot_index, BOT_NAMES.size())]
 
 static func get_outfit_profile(profile_index: int) -> Array:
 	return OUTFIT_PROFILES[posmod(profile_index, OUTFIT_PROFILES.size())]

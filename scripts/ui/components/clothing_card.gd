@@ -22,7 +22,7 @@ func _ready() -> void:
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(box)
 	var icon := TextureRect.new()
-	icon.texture = load(item.icon_path) as Texture2D
+	icon.texture = load(item.icon_path) as Texture2D if not item.icon_path.is_empty() else null
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(icon)

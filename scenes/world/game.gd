@@ -1,6 +1,5 @@
 extends Node2D
 
-const BOT_NAMES := ["Айгүл", "Батыр", "Дәулет", "Аружан", "Нұрлан", "Жанар"]
 const YURT_REVEAL_DELAY := 5.0
 const YURT_REVEAL_DURATION := 5.0
 
@@ -138,7 +137,7 @@ func _spawn_bot(idx: int, profile_id: String = "") -> void:
 	var p := player_scene.instantiate() as Player
 	p.player_index = idx + 1
 	p.is_bot = true
-	p.bot_name = BOT_NAMES[idx % BOT_NAMES.size()]
+	p.bot_name = Player.bot_name_for(idx)
 	p.global_position = map.get_safe_spawn()
 
 	var ctrl := p.get_node("PlayerController") as PlayerController
