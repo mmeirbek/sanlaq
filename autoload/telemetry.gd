@@ -21,8 +21,13 @@ var _http: HTTPRequest
 var _license_http: HTTPRequest
 var _flush_timer: float = 0.0
 var _flushing: bool = false
+## Автотесты и CI (headless) ничего не пишут и не шлют, см. RunContext.
+var _enabled: bool = not RunContext.is_headless()
 
 func _ready() -> void:
+	if not _enabled:
+		set_process(false)
+		return
 	_load_station()
 	_http = HTTPRequest.new()
 	add_child(_http)
@@ -70,6 +75,8 @@ func _notification(what: int) -> void:
 		_log_session_end()
 
 func log_event(event_type: String, payload: Dictionary = {}) -> void:
+	if not _enabled:
+		return
 	_append_local({
 		"ts": Time.get_datetime_string_from_system(true),
 		"station_id": station_id,
@@ -83,7 +90,7 @@ func log_error(message: String, context: String = "") -> void:
 	log_event("error", {"message": message, "context": context})
 
 func flush() -> void:
-	if _flushing or ENDPOINT_URL.is_empty():
+	if not _enabled or _flushing or ENDPOINT_URL.is_empty():
 		return
 	var rows := _read_queue()
 	if rows.is_empty():
