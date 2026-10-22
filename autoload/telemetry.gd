@@ -21,8 +21,8 @@ var _http: HTTPRequest
 var _license_http: HTTPRequest
 var _flush_timer: float = 0.0
 var _flushing: bool = false
-## Автотесты и CI (headless) ничего не пишут и не шлют, см. RunContext.
-var _enabled: bool = not RunContext.is_headless()
+## Автотесты, CI и инструменты ничего не пишут и не шлют, см. RunContext.
+var _enabled: bool = not RunContext.is_automated()
 
 func _ready() -> void:
 	if not _enabled:

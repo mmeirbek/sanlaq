@@ -17,8 +17,8 @@ var settings: Dictionary = {}
 var career: Dictionary = {"wins": 0, "streak": 0, "best_streak": 0, "knowledge": 0}
 
 func _ready() -> void:
-	# Тесты идут на чистом профиле, как в CI, и не портят сохранение игрока.
-	if not RunContext.is_headless():
+	# Тесты и инструменты идут на чистом профиле и не портят сохранение игрока.
+	if not RunContext.is_automated():
 		_load_from_disk()
 	_ensure_equipped_outfit()
 
@@ -55,7 +55,7 @@ func set_setting(key: String, value: Variant) -> void:
 	_save_to_disk()
 
 func _save_to_disk() -> void:
-	if RunContext.is_headless():
+	if RunContext.is_automated():
 		return
 	var data := {
 		nickname = nickname,
