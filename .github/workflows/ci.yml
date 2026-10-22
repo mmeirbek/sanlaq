@@ -1,0 +1,56 @@
+name: CI
+
+# Тесты — на каждый PR и push. Web-сборка и деплой на GitHub Pages — только из
+# main и только если тесты зелёные.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-godot
+      - name: Run tests
+        run: tools/run_tests.sh
+
+  build-web:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-godot
+        with:
+          export-templates: "true"
+      - name: Import resources
+        run: godot --headless --import --path .
+      - name: Export web build
+        run: |
+          mkdir -p export/web
+          godot --headless --export-release "Web" --path . export/web/index.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: export/web
+
+  deploy:
+    needs: build-web
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: true
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
