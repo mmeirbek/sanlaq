@@ -16,4 +16,3 @@ wrong_answers_kz = Array[String](["Мәсі", "Кебіс", "Шалбар"])
 wrong_answers_en = Array[String](["Masi", "Kebis", "Shalbar"])
 texture_path = "res://assets/sprites/character/shoes/shoes_saptama_etik_01.png"
 icon_path = "res://assets/sprites/items/shoes_saptama_etik_01.png"
-reference_photo_path = "res://assets/ui/encyclopedia_photos/saptama_etik.jpg"

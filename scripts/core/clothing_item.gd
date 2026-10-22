@@ -16,7 +16,6 @@ enum Rarity { COMMON, RARE, LEGENDARY }
 @export var wrong_answers_en: Array[String] = []
 @export var texture_path: String = ""
 @export var icon_path: String = ""
-@export var reference_photo_path: String = ""
 @export var price: int = 0
 
 func get_name_for_lang(lang: String) -> String:

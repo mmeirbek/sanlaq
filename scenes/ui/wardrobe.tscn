@@ -5,6 +5,7 @@
 [ext_resource type="Script" path="res://scripts/ui/components/pixel_backdrop.gd" id="3_backdrop"]
 [ext_resource type="Script" path="res://scripts/ui/components/screen_header.gd" id="4_header"]
 [ext_resource type="Texture2D" path="res://assets/ui/frames/check.png" id="5_check"]
+[ext_resource type="Script" path="res://scripts/ui/components/slot_tabs.gd" id="6_tabs"]
 
 [node name="Wardrobe" type="Control"]
 layout_mode = 3
@@ -96,6 +97,7 @@ text = "КОЛЛЕКЦИЯ"
 unique_name_in_owner = true
 layout_mode = 2
 alignment = 1
+script = ExtResource("6_tabs")
 
 [node name="SlotName" type="Label" parent="Columns/Collection/VBox"]
 unique_name_in_owner = true

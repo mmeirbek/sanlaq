@@ -9,15 +9,7 @@ const SLOT_NAMES := {
 	ClothingItem.SlotType.PANTS: "Шалбар",
 	ClothingItem.SlotType.SHOES: "Аяқ киім",
 }
-## Иконка вкладки слота — узнаваемая вещь этого слота.
-const SLOT_ICONS := {
-	ClothingItem.SlotType.HEAD: preload("res://assets/sprites/items/head_borik_01.png"),
-	ClothingItem.SlotType.TORSO: preload("res://assets/sprites/items/torso_koylek_01.png"),
-	ClothingItem.SlotType.PANTS: preload("res://assets/sprites/items/pants_shalbar_01.png"),
-	ClothingItem.SlotType.SHOES: preload("res://assets/sprites/items/shoes_saptama_etik_01.png"),
-}
 const CHARACTER_SCENE := preload("res://scenes/entities/character_visual.tscn")
-const CHECK_ICON := preload("res://assets/ui/frames/check.png")
 ## Персонаж на пьедестале — ×4, целым масштабом.
 const MANNEQUIN_SCALE := 4
 ## Порядок поворота и пауза на каждой стороне, секунды.
@@ -27,30 +19,17 @@ const TURN_SECONDS := 1.1
 var _current_slot: ClothingItem.SlotType = ClothingItem.SlotType.HEAD
 var _mannequin: CharacterVisual
 var _turn := 0
-var _tab_cards: Dictionary = {}
 
-@onready var _slot_tabs: HBoxContainer = %Tabs
+@onready var _slot_tabs: SlotTabs = %Tabs
 @onready var _items_grid: GridContainer = %Items
 @onready var _mannequin_slot: Control = %MannequinSlot
 
 func _ready() -> void:
 	(%Header as ScreenHeader).back_pressed.connect(SceneRouter.go_to_main_menu)
-	_build_tabs()
+	_slot_tabs.hint = tr("Киім санатын ашу · Open category")
+	_slot_tabs.slot_selected.connect(_show_slot)
 	_build_mannequin()
 	_show_slot(_current_slot)
-
-func _build_tabs() -> void:
-	for slot: ClothingItem.SlotType in SLOT_ICONS:
-		var card := SelectableCard.new()
-		card.compact = true
-		card.tooltip_text = tr("Киім санатын ашу · Open category")
-		var icon := TextureRect.new()
-		icon.texture = SLOT_ICONS[slot]
-		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		card.add_child(icon)
-		card.pressed.connect(_show_slot.bind(slot))
-		_slot_tabs.add_child(card)
-		_tab_cards[slot] = card
 
 func _build_mannequin() -> void:
 	_mannequin = CHARACTER_SCENE.instantiate()
@@ -81,8 +60,7 @@ func _apply_equipped_outfit() -> void:
 
 func _show_slot(slot: ClothingItem.SlotType) -> void:
 	_current_slot = slot
-	for tab_slot in _tab_cards:
-		(_tab_cards[tab_slot] as SelectableCard).selected = tab_slot == slot
+	_slot_tabs.select(slot)
 	%SlotName.text = SLOT_NAMES[slot]
 	_refresh_items()
 
@@ -93,24 +71,8 @@ func _refresh_items() -> void:
 	var equipped_id := SaveManager.get_equipped(_current_slot)
 	var lang := GameSettings.get_lang_code()
 	for item in AssetRegistry.get_clothing(_current_slot):
-		var card := SelectableCard.new()
-		card.compact = true
+		var card := ClothingCard.create(item, item.get_name_for_lang(lang), item.get_desc_for_lang(lang))
 		card.selected = item.id == equipped_id
-		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		card.tooltip_text = item.get_desc_for_lang(lang)
-		var box := VBoxContainer.new()
-		box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var icon := TextureRect.new()
-		icon.texture = load(item.icon_path) as Texture2D
-		icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
-		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		box.add_child(icon)
-		var name_label := Label.new()
-		name_label.text = item.get_name_for_lang(lang)
-		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		box.add_child(name_label)
-		card.add_child(box)
 		card.pressed.connect(_equip_item.bind(item))
 		_items_grid.add_child(card)
 	_show_details(AssetRegistry.get_clothing_by_id(equipped_id), equipped_id)

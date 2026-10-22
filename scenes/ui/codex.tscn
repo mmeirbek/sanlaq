@@ -1,184 +1,146 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3]
 
-[ext_resource type="Script" path="res://scenes/ui/codex.gd" id="1"]
-[ext_resource type="FontFile" path="res://assets/fonts/NotoSans-Bold.ttf" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="4"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_header.tscn" id="2"]
+[ext_resource type="Script" path="res://scenes/ui/codex.gd" id="1_script"]
+[ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://scripts/ui/components/pixel_backdrop.gd" id="3_backdrop"]
+[ext_resource type="Script" path="res://scripts/ui/components/screen_header.gd" id="4_header"]
+[ext_resource type="Script" path="res://scripts/ui/components/slot_tabs.gd" id="5_tabs"]
+[ext_resource type="Script" path="res://scripts/ui/components/gem_divider.gd" id="6_divider"]
 
 [node name="Codex" type="Control"]
 layout_mode = 3
 anchors_preset = 15
-anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-anchor_left = 0.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1")
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
 
-[node name="Background" parent="." instance=ExtResource("4")]
+[node name="Background" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
-anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-anchor_left = 0.0
 grow_horizontal = 2
 grow_vertical = 2
-variant = 2
+mouse_filter = 2
+script = ExtResource("3_backdrop")
+variant = 1
+veil = 0.35
 
-[node name="Header" parent="." instance=ExtResource("2")]
+[node name="Header" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 0
-offset_left = 44.0
-offset_top = 48.0
-offset_right = 44.0
-offset_bottom = 48.0
-grow_horizontal = 1
-grow_vertical = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 32.0
+offset_top = 24.0
+offset_right = -32.0
+offset_bottom = 120.0
+grow_horizontal = 2
+script = ExtResource("4_header")
 title = "МҰРА · КИІМ ЭНЦИКЛОПЕДИЯСЫ"
 subtitle = "ЗАТТАРДЫ АШ · ТАРИХЫН ТАНЫ"
 
-[node name="BackBtn" type="Button" parent="."]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 1
-anchor_top = 0
-anchor_right = 1
-anchor_bottom = 0
-offset_left = -204
-offset_top = 60
-offset_right = -44
-offset_bottom = 112
-grow_horizontal = 0
-text = "← Артқа"
-theme_override_font_sizes/font_size = 18
-
-[node name="Content" type="HBoxContainer" parent="."]
+[node name="Columns" type="HBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 44.0
-offset_top = 178.0
-offset_right = -44.0
-offset_bottom = -40.0
+offset_left = 32.0
+offset_top = 136.0
+offset_right = -32.0
+offset_bottom = -24.0
 grow_horizontal = 2
-grow_vertical = 1
-theme_override_constants/separation = 24
+grow_vertical = 2
+theme_override_constants/separation = 16
 
-[node name="GridCard" type="PanelContainer" parent="Content"]
+[node name="Collection" type="PanelContainer" parent="Columns"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 1.6
 
-[node name="Margin" type="MarginContainer" parent="Content/GridCard"]
+[node name="VBox" type="VBoxContainer" parent="Columns/Collection"]
 layout_mode = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 16
 
-[node name="VBox" type="VBoxContainer" parent="Content/GridCard/Margin"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="Tabs" type="HBoxContainer" parent="Content/GridCard/Margin/VBox"]
+[node name="Tabs" type="HBoxContainer" parent="Columns/Collection/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 8
+alignment = 1
+script = ExtResource("5_tabs")
 
-[node name="Scroll" type="ScrollContainer" parent="Content/GridCard/Margin/VBox"]
+[node name="SlotName" type="Label" parent="Columns/Collection/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HeadingLabel"
+text = "Бас киім"
+horizontal_alignment = 1
+
+[node name="Grid" type="GridContainer" parent="Columns/Collection/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-horizontal_scroll_mode = 0
-
-[node name="Grid" type="GridContainer" parent="Content/GridCard/Margin/VBox/Scroll"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/h_separation = 14
-theme_override_constants/v_separation = 14
 columns = 3
 
-[node name="DetailPanel" type="PanelContainer" parent="Content"]
+[node name="Detail" type="PanelContainer" parent="Columns"]
+custom_minimum_size = Vector2(520, 0)
+layout_mode = 2
+theme_type_variation = &"ParchmentPanel"
+
+[node name="VBox" type="VBoxContainer" parent="Columns/Detail"]
+layout_mode = 2
+
+[node name="Illustration" type="HBoxContainer" parent="Columns/Detail/VBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 32
+
+[node name="Icon" type="TextureRect" parent="Columns/Detail/VBox/Illustration"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(128, 128)
 layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Margin" type="MarginContainer" parent="Content/DetailPanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 16
-
-[node name="VBox" type="VBoxContainer" parent="Content/DetailPanel/Margin"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="DetailTitleLabel" type="Label" parent="Content/DetailPanel/Margin/VBox"]
-layout_mode = 2
-text = "Киім туралы"
-horizontal_alignment = 1
-theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
-theme_override_font_sizes/font_size = 20
-
-[node name="Icon" type="TextureRect" parent="Content/DetailPanel/Margin/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-custom_minimum_size = Vector2(0, 144)
-size_flags_horizontal = 3
-texture_filter = 2
+size_flags_vertical = 4
 expand_mode = 1
 stretch_mode = 5
 
-[node name="PhotoCredit" type="Label" parent="Content/DetailPanel/Margin/VBox"]
+[node name="MannequinSlot" type="Control" parent="Columns/Detail/VBox/Illustration"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(192, 192)
 layout_mode = 2
-text = "Дереккөз: Wikimedia Commons"
-horizontal_alignment = 1
-theme_override_colors/font_color = Color(0.45, 0.38, 0.28, 1)
-theme_override_font_sizes/font_size = 11
+mouse_filter = 2
 
-[node name="NameLabel" type="Label" parent="Content/DetailPanel/Margin/VBox"]
+[node name="NameLabel" type="Label" parent="Columns/Detail/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"InkHeadingLabel"
 text = "—"
-horizontal_alignment = 1
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 24
 
-[node name="MetaLabel" type="Label" parent="Content/DetailPanel/Margin/VBox"]
+[node name="MetaLabel" type="Label" parent="Columns/Detail/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"InkLabel"
 text = "—"
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 16
 
-[node name="DescLabel" type="Label" parent="Content/DetailPanel/Margin/VBox"]
+[node name="DescLabel" type="Label" parent="Columns/Detail/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+theme_type_variation = &"InkLabel"
 text = "Киімді таңдаңыз"
 autowrap_mode = 2
-theme_override_font_sizes/font_size = 17
 
-[node name="LoreDivider" type="ColorRect" parent="Content/DetailPanel/Margin/VBox"]
-custom_minimum_size = Vector2(0, 2)
+[node name="Divider" type="Control" parent="Columns/Detail/VBox"]
 layout_mode = 2
-color = Color(0.851, 0.663, 0.247, 0.7)
+mouse_filter = 2
+script = ExtResource("6_divider")
 
-[node name="LoreTitle" type="Label" parent="Content/DetailPanel/Margin/VBox"]
+[node name="LoreTitle" type="Label" parent="Columns/Detail/VBox"]
 layout_mode = 2
+theme_type_variation = &"InkHeadingLabel"
 text = "БІЛІМ БҰРЫШЫ"
-theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 15
 
-[node name="LoreText" type="Label" parent="Content/DetailPanel/Margin/VBox"]
+[node name="LoreText" type="Label" parent="Columns/Detail/VBox"]
 layout_mode = 2
+theme_type_variation = &"InkLabel"
 text = "Әр заттың тарихын оқып, өз образыңды жина."
 autowrap_mode = 2
-theme_override_colors/font_color = Color(0.28, 0.25, 0.22, 1)
-theme_override_font_sizes/font_size = 14

@@ -16,4 +16,3 @@ wrong_answers_kz = Array[String](["Тымақ", "Сәукеле", "Бөрік"])
 wrong_answers_en = Array[String](["Tymaq", "Saukele", "Borik"])
 texture_path = "res://assets/sprites/character/head/head_takiya_01.png"
 icon_path = "res://assets/sprites/items/head_takiya_01.png"
-reference_photo_path = "res://assets/ui/encyclopedia_photos/takiya.jpg"
