@@ -9,6 +9,7 @@ extends SceneTree
 ##   --size  размер окна, по умолчанию 1280x720. 1560x720 — телефон 19.5:9,
 ##           960x720 — планшет 4:3.
 ##   --out   папка для PNG, по умолчанию tools/preview/screens/.
+##   --only  снять только эти кадры, через запятую: --only=main_menu,ui_gallery
 ##
 ## Запускать НЕ в headless: без рендера картинки будут пустыми. Сами PNG не
 ## коммитятся (см. .gitignore) — это расходный материал для ревью.
@@ -29,6 +30,8 @@ const SCENES := {
 	"settings": "res://scenes/ui/settings.tscn",
 	"about": "res://scenes/ui/about.tscn",
 	"results": "res://scenes/ui/results.tscn",
+	"ui_gallery": "res://tools/ui_gallery.tscn",
+	"ui_gallery_overlays": "res://tools/ui_gallery_overlays.tscn",
 }
 ## Брифинг общий для всех режимов, поэтому снимается по разу на каждый.
 const BRIEFINGS := ["sokyroteke", "abai_says", "togyz_qumalaq", "aq_suyek"]
@@ -38,11 +41,15 @@ const GAME_SCENE := "res://scenes/world/game.tscn"
 const GAME_SHOTS := {"game_countdown": 1.0, "game_playing": 6.0}
 
 var _out_dir := ""
+## Пусто — снимать всё.
+var _only: PackedStringArray = []
 
 
 func _init() -> void:
 	var args := _parse_user_args()
 	_out_dir = ProjectSettings.globalize_path(args.get("out", DEFAULT_OUT_DIR))
+	if args.has("only"):
+		_only = args.only.split(",")
 	# Автолоады добавляются в дерево не сразу — ждём, иначе их не найти.
 	# Окно к этому моменту тоже уже создано и развёрнуто по настройкам проекта.
 	await process_frame
@@ -65,6 +72,8 @@ func _init() -> void:
 
 
 func _shoot(name: String, scene_path: String) -> void:
+	if not _wanted(name):
+		return
 	var instance := _mount(scene_path)
 	if instance == null:
 		return
@@ -76,6 +85,8 @@ func _shoot(name: String, scene_path: String) -> void:
 
 
 func _shoot_game() -> void:
+	if not GAME_SHOTS.keys().any(_wanted):
+		return
 	var game := _mount(GAME_SCENE)
 	if game == null:
 		return
@@ -84,7 +95,8 @@ func _shoot_game() -> void:
 		var at: float = GAME_SHOTS[name]
 		await create_timer(at - elapsed).timeout
 		elapsed = at
-		_capture(name)
+		if _wanted(name):
+			_capture(name)
 	await _unmount(game)
 
 
@@ -107,6 +119,10 @@ func _unmount(instance: Node) -> void:
 func _capture(name: String) -> void:
 	root.get_texture().get_image().save_png(_out_dir.path_join(name + ".png"))
 	print("снято: ", name)
+
+
+func _wanted(name: String) -> bool:
+	return _only.is_empty() or name in _only
 
 
 ## Аргументы после «--» в виде --ключ=значение.
