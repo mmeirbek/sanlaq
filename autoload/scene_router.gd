@@ -23,10 +23,18 @@ var _pending_results: Dictionary = {}
 ## Какой режим объясняет экран брифинга — id ресурса ModeBriefing.
 var _pending_briefing: String = ""
 
-## Шторка поверх всех экранов; пока идёт переход, она же глотает клики, чтобы
-## двойное нажатие не увело на два экрана подряд.
+## Переходы со шторкой. В автотестах и CI (headless) выключены — переход
+## мгновенный; тест шторки включает их сам.
+var animate_transitions := not RunContext.is_headless()
+
+## Шторка поверх всех экранов; пока экран уходит, она глотает клики.
 var _curtain: ColorRect
+var _fade: Tween
+## Экран уходит: он заморожен, ввод не доходит ни до него, ни до нового.
 var _changing := false
+## Переход, запрошенный во время другого (например, из _ready новой сцены):
+## выполняется сразу после него — побеждает последний запрос.
+var _queued_scene := ""
 
 signal scene_changed(from: String, to: String)
 
@@ -56,8 +64,12 @@ func go_to_game(game_data: Dictionary = {}) -> void:
 	_change_scene(SCENE_GAME)
 
 func go_to_results(results: Dictionary = {}) -> void:
-	_pending_results = results
+	set_pending_results(results)
 	_change_scene(SCENE_RESULTS)
+
+## Как set_pending_game_data: для тестов, которые поднимают экран итогов сами.
+func set_pending_results(results: Dictionary) -> void:
+	_pending_results = results
 
 func go_to_codex() -> void:
 	_change_scene(SCENE_CODEX)
@@ -116,30 +128,51 @@ func quit() -> void:
 	Telemetry.flush()
 	get_tree().quit()
 
+func _input(_event: InputEvent) -> void:
+	# Уходящий экран заморожен, но клавиатура дошла бы до его кнопок в фокусе.
+	if _changing:
+		get_viewport().set_input_as_handled()
+
 func _change_scene(to: String) -> void:
-	var from := ""
-	if get_tree().current_scene:
-		from = get_tree().current_scene.scene_file_path
-	if from == to or _changing:
+	if _changing:
+		_queued_scene = to
+		return
+	var tree := get_tree()
+	var from := tree.current_scene.scene_file_path if tree.current_scene else ""
+	if from == to:
 		return
 	_changing = true
-	# Автотесты и CI (headless) переходят мгновенно, без ожидания анимации.
-	var animate := not RunContext.is_headless()
-	if animate:
+	if animate_transitions:
+		# Уходящий экран больше ничего не делает: ни таймеров, ни записи
+		# результатов матча, ни нажатий.
+		if tree.current_scene:
+			tree.current_scene.process_mode = Node.PROCESS_MODE_DISABLED
 		_curtain.mouse_filter = Control.MOUSE_FILTER_STOP
 		await _fade_curtain(1.0, FADE_OUT)
-	var err := get_tree().change_scene_to_file(to)
+	var err := tree.change_scene_to_file(to)
 	if err != OK:
 		Telemetry.log_error("change_scene_to_file failed with error %d" % err, to)
+		if tree.current_scene:
+			tree.current_scene.process_mode = Node.PROCESS_MODE_INHERIT
 	scene_changed.emit(from, to)
-	if animate:
-		await get_tree().process_frame
-		await _fade_curtain(0.0, FADE_IN)
-		_curtain.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Новая сцена встаёт в дерево в конце кадра, её _ready может сам попросить переход.
+	await tree.process_frame
 	_changing = false
+	var queued := _queued_scene
+	_queued_scene = ""
+	if not queued.is_empty() and queued != to:
+		# Шторка ещё тёмная — следующий переход начинается с неё.
+		_change_scene(queued)
+		return
+	if animate_transitions:
+		_curtain.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		await _fade_curtain(0.0, FADE_IN)
 
+## Новый переход прерывает проявление прошлого: шторка идёт от текущей прозрачности.
 func _fade_curtain(alpha: float, seconds: float) -> void:
-	var tween := create_tween()
-	tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	tween.tween_property(_curtain, "color:a", alpha, seconds)
-	await tween.finished
+	if _fade:
+		_fade.kill()
+	_fade = create_tween()
+	_fade.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_fade.tween_property(_curtain, "color:a", alpha, seconds)
+	await _fade.finished
