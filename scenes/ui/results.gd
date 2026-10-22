@@ -1,10 +1,11 @@
 extends Control
+## Итог раунда Соқыртеке: кто победил (с картинкой роли — понятно без слов),
+## ранг игрока и статистика, дальше — снова играть, шкаф или меню.
 
-@onready var _winner_label: Label = %WinnerLabel
-@onready var _sub_label: Label = %SubLabel
-@onready var _replay_btn: Button = %ReplayBtn
-@onready var _wardrobe_btn: Button = %WardrobeBtn
-@onready var _menu_btn: Button = %MenuBtn
+const WINNER_ART := {
+	"sokyroteke": preload("res://assets/sprites/modes/role_seeker.png"),
+	"players": preload("res://assets/sprites/modes/role_runner.png"),
+}
 
 func _ready() -> void:
 	var results := SceneRouter.get_pending_results()
@@ -12,28 +13,20 @@ func _ready() -> void:
 	var career: Dictionary = results.get("career", SaveManager.career)
 	var correct_answers: int = results.get("correct_answers", 0)
 	var wins := int(career.get("wins", 0))
-	var rank := RankSystem.current_rank_name(wins)
-	var sub: String
+	%WinnerArt.texture = WINNER_ART.get(winner, WINNER_ART["players"])
 	if winner == "sokyroteke":
-		_winner_label.text = tr("СОҚЫРТЕКЕ ЖЕҢДІ!")
-		_winner_label.add_theme_color_override("font_color", SanlaqDesignTokens.RED_ACCENT)
-		sub = tr("Соқыртеке барлық қашушыны ұстап алды!")
+		%WinnerLabel.text = tr("СОҚЫРТЕКЕ ЖЕҢДІ!")
+		%SubLabel.text = tr("Соқыртеке барлық қашушыны ұстап алды!")
 	else:
-		_winner_label.text = tr("ҚАШУШЫЛАР ЖЕҢДІ!")
-		_winner_label.add_theme_color_override("font_color", SanlaqDesignTokens.GREEN_ACCENT)
-		sub = tr("Уақыт бітті — қашушылар аман қалды!")
-	sub += tr("\n\nДӘРЕЖЕ: %s · БІЛІМ: +%d · ЖЕҢІС: %d · СЕРИЯ: %d\n%s") % [
-		rank,
+		%WinnerLabel.text = tr("ҚАШУШЫЛАР ЖЕҢДІ!")
+		%SubLabel.text = tr("Уақыт бітті — қашушылар аман қалды!")
+	%Stats.text = tr("\n\nДӘРЕЖЕ: %s · БІЛІМ: +%d · ЖЕҢІС: %d · СЕРИЯ: %d\n%s").strip_edges() % [
+		RankSystem.current_rank_name(wins),
 		correct_answers,
 		wins,
 		int(career.get("streak", 0)),
 		RankSystem.progress_text(wins),
 	]
-	_sub_label.text = sub
-
-	_replay_btn.pressed.connect(_on_replay)
-	_wardrobe_btn.pressed.connect(func() -> void: SceneRouter.go_to_wardrobe())
-	_menu_btn.pressed.connect(func() -> void: SceneRouter.go_to_main_menu())
-
-func _on_replay() -> void:
-	SceneRouter.go_to_lobby({})
+	%ReplayBtn.pressed.connect(func() -> void: SceneRouter.go_to_lobby({}))
+	%WardrobeBtn.pressed.connect(SceneRouter.go_to_wardrobe)
+	%MenuBtn.pressed.connect(SceneRouter.go_to_main_menu)
