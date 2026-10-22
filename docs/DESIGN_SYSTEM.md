@@ -29,8 +29,8 @@
 
 | Узел | Варианты |
 |---|---|
-| `Button` / `PixelButton` | по умолчанию — бордовая кнопка; `ButtonLarge` — главное действие; `ButtonSecondary` — «Артқа», «Жоқ» |
-| `Label` | по умолчанию — текст на тёмном; `TitleLabel`, `HeadingLabel`, `SubtitleLabel` (на фоне), `WarningLabel`, `CaptionLabel`, `HudLabel`, `TimerLabel`, `HudTimerLabel` (таймер на плашке HUD); на пергаменте — `InkLabel`, `InkHeadingLabel` |
+| `Button` / `PixelButton` | по умолчанию — бордовая кнопка; `ButtonLarge` — главное действие; `ButtonSecondary` — «Артқа», «Жоқ»; `AnswerButton` — ответ квиза шрифтом Handjet |
+| `Label` | по умолчанию — текст на тёмном; `TitleLabel`, `HeadingLabel`, `SubtitleLabel` (на фоне), `WarningLabel`, `CaptionLabel`, `HudLabel`, `TimerLabel`, `HudTimerLabel` (таймер на плашке HUD), `LeadLabel` (крупный текст, вопрос квиза), `NameTagLabel` (имя над игроком в мире); на пергаменте — `InkLabel`, `InkHeadingLabel` |
 | `PanelContainer` | по умолчанию — бордовая панель; `ParchmentPanel` — длинный текст; `HudPanel`; `InsetPanel`; `Card`, `CardHover`, `CardSelected`; компактные `CardCompact*` |
 
 ## Компоненты
@@ -44,7 +44,7 @@
 | `Toast` | Короткое сообщение: `show_message(text, seconds)` |
 | `Banner` | Полоса через экран: `show_banner(title, subtitle, hold)` |
 | `Countdown` | «3, 2, 1, БАСТА!»: `start(3)`, сигнал `finished` |
-| `ConfirmDialog` | «Иә / Жоқ» с затемнением: `open()`, сигналы `confirmed` / `cancelled`; подписи кнопок меняются |
+| `ConfirmDialog` | «Иә / Жоқ» с затемнением: `open()`, сигналы `confirmed` / `cancelled`; подписи кнопок меняются. Фокус — на безопасном варианте: «Жоқ», а с `focus_confirm = true` — «Иә» |
 | `TimeBar` | Полоска оставшегося времени: `ratio` от 0 до 1, последняя треть — красная |
 
 Компоненты не обращаются к автолоадам: они шлют сигналы, а что делать дальше, решает
