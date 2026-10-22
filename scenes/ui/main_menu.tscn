@@ -1,274 +1,182 @@
 [gd_scene format=3 uid="uid://dhn235qb745v6"]
 
-[ext_resource type="Script" uid="uid://c5hx0m8vs6xxf" path="res://scenes/ui/main_menu.gd" id="1"]
-[ext_resource type="FontFile" uid="uid://dtqjd8bgha67o" path="res://assets/fonts/NotoSans-Bold.ttf" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_main_backdrop.tscn" id="4"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_dialog.tscn" id="5"]
+[ext_resource type="Script" uid="uid://c5hx0m8vs6xxf" path="res://scenes/ui/main_menu.gd" id="1_script"]
+[ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://scripts/ui/components/pixel_backdrop.gd" id="3_backdrop"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui/logo.png" id="4_logo"]
+[ext_resource type="Script" path="res://scripts/ui/components/pixel_button.gd" id="5_button"]
+[ext_resource type="Script" path="res://scripts/ui/components/gem_divider.gd" id="6_divider"]
+[ext_resource type="Script" path="res://scripts/ui/components/confirm_dialog.gd" id="7_dialog"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_menu_card"]
-bg_color = Color(0.035, 0.12, 0.16, 0.91)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.918, 0.761, 0.357, 0.95)
-corner_radius_top_left = 22
-corner_radius_top_right = 22
-corner_radius_bottom_right = 22
-corner_radius_bottom_left = 22
-shadow_color = Color(0.04, 0.16, 0.23, 0.2)
-shadow_size = 18
-shadow_offset = Vector2(0, 7)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hero_card"]
-bg_color = Color(0.03, 0.16, 0.19, 0.28)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.918, 0.761, 0.357, 0.58)
-corner_radius_top_left = 24
-corner_radius_top_right = 24
-corner_radius_bottom_right = 24
-corner_radius_bottom_left = 24
-shadow_color = Color(0.04, 0.16, 0.23, 0.24)
-shadow_size = 18
-shadow_offset = Vector2(0, 8)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hero_hint"]
-bg_color = Color(0.02, 0.12, 0.18, 0.42)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.918, 0.761, 0.357, 0.52)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[node name="MainMenu" type="Control" unique_id=288087735]
+[node name="MainMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1")
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
 
-[node name="Background" parent="." unique_id=65116616 instance=ExtResource("4")]
+[node name="Background" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_backdrop")
+variant = 0
+veil = 0.2
 
-[node name="MenuCard" type="Panel" parent="." unique_id=176306271]
-layout_mode = 0
-offset_left = 118.0
-offset_top = 74.0
-offset_right = 700.0
-offset_bottom = 710.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_menu_card")
-
-[node name="Margin" type="MarginContainer" parent="MenuCard" unique_id=1032986260]
+[node name="Logo" type="TextureRect" parent="."]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 1.0
-offset_right = -2.0
-offset_bottom = -1.0
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -320.0
+offset_top = 16.0
+offset_right = 320.0
+offset_bottom = 146.0
 grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 32
-theme_override_constants/margin_top = 28
-theme_override_constants/margin_right = 32
-theme_override_constants/margin_bottom = 24
+mouse_filter = 2
+texture = ExtResource("4_logo")
+stretch_mode = 2
 
-[node name="VBox" type="VBoxContainer" parent="MenuCard/Margin" unique_id=987777394]
-layout_mode = 2
-theme_override_constants/separation = 5
+[node name="Menu" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -560.0
+offset_top = 164.0
+offset_right = -48.0
+offset_bottom = 164.0
+grow_horizontal = 2
 
-[node name="SpacerTop" type="Control" parent="MenuCard/Margin/VBox" unique_id=1214419137]
-custom_minimum_size = Vector2(0, 6)
+[node name="Buttons" type="VBoxContainer" parent="Menu"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="MenuCard/Margin/VBox" unique_id=681921391]
+[node name="PlayBtn" type="Button" parent="Menu/Buttons"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.984, 0.969, 0.933, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 46
-text = "Sañlaq"
-horizontal_alignment = 1
-uppercase = true
+theme_type_variation = &"ButtonLarge"
+text = "ОЙНАУ"
+script = ExtResource("5_button")
+ornate = true
 
-[node name="Subtitle" type="Label" parent="MenuCard/Margin/VBox" unique_id=401136524]
+[node name="WardrobeBtn" type="Button" parent="Menu/Buttons"]
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
-theme_override_font_sizes/font_size = 22
-text = "ҰЛТТЫҚ ОЙЫН · NATIONAL GAME"
-horizontal_alignment = 1
+text = "КИІМ ШКАФЫ"
+script = ExtResource("5_button")
 
-[node name="NicknameEdit" type="HBoxContainer" parent="MenuCard/Margin/VBox" unique_id=1017268331]
+[node name="CodexBtn" type="Button" parent="Menu/Buttons"]
 layout_mode = 2
-size_flags_vertical = 4
-theme_override_constants/separation = 10
-alignment = 1
+text = "МҰРА  ·  ЭНЦИКЛОПЕДИЯ"
+script = ExtResource("5_button")
 
-[node name="NickNameLabel" type="Label" parent="MenuCard/Margin/VBox/NicknameEdit" unique_id=1794279849]
+[node name="AboutBtn" type="Button" parent="Menu/Buttons"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.918, 0.761, 0.357, 1)
+text = "ОЙЫН ТУРАЛЫ"
+script = ExtResource("5_button")
+
+[node name="SettingsBtn" type="Button" parent="Menu/Buttons"]
+layout_mode = 2
+text = "БАПТАУЛАР"
+script = ExtResource("5_button")
+
+[node name="QuitBtn" type="Button" parent="Menu/Buttons"]
+layout_mode = 2
+theme_type_variation = &"ButtonSecondary"
+text = "Шығу"
+script = ExtResource("5_button")
+
+[node name="PlayerCard" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 48.0
+offset_top = 164.0
+offset_right = 560.0
+offset_bottom = 164.0
+grow_horizontal = 2
+
+[node name="VBox" type="VBoxContainer" parent="PlayerCard"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="PlayerCard/VBox"]
+layout_mode = 2
+theme_type_variation = &"HeadingLabel"
 text = "Ойыншы аты"
 
-[node name="NicknameInput" type="LineEdit" parent="MenuCard/Margin/VBox/NicknameEdit" unique_id=249399860]
-custom_minimum_size = Vector2(280, 48)
+[node name="NicknameInput" type="LineEdit" parent="PlayerCard/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
 placeholder_text = "Атыңызды жазыңыз"
+max_length = 24
 
-[node name="NicknameWarning" type="Label" parent="MenuCard/Margin/VBox" unique_id=-1273082825]
+[node name="NicknameWarning" type="Label" parent="PlayerCard/VBox"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
-theme_override_colors/font_color = Color(0.91, 0.29, 0.29, 1)
-theme_override_font_sizes/font_size = 14
+theme_type_variation = &"WarningLabel"
 text = "Алдымен атыңызды жазыңыз!"
-horizontal_alignment = 1
 
-[node name="SpacerMid" type="Control" parent="MenuCard/Margin/VBox" unique_id=2003310065]
-custom_minimum_size = Vector2(0, 6)
+[node name="MascotSlot" type="Control" parent="PlayerCard/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
+mouse_filter = 2
 
-[node name="PlayBtn" type="Button" parent="MenuCard/Margin/VBox" unique_id=1898331553]
-custom_minimum_size = Vector2(0, 42)
+[node name="Divider" type="Control" parent="PlayerCard/VBox"]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-theme_type_variation = &"PrimaryButton"
-theme_override_font_sizes/font_size = 21
-text = "ОЙНАУ"
+mouse_filter = 2
+script = ExtResource("6_divider")
 
-[node name="WardrobeBtn" type="Button" parent="MenuCard/Margin/VBox" unique_id=1256275402]
-custom_minimum_size = Vector2(0, 42)
+[node name="RuleTitle" type="Label" parent="PlayerCard/VBox"]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-theme_override_font_sizes/font_size = 21
-text = "КИІМ ШКАФЫ"
-
-[node name="CodexBtn" type="Button" parent="MenuCard/Margin/VBox" unique_id=1199192319]
-custom_minimum_size = Vector2(0, 42)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-theme_override_font_sizes/font_size = 21
-text = "МҰРА  ·  ЭНЦИКЛОПЕДИЯ"
-
-[node name="AboutBtn" type="Button" parent="MenuCard/Margin/VBox" unique_id=2053508301]
-custom_minimum_size = Vector2(0, 42)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-theme_override_font_sizes/font_size = 21
-text = "ОЙЫН ТУРАЛЫ"
-
-[node name="SettingsBtn" type="Button" parent="MenuCard/Margin/VBox" unique_id=971536816]
-custom_minimum_size = Vector2(0, 42)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-theme_override_font_sizes/font_size = 21
-text = "БАПТАУЛАР"
-
-[node name="QuitBtn" type="Button" parent="MenuCard/Margin/VBox" unique_id=1339786302]
-custom_minimum_size = Vector2(0, 42)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-theme_override_font_sizes/font_size = 21
-text = "Шығу"
-
-[node name="SpacerBot" type="Control" parent="MenuCard/Margin/VBox" unique_id=1234042292]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="HeroCard" type="Panel" parent="." unique_id=359629454]
-layout_mode = 0
-offset_left = 744.0
-offset_top = 142.0
-offset_right = 1168.0
-offset_bottom = 666.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_hero_card")
-
-[node name="Kicker" type="Label" parent="HeroCard" unique_id=2022362438]
-layout_mode = 0
-offset_left = 28.0
-offset_top = 26.0
-offset_right = 396.0
-offset_bottom = 50.0
-theme_override_colors/font_color = Color(0.918, 0.761, 0.357, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 14
-text = "ҰЛТТЫҚ ҚУЫМДЫ ОЙЫН"
-
-[node name="HeroHint" type="Panel" parent="HeroCard" unique_id=2132604139]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 402.0
-offset_right = 400.0
-offset_bottom = 492.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_hero_hint")
-
-[node name="Title" type="Label" parent="HeroCard/HeroHint" unique_id=349237179]
-layout_mode = 0
-offset_left = 16.0
-offset_top = 12.0
-offset_right = 350.0
-offset_bottom = 34.0
-theme_override_colors/font_color = Color(0.918, 0.761, 0.357, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 13
+theme_type_variation = &"HeadingLabel"
 text = "ҚЫСҚАША ЕРЕЖЕ"
 
-[node name="Copy" type="Label" parent="HeroCard/HeroHint" unique_id=1876108675]
-layout_mode = 0
-offset_left = 16.0
-offset_top = 38.0
-offset_right = 356.0
-offset_bottom = 72.0
-theme_override_colors/font_color = Color(0.984, 0.969, 0.933, 0.9)
-theme_override_font_sizes/font_size = 14
+[node name="RuleText" type="Label" parent="PlayerCard/VBox"]
+layout_mode = 2
 text = "Қашқындарды ұста да, олардың киімін дұрыс атаңыз."
-autowrap_mode = 2
+autowrap_mode = 3
 
-[node name="Version" type="Label" parent="." unique_id=1488877245]
+[node name="Version" type="Label" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -118.0
-offset_top = -34.0
-offset_right = -24.0
+offset_left = -160.0
+offset_top = -40.0
+offset_right = -16.0
 offset_bottom = -12.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_colors/font_color = Color(0.984, 0.969, 0.933, 0.74)
-theme_override_font_sizes/font_size = 13
-text = "v0.2.0"
+theme_type_variation = &"CaptionLabel"
 horizontal_alignment = 2
 
-[node name="QuitDialog" parent="." unique_id=1981012805 instance=ExtResource("5")]
+[node name="QuitDialog" type="Control" parent="."]
 unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("7_dialog")
 dialog_title = "Шығу"
 dialog_message = "Ойыннан шығасыз ба?"
 
-[connection signal="text_changed" from="MenuCard/Margin/VBox/NicknameEdit/NicknameInput" to="." method="_on_nickname_changed"]
-[connection signal="pressed" from="MenuCard/Margin/VBox/PlayBtn" to="." method="_on_play_pressed"]
-[connection signal="pressed" from="MenuCard/Margin/VBox/WardrobeBtn" to="." method="_on_wardrobe_pressed"]
-[connection signal="pressed" from="MenuCard/Margin/VBox/CodexBtn" to="." method="_on_codex_pressed"]
-[connection signal="pressed" from="MenuCard/Margin/VBox/AboutBtn" to="." method="_on_about_pressed"]
-[connection signal="pressed" from="MenuCard/Margin/VBox/SettingsBtn" to="." method="_on_settings_pressed"]
-[connection signal="pressed" from="MenuCard/Margin/VBox/QuitBtn" to="." method="_on_quit_pressed"]
+[connection signal="text_changed" from="PlayerCard/VBox/NicknameInput" to="." method="_on_nickname_changed"]
+[connection signal="pressed" from="Menu/Buttons/PlayBtn" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="Menu/Buttons/WardrobeBtn" to="." method="_on_wardrobe_pressed"]
+[connection signal="pressed" from="Menu/Buttons/CodexBtn" to="." method="_on_codex_pressed"]
+[connection signal="pressed" from="Menu/Buttons/AboutBtn" to="." method="_on_about_pressed"]
+[connection signal="pressed" from="Menu/Buttons/SettingsBtn" to="." method="_on_settings_pressed"]
+[connection signal="pressed" from="Menu/Buttons/QuitBtn" to="." method="_on_quit_pressed"]

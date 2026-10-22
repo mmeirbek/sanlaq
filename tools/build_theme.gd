@@ -10,7 +10,7 @@ extends SceneTree
 ## Варианты типов (theme_type_variation) — справочник для экранов:
 ##   Button: (по умолчанию — бордовая), ButtonSecondary, ButtonLarge
 ##   Label: (по умолчанию — текст на тёмном), TitleLabel, HeadingLabel,
-##          CaptionLabel, InkLabel, InkHeadingLabel, HudLabel, TimerLabel
+##          CaptionLabel, WarningLabel, InkLabel, InkHeadingLabel, HudLabel, TimerLabel
 ##   PanelContainer: (по умолчанию — бордовая панель), ParchmentPanel,
 ##          HudPanel, Card, CardHover, CardSelected, InsetPanel
 
@@ -36,6 +36,11 @@ func _init() -> void:
 	_labels(theme, fonts)
 	_panels(theme)
 	_inputs(theme, fonts)
+	# Шаг между элементами контейнеров по умолчанию — экраны его не переопределяют.
+	for box in ["VBoxContainer", "HBoxContainer", "GridContainer"]:
+		theme.set_constant("separation", box, UiTokens.SPACE_XS)
+	theme.set_constant("h_separation", "GridContainer", UiTokens.SPACE_S)
+	theme.set_constant("v_separation", "GridContainer", UiTokens.SPACE_S)
 	_save(theme, THEME_PATH)
 	print("тема собрана: ", THEME_PATH)
 	quit()
@@ -95,6 +100,11 @@ func _labels(theme: Theme, fonts: Dictionary) -> void:
 	_variation(theme, "CaptionLabel", "Label")
 	theme.set_font_size("font_size", "CaptionLabel", UiTokens.BODY_SMALL)
 	theme.set_color("font_color", "CaptionLabel", UiTokens.MUTED)
+
+	# Предупреждение («сначала введите имя»): жирнее и тёплым цветом.
+	_variation(theme, "WarningLabel", "Label")
+	theme.set_font("font", "WarningLabel", fonts.body_bold)
+	theme.set_color("font_color", "WarningLabel", UiTokens.EMBER)
 
 	# Для пергаментных панелей: тёмный текст на светлом.
 	_variation(theme, "InkLabel", "Label")
