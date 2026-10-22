@@ -15,6 +15,7 @@ func _init() -> void:
 	await _test_countdown()
 	await _test_banner()
 	await _test_confirm_dialog()
+	_test_backdrop_scaling()
 	finish("COMPONENTS")
 
 
@@ -120,6 +121,20 @@ func _test_confirm_dialog() -> void:
 	_press_action("ui_accept")
 	check(outcome[0] == "cancelled", "Enter по умолчанию жмёт безопасное «Жоқ», а не «Иә»")
 	await unmount(dialog)
+
+
+## Фон встаёт в целом масштабе по центру на любом экране.
+func _test_backdrop_scaling() -> void:
+	var picture := Vector2(1280, 720)
+	var cases := {
+		"16:9": [Vector2(1280, 720), Rect2(0, 0, 1280, 720)],
+		"телефон 19.5:9": [Vector2(1560, 720), Rect2(140, 0, 1280, 720)],
+		"планшет 4:3": [Vector2(1280, 960), Rect2(0, 120, 1280, 720)],
+		"2K": [Vector2(2560, 1440), Rect2(0, 0, 2560, 1440)],
+	}
+	for screen: String in cases:
+		var got := PixelBackdrop.picture_rect(picture, cases[screen][0])
+		check(got == cases[screen][1], "фон на экране %s: %s" % [screen, got])
 
 
 func _add(node: Control) -> Control:
