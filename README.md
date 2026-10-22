@@ -102,7 +102,7 @@ sokyroteke/
 ├── autoload/              # глобальные синглтоны
 │   ├── asset_registry.gd  # индексация data/*.tres (одежда, карты, режимы, боты)
 │   ├── save_manager.gd    # сохранения в user://save_data.json
-│   ├── game_settings.gd   # язык KZ/RU/EN, громкости
+│   ├── game_settings.gd   # язык KZ/EN, громкости
 │   ├── music_audio.gd     # фоновая музыка
 │   ├── telemetry.gd       # события + лицензирование станций
 │   └── scene_router.gd    # навигация между сценами + передача данных
@@ -200,10 +200,10 @@ sokyroteke/
 ```gdscript
 id = "head_borik_02"
 slot_type = 0          # 0=голова,1=торс,2=штаны,3=обувь
-name_kz/ru/en = ...
+name_kz/en = ...
 color = Color(0.27, 0.35, 0.55, 1)
 rarity = 1             # 0=common,1=rare,2=legendary
-wrong_answers_kz/ru = Array[String](["Тақия","Сәукеле"])  # минимум 2
+wrong_answers_kz/en = Array[String](["Тақия","Сәукеле"])  # минимум 2
 texture_path = "res://assets/sprites/character/head/head_borik_02.png"
 icon_path    = "res://assets/sprites/items/head_borik_02.png"
 ```
