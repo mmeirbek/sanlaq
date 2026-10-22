@@ -234,9 +234,10 @@ func _test_togyz() -> void:
 	var n := await mount("res://scenes/ui/togyz_qumalaq.tscn")
 	if n == null:
 		return
-	_check_backdrop(n, SanlaqSceneBackdrop.Variant.TOGYZ, "тоғыз")
+	check(n.get_node_or_null("Background") is PixelBackdrop, "тоғыз: пиксельный фон на месте")
 	check((n.get_node("%SetupPanel") as Control).visible, "тоғыз: экран выбора соперника виден")
-	check(_connected(n, "%BackBtn"), "тоғыз: кнопка «Артқа» подключена")
+	check((n.get_node("%Header") as ScreenHeader).back_pressed.get_connections().size() > 0,
+		"тоғыз: «Артқа» подключена")
 	check(_connected(n, "%VsHumanBtn"), "тоғыз: кнопка игры вдвоём подключена")
 
 	(n.get_node("%VsBotBtn") as Button).pressed.emit()
@@ -268,4 +269,10 @@ func _test_togyz() -> void:
 		check(board2.kazan[0] + board2.kazan[1] > 0, "тоғыз: казаны наполняются по ходу партии")
 		print("[test] .. счёт после прогона: %d : %d" % [board2.kazan[0], board2.kazan[1]])
 	check((n.get_node("%TurnLabel") as Label).text != "", "тоғыз: индикатор хода заполнен")
+	var rings := (n.get_node("%BottomRow") as HBoxContainer).get_children().filter(
+		func(pit: TogyzPit) -> bool: return pit.available)
+	var board3: GameBoard = n.get("_board")
+	if board3 != null and not board3.is_over() and board3.current_player == 0 and not bool(n.get("_animating")):
+		check(rings.size() == board3.legal_moves().size(),
+			"тоғыз: кольцом отмечены ровно доступные ходы, %d из %d" % [rings.size(), board3.legal_moves().size()])
 	await unmount(n)

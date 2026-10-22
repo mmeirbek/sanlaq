@@ -95,6 +95,8 @@ def frames():
         # Плашка HUD: тоньше и спокойнее, чтобы не спорить с картой.
         "panel_hud": chamfer_frame([OUTLINE_LAYER, bevel("GOLD", "GOLD_DARK", "GOLD_DARK"),
                                     bevel("INK_SOFT", "INK", "INK")], c("INK"), chamfer=1),
+        # Деревянная доска тоғыз құмалақ.
+        "panel_wood": panel("wood", "wood_light", "wood_dark"),
         # Карточки (режимы, энциклопедия, шкаф).
         "card": panel("BURGUNDY_DARK", "BURGUNDY", "OUTLINE", chamfer=3),
         "card_hover": panel("BURGUNDY", "BURGUNDY_LIGHT", "BURGUNDY_DARK", *hover_gold, chamfer=3),

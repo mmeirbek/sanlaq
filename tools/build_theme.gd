@@ -13,7 +13,7 @@ extends SceneTree
 ##          CaptionLabel, SubtitleLabel, WarningLabel, InkLabel, InkHeadingLabel, HudLabel, TimerLabel,
 ##          HudTimerLabel, LeadLabel, NameTagLabel
 ##   PanelContainer: (по умолчанию — бордовая панель), ParchmentPanel,
-##          HudPanel, Card*, CardCompact* (плотные списки), InsetPanel
+##          HudPanel, Card*, CardCompact* (плотные списки), InsetPanel, WoodPanel
 
 const THEME_PATH := "res://resources/ui/ui_theme.tres"
 const FONTS_DIR := "res://resources/ui/fonts/"
@@ -175,6 +175,8 @@ func _panels(theme: Theme) -> void:
 		"CardCompactHover": "card_hover",
 		"CardCompactSelected": "card_selected",
 		"InsetPanel": "inset",
+		# Доска тоғыз құмалақ.
+		"WoodPanel": "panel_wood",
 	}
 	var tight := Vector2(UiTokens.SPACE_S, UiTokens.SPACE_XS)
 	var compact := Vector2(UiTokens.SPACE_XS, UiTokens.SPACE_XS)

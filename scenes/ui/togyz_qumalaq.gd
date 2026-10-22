@@ -1,6 +1,7 @@
 extends Control
 ## Экран режима «Тоғыз құмалақ». Правила живут в GameBoard, выбор хода компьютера —
 ## в TogyzBot; здесь только отрисовка доски, анимация раздачи и передача ходов.
+## Лунку рисует TogyzPit: камешки, число, кольцо доступного хода, тұздық.
 ##
 ## Раскладка: нижний ряд — лунки игрока 0 слева направо (индексы 0-8), верхний ряд —
 ## лунки игрока 1 справа налево (индексы 9-17). Тогда раздача против часовой стрелки
@@ -9,7 +10,6 @@ extends Control
 
 const HUMAN := 0
 const BOT := 1
-const PIT_SIZE := Vector2(104, 96)
 ## Вся раздача должна укладываться примерно в это время, как просит спецификация.
 const SOW_TOTAL := 1.4
 const SOW_STEP_MAX := 0.09
@@ -22,7 +22,8 @@ var _animating: bool = false
 ## Что показано на экране прямо сейчас — во время анимации отстаёт от _board.
 var _shown_pits: Array[int] = []
 var _shown_kazan: Array[int] = [0, 0]
-var _pit_ui: Array = []
+## Индекс отау -> его TogyzPit.
+var _pits: Array[TogyzPit] = []
 var _audio: GameAudio
 
 @onready var _setup_panel: PanelContainer = %SetupPanel
@@ -43,7 +44,6 @@ var _audio: GameAudio
 @onready var _vs_bot_btn: Button = %VsBotBtn
 @onready var _again_btn: Button = %AgainBtn
 @onready var _menu_btn: Button = %MenuBtn
-@onready var _back_btn: Button = %BackBtn
 
 func _ready() -> void:
 	_audio = GameAudio.new()
@@ -52,7 +52,7 @@ func _ready() -> void:
 	_vs_bot_btn.pressed.connect(_start_game.bind(true))
 	_again_btn.pressed.connect(_reset_to_setup)
 	_menu_btn.pressed.connect(func() -> void: SceneRouter.go_to_main_menu())
-	_back_btn.pressed.connect(func() -> void: SceneRouter.go_to_mode_select())
+	(%Header as ScreenHeader).back_pressed.connect(SceneRouter.go_to_mode_select)
 	_show_only(_setup_panel)
 
 func _start_game(vs_bot: bool) -> void:
@@ -77,94 +77,33 @@ func _player_name(player: int) -> String:
 
 func _build_board() -> void:
 	for row: HBoxContainer in [_top_row, _bottom_row]:
-		for c in row.get_children():
-			row.remove_child(c)
-			c.queue_free()
-	_pit_ui.clear()
-	_pit_ui.resize(GameBoard.PIT_COUNT)
-
+		for pit in row.get_children():
+			row.remove_child(pit)
+			pit.queue_free()
+	_pits.clear()
+	_pits.resize(GameBoard.PIT_COUNT)
 	for i in range(0, GameBoard.PER_SIDE):
 		_bottom_row.add_child(_make_pit(i))
 	# Верхний ряд рисуется справа налево, чтобы круг раздачи был непрерывным.
 	for i in range(GameBoard.PIT_COUNT - 1, GameBoard.PER_SIDE - 1, -1):
 		_top_row.add_child(_make_pit(i))
 
-func _make_pit(index: int) -> Control:
-	var host := Control.new()
-	host.custom_minimum_size = PIT_SIZE
-	host.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
-	var panel := PanelContainer.new()
-	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_theme_stylebox_override("panel", _pit_style())
-	host.add_child(panel)
-
-	var box := VBoxContainer.new()
-	box.alignment = BoxContainer.ALIGNMENT_CENTER
-	box.add_theme_constant_override("separation", 2)
-	panel.add_child(box)
-
-	var count := Label.new()
-	count.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	count.add_theme_font_override("font", SanlaqDesignTokens.FONT_BOLD)
-	count.add_theme_font_size_override("font_size", 30)
-	count.add_theme_color_override("font_color", SanlaqDesignTokens.NAVY)
-	box.add_child(count)
-
-	var caption := Label.new()
-	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	caption.add_theme_font_size_override("font_size", 12)
-	caption.add_theme_color_override("font_color", Color(0.45, 0.38, 0.28))
-	caption.text = str(index % GameBoard.PER_SIDE + 1)
-	box.add_child(caption)
-
-	var click := Button.new()
-	click.flat = true
-	click.focus_mode = Control.FOCUS_NONE
-	click.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	click.set_anchors_preset(Control.PRESET_FULL_RECT)
-	click.pressed.connect(_on_pit_pressed.bind(index))
-	host.add_child(click)
-
-	_pit_ui[index] = {"panel": panel, "count": count, "caption": caption}
-	return host
-
-func _pit_style(active: bool = false, tuzdyk_of: int = -1) -> StyleBoxFlat:
-	var s := StyleBoxFlat.new()
-	if tuzdyk_of >= 0:
-		s.bg_color = SanlaqDesignTokens.NAVY_LIGHT
-		s.border_color = SanlaqDesignTokens.GOLD
-	elif active:
-		s.bg_color = SanlaqDesignTokens.GOLD_PALE
-		s.border_color = SanlaqDesignTokens.GOLD_DARK
-	else:
-		s.bg_color = SanlaqDesignTokens.CREAM_LIGHT
-		s.border_color = SanlaqDesignTokens.GOLD
-	s.set_border_width_all(4 if active or tuzdyk_of >= 0 else 2)
-	s.set_corner_radius_all(12)
-	s.set_content_margin_all(4)
-	return s
+func _make_pit(index: int) -> TogyzPit:
+	var pit := TogyzPit.new()
+	pit.number = index % GameBoard.PER_SIDE + 1
+	pit.pressed.connect(_on_pit_pressed.bind(index))
+	_pits[index] = pit
+	return pit
 
 func _refresh() -> void:
+	# Кольцо доступного хода — только у того, кто ходит сам, и не во время раздачи.
+	var mover_is_human := not (_vs_bot and _board.current_player == BOT)
+	var show_moves := not _animating and mover_is_human and not _board.is_over()
 	for i in GameBoard.PIT_COUNT:
-		var ui: Dictionary = _pit_ui[i]
-		var owner: int = _board.tuzdyk_owner[i]
-		var count: Label = ui["count"]
-		var caption: Label = ui["caption"]
-		if owner >= 0:
-			# Буква, а не «★»: гарантированно есть в шрифте проекта.
-			count.text = "Т"
-			count.add_theme_color_override("font_color", SanlaqDesignTokens.GOLD)
-			caption.text = _player_name(owner)
-			caption.add_theme_color_override("font_color", SanlaqDesignTokens.GOLD_PALE)
-		else:
-			count.text = str(_shown_pits[i])
-			count.add_theme_color_override("font_color", SanlaqDesignTokens.NAVY)
-			caption.text = str(i % GameBoard.PER_SIDE + 1)
-			caption.add_theme_color_override("font_color", Color(0.45, 0.38, 0.28))
-		ui["panel"].add_theme_stylebox_override("panel", _pit_style(false, owner))
-
+		var pit := _pits[i]
+		pit.tuzdyk = _board.tuzdyk_owner[i] >= 0
+		pit.count = _shown_pits[i]
+		pit.available = show_moves and _board.is_legal_move(i)
 	_left_count.text = str(_shown_kazan[1])
 	_right_count.text = str(_shown_kazan[0])
 	_update_turn_label()
@@ -215,7 +154,8 @@ func _perform_move(index: int) -> void:
 	elif _vs_bot and _board.current_player == BOT:
 		_bot_turn()
 	else:
-		_update_turn_label()
+		# Кольца доступных ходов — для следующего игрока.
+		_refresh()
 
 func _animate_sow(res: Dictionary, before_pits: Array[int], before_kazan: Array[int]) -> void:
 	_shown_pits = before_pits.duplicate()
@@ -236,22 +176,19 @@ func _animate_sow(res: Dictionary, before_pits: Array[int], before_kazan: Array[
 		else:
 			_shown_pits[step["index"]] += 1
 		_refresh()
-		_highlight(step["index"], step_time)
+		_glow(step["index"], step_time)
 		_audio.play_card_tone(i)
 		await get_tree().create_timer(step_time).timeout
 		if not is_inside_tree():
 			return
 
-func _highlight(index: int, duration: float) -> void:
-	if _board.tuzdyk_owner[index] >= 0:
-		return
-	var ui: Dictionary = _pit_ui[index]
-	var panel: PanelContainer = ui["panel"]
-	panel.add_theme_stylebox_override("panel", _pit_style(true))
-	var timer := get_tree().create_timer(duration)
-	timer.timeout.connect(func() -> void:
-		if is_inside_tree() and is_instance_valid(panel) and _board != null:
-			panel.add_theme_stylebox_override("panel", _pit_style(false, _board.tuzdyk_owner[index])))
+## Вспышка лунки, куда только что упал камень.
+func _glow(index: int, duration: float) -> void:
+	var pit := _pits[index]
+	pit.glowing = true
+	await get_tree().create_timer(duration).timeout
+	if is_instance_valid(pit):
+		pit.glowing = false
 
 func _report(res: Dictionary) -> void:
 	var mover: int = res["player"]
