@@ -23,8 +23,11 @@ func _ready() -> void:
 	shader_material.shader = SHADER
 	shader_material.set_shader_parameter("shade", UiTokens.OUTLINE)
 	_rect.material = shader_material
+	# Прямо перед отрисовкой камера уже сдвинулась в этом кадре: круг не
+	# отстаёт от ловца. В _process узел мог бы обогнать камеру.
+	RenderingServer.frame_pre_draw.connect(_update_circle)
 
-func _process(_delta: float) -> void:
+func _update_circle() -> void:
 	if not _active:
 		return
 	# Мир -> координаты, в которых лежит _rect: камера, её зум и тряска.

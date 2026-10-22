@@ -13,6 +13,9 @@ const DIM := Color(UiTokens.OUTLINE, 0.75)
 @export var dialog_message := ""
 @export var confirm_text := "Иә"
 @export var cancel_text := "Жоқ"
+## Какая кнопка в фокусе при открытии — её нажмёт случайный пробел или Enter.
+## Обычно безопасный вариант — «Жоқ»; если безопаснее «Иә», включите.
+@export var focus_confirm := false
 
 var _title_label: Label
 var _message_label: Label
@@ -68,8 +71,8 @@ func open() -> void:
 	_confirm_button.text = confirm_text
 	_cancel_button.text = cancel_text
 	visible = true
-	# Фокус на безопасном варианте: случайный Enter не подтвердит выход.
-	_cancel_button.grab_focus()
+	# Фокус на безопасном варианте: случайный Enter не уведёт с экрана.
+	(_confirm_button if focus_confirm else _cancel_button).grab_focus()
 
 
 func close() -> void:

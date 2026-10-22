@@ -2,13 +2,17 @@ class_name QuizHUD
 extends CanvasLayer
 ## Квиз при поимке (scenes/world/quiz_hud.tscn): крупная иконка вещи, вопрос
 ## «Бұл қандай …?», полоса времени и три ответа — мышью, пальцем или клавишами
-## 1–3. Ответ проверяется по номеру кнопки, а не по её тексту.
+## 1–3 (верхний ряд или цифровой блок, при любой раскладке). Ответ проверяется
+## по номеру кнопки, а не по её тексту.
 
 signal answer_submitted(correct: bool)
 
 ## Сколько секунд после ответа виден результат «Дұрыс!/Қате!».
 const RESULT_SHOW_TIME := 2.0
+## Клавиши ответов по физическому месту: на казахской раскладке в верхнем ряду
+## буквы, а не цифры.
 const ANSWER_KEYS: Array[Key] = [KEY_1, KEY_2, KEY_3]
+const ANSWER_KEYPAD_KEYS: Array[Key] = [KEY_KP_1, KEY_KP_2, KEY_KP_3]
 const CHECK_ICON := preload("res://assets/ui/frames/check.png")
 const CROSS_ICON := preload("res://assets/ui/frames/cross.png")
 
@@ -78,7 +82,9 @@ func _process(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not _active or not (event is InputEventKey) or not event.pressed or event.echo:
 		return
-	var index := ANSWER_KEYS.find(event.keycode)
+	var index := ANSWER_KEYS.find(event.physical_keycode)
+	if index == -1:
+		index = ANSWER_KEYPAD_KEYS.find(event.keycode)
 	if index != -1 and _answers[index].visible:
 		get_viewport().set_input_as_handled()
 		_on_answer(index)
@@ -98,11 +104,11 @@ func _on_answer(index: int) -> void:
 ## Верный ответ отмечен галочкой, выбранный неверный — крестиком; остальные
 ## гаснут. Цвет дублируется значком — понятно и без различения цветов.
 func _show_result(chosen: int, correct: bool) -> void:
-	var name := _current_item.get_name_for_lang(GameSettings.get_lang_code())
+	var item_name := _current_item.get_name_for_lang(GameSettings.get_lang_code())
 	if correct:
 		_question.text = tr("Дұрыс!")
 	else:
-		_question.text = "%s %s" % [tr("Қате!"), tr("Бұл: %s") % name]
+		_question.text = "%s %s" % [tr("Қате!"), tr("Бұл: %s") % item_name]
 	_question.add_theme_color_override("font_color", UiTokens.SUCCESS if correct else UiTokens.DANGER)
 	for i in _answers.size():
 		_answers[i].disabled = i != _correct_index

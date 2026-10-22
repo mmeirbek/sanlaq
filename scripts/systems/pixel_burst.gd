@@ -14,9 +14,10 @@ var _gravity := Vector2.ZERO
 
 
 ## Создаёт разлёт в точке at (координаты parent) и сама удаляется после.
-## speed — разброс начальной скорости в пикселях мира в секунду.
+## speed_range — наименьшая и наибольшая начальная скорость (x, y) в пикселях
+## мира в секунду; направление у каждой частицы случайное.
 static func spawn(parent: Node, at: Vector2, colors: Array[Color], amount: int,
-		speed: Vector2, gravity: Vector2, lifetime: float) -> PixelBurst:
+		speed_range: Vector2, gravity: Vector2, lifetime: float) -> PixelBurst:
 	var burst := PixelBurst.new()
 	burst.position = at
 	burst.z_index = WorldLayers.EFFECTS
@@ -25,7 +26,7 @@ static func spawn(parent: Node, at: Vector2, colors: Array[Color], amount: int,
 	for i in amount:
 		burst._particles.append({
 			"at": Vector2.ZERO,
-			"velocity": Vector2.from_angle(randf() * TAU) * randf_range(speed.x, speed.y),
+			"velocity": Vector2.from_angle(randf() * TAU) * randf_range(speed_range.x, speed_range.y),
 			"color": colors[i % colors.size()],
 			# Крупные и мелкие вперемешку: 1 или 2 пикселя арта.
 			"size": UiTokens.PIXEL * (1 + i % 2),

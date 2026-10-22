@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://scripts/entities/player_controller.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://char_visual" path="res://scenes/entities/character_visual.tscn" id="3"]
 [ext_resource type="Texture2D" path="res://assets/sprites/world/shadow.png" id="4"]
-[ext_resource type="FontVariation" path="res://resources/ui/fonts/body_bold.tres" id="5"]
+[ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="5"]
 [ext_resource type="Texture2D" path="res://assets/sprites/world/wade.png" id="6"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_0"]
@@ -49,10 +49,7 @@ offset_top = 14.0
 offset_right = 60.0
 offset_bottom = 38.0
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.968627, 0.901961, 0.819608, 1)
-theme_override_colors/font_outline_color = Color(0.14902, 0.0862745, 0.0705882, 1)
-theme_override_constants/outline_size = 6
-theme_override_fonts/font = ExtResource("5")
-theme_override_font_sizes/font_size = 20
+theme = ExtResource("5")
+theme_type_variation = &"NameTagLabel"
 horizontal_alignment = 1
 vertical_alignment = 1

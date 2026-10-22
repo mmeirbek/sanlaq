@@ -63,6 +63,7 @@ func _ready() -> void:
 	match_mgr.sokyroteke_assigned.connect(_on_sokyroteke_assigned)
 	match_mgr.quiz_triggered.connect(_on_quiz_triggered)
 	match_mgr.round_started.connect(_on_round_started)
+	match_mgr.round_ended.connect(_on_round_ended)
 	match_mgr.match_ended.connect(_on_match_ended)
 	match_mgr.player_caught.connect(_on_player_caught)
 	match_mgr.player_eliminated.connect(_on_player_eliminated)
@@ -164,14 +165,19 @@ func _spawn_bot(idx: int, profile_id: String = "") -> void:
 	p.set_display_name(_player_display_name(p))
 
 func _on_sokyroteke_assigned(player: Player) -> void:
+	# Баннер роли висит, пока ловец «жабады көзін» и идёт обратный отсчёт.
+	var seconds := match_mgr.mode.headstart_secs
 	if player.is_bot:
 		vision.set_active(false)
-		game_hud.show_role(tr("СІЗ ҚАШУШЫСЫЗ!"), tr("МАҚСАТ: УАҚЫТ АЯҚТАЛҒАНША АМАН ҚАЛ"))
-		game_hud.show_message(tr("«%s» — Соқыртеке! Қашыңыз!") % player.bot_name, 3.0)
+		var objective := tr("МАҚСАТ: УАҚЫТ АЯҚТАЛҒАНША АМАН ҚАЛ")
+		# Бегуну важнее всего, кто ловец, — это вторая строка баннера.
+		var seeker := tr("«%s» — Соқыртеке! Қашыңыз!") % player.bot_name
+		game_hud.show_role(tr("СІЗ ҚАШУШЫСЫЗ!"), seeker, objective, seconds)
 	else:
 		vision.set_active(true)
 		vision.set_target_position(player.global_position + Player.BODY_CENTER)
-		game_hud.show_role(tr("СІЗ СОҚЫРТЕКЕСІЗ!"), tr("МАҚСАТ: БАРЛЫҚ ҚАШУШЫНЫ ҰСТА"))
+		var objective := tr("МАҚСАТ: БАРЛЫҚ ҚАШУШЫНЫ ҰСТА")
+		game_hud.show_role(tr("СІЗ СОҚЫРТЕКЕСІЗ!"), objective, objective, seconds)
 
 func _on_quiz_triggered(catcher: Player, target: Player, item: ClothingItem) -> void:
 	if catcher.is_bot:
@@ -200,6 +206,10 @@ func _on_quiz_answer(correct: bool) -> void:
 func _on_round_started() -> void:
 	# Пока ловец «жабады көзін», бегуны разбегаются: отсчёт идёт ровно столько.
 	game_hud.start_countdown(match_mgr.mode.headstart_secs)
+
+## Итог сразу, а не через паузу до экрана результатов.
+func _on_round_ended(winner: String) -> void:
+	game_hud.show_result(tr("СОҚЫРТЕКЕ ЖЕҢДІ!") if winner == "sokyroteke" else tr("ҚАШУШЫЛАР ЖЕҢДІ!"))
 
 func _on_player_caught(_catcher: Player, target: Player) -> void:
 	game_audio.play_catch()
@@ -234,7 +244,6 @@ func _on_match_ended(results: Dictionary) -> void:
 		"human_won": human_won,
 		"correct_answers": _correct_answers,
 	})
-	game_hud.show_result(tr("СОҚЫРТЕКЕ ЖЕҢДІ!") if winner == "sokyroteke" else tr("ҚАШУШЫЛАР ЖЕҢДІ!"))
 	if human_won:
 		game_audio.play_victory()
 	else:

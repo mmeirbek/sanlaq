@@ -26,7 +26,8 @@ var _sprint_mode := true
 
 var _joy_base: TextureRect
 var _knob: TextureRect
-var _action: PixelButton
+var _action: PanelContainer
+var _action_icon: TextureRect
 
 func _ready() -> void:
 	if not DisplayServer.is_touchscreen_available():
@@ -50,14 +51,19 @@ func _ready() -> void:
 	_joy_base.add_child(_knob)
 	_place_knob(Vector2.ZERO)
 
-	_action = PixelButton.new()
+	# Не Button: обычная кнопка слышит только первый палец, а он обычно на стике.
+	# Касания любого пальца приходят в gui_input — как у стика.
+	_action = PanelContainer.new()
 	_action.custom_minimum_size = ACTION_SIZE
-	_action.focus_mode = Control.FOCUS_NONE
-	_action.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_action.icon = SPRINT_ICON if _sprint_mode else ECHO_ICON
-	_action.button_down.connect(_on_action_down)
-	_action.button_up.connect(func() -> void: _sprint_held = false)
+	_action.mouse_filter = Control.MOUSE_FILTER_STOP
+	_action.gui_input.connect(_on_action_input)
 	root.add_child(_action)
+	_action_icon = TextureRect.new()
+	_action_icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+	_action_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_action_icon.texture = SPRINT_ICON if _sprint_mode else ECHO_ICON
+	_action.add_child(_action_icon)
+	_show_action_pressed(false)
 
 	# Экраны бывают любой формы (растяжение canvas_items/expand), и телефон
 	# можно повернуть — раскладываем от реального размера при каждом изменении.
@@ -67,8 +73,8 @@ func _ready() -> void:
 ## Бегун держит кнопку для рывка, ловец нажимает для «үн тыңдау».
 func set_sprint_mode(sprint: bool) -> void:
 	_sprint_mode = sprint
-	if _action:
-		_action.icon = SPRINT_ICON if sprint else ECHO_ICON
+	if _action_icon:
+		_action_icon.texture = SPRINT_ICON if sprint else ECHO_ICON
 
 func _layout_controls() -> void:
 	var safe := _safe_rect()
@@ -89,11 +95,18 @@ func _safe_rect() -> Rect2:
 	var safe := Rect2(safe_area.position * to_ui, safe_area.size * to_ui).intersection(visible_rect)
 	return safe if safe.has_area() else visible_rect
 
-func _on_action_down() -> void:
-	if _sprint_mode:
-		_sprint_held = true
-	else:
+func _on_action_input(event: InputEvent) -> void:
+	if not (event is InputEventScreenTouch):
+		return
+	_show_action_pressed(event.pressed)
+	_sprint_held = event.pressed and _sprint_mode
+	if event.pressed and not _sprint_mode:
 		echo_pressed.emit()
+
+## Рамка кнопки из темы: нажатая или обычная.
+func _show_action_pressed(pressed: bool) -> void:
+	var frame := _action.get_theme_stylebox("pressed" if pressed else "normal", "Button")
+	_action.add_theme_stylebox_override("panel", frame)
 
 func _on_joy_input(event: InputEvent) -> void:
 	var center := _joy_base.size / 2.0

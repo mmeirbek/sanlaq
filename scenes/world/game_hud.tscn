@@ -1,4 +1,4 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://btupqhv8706ti"]
 
 [ext_resource type="Script" path="res://scripts/ui/game_hud.gd" id="1_script"]
 [ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="2_theme"]
@@ -189,7 +189,16 @@ icon = ExtResource("7_right")
 icon_alignment = 1
 script = ExtResource("11_button")
 
-[node name="Countdown" type="CenterContainer" parent="Root"]
+[node name="CountdownArea" type="Control" parent="Root"]
+layout_mode = 1
+anchor_top = 0.55
+anchor_right = 1.0
+anchor_bottom = 0.95
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Countdown" type="CenterContainer" parent="Root/CountdownArea"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -225,3 +234,4 @@ dialog_title = "ҰСТАЛДЫҢЫЗ"
 dialog_message = "Ойынды бақылауды жалғастырасыз ба?"
 confirm_text = "БАҚЫЛАУ"
 cancel_text = "БАС МӘЗІРГЕ"
+focus_confirm = true

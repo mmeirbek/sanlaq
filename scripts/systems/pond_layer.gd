@@ -42,6 +42,6 @@ func set_zones(zones: Array[Dictionary]) -> void:
 func _draw() -> void:
 	# Только квадраты вокруг прудов: шейдер считает там, где вода вообще может быть.
 	for zone in _zones:
-		# С запасом на волнистый край (WOBBLE в шейдере).
-		var reach: float = zone["radius"] + UiTokens.PIXEL * 2.0
+		# С запасом на берег снаружи зоны и волнистый край (SHORE и WOBBLE в шейдере).
+		var reach: float = zone["radius"] + UiTokens.PIXEL * 5.0
 		draw_rect(Rect2(zone["pos"] - Vector2(reach, reach), Vector2(reach, reach) * 2.0), Color.WHITE)

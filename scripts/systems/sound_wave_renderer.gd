@@ -5,7 +5,7 @@ extends Node2D
 @onready var _sound_system: SoundWaveSystem = $"../SoundWaveSystem"
 
 func _ready() -> void:
-	z_index = WorldLayers.EFFECTS
+	z_index = WorldLayers.SOUND_WAVES
 
 func _process(_delta: float) -> void:
 	queue_redraw()

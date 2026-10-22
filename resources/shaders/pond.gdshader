@@ -8,7 +8,8 @@ shader_type canvas_item;
 const int MAX_ZONES = 16;
 // UiTokens.PIXEL: сторона пикселя арта в пикселях мира.
 const float PIXEL = 2.0;
-// Ширина песчаного берега в пикселях арта.
+// Ширина песчаного берега в пикселях арта. Берег лежит снаружи зоны: на
+// песке игрок ещё не замедлен.
 const float SHORE = 2.0;
 // Наибольшее отклонение края от круга зоны, в пикселях арта.
 const float WOBBLE = 1.5;
@@ -31,10 +32,10 @@ void vertex() {
 	local_position = VERTEX;
 }
 
-// Насколько центр пикселя арта cell внутри воды, в пикселях арта:
-// > 0 — внутри, <= 0 — снаружи. Край чуть волнистый (до WOBBLE пикселя
-// арта), чтобы пруды не были циркульными кругами; для механики это
-// неощутимо.
+// Насколько центр пикселя арта cell внутри зоны, в пикселях арта:
+// > 0 — вода, от -SHORE до 0 — берег, дальше — трава. Край чуть волнистый
+// (до WOBBLE пикселя арта), чтобы пруды не были циркульными кругами; для
+// механики это неощутимо.
 float depth(vec2 cell) {
 	vec2 at = (cell + 0.5) * PIXEL;
 	float best = -1e6;
@@ -49,7 +50,11 @@ float depth(vec2 cell) {
 }
 
 bool is_water(vec2 cell) {
-	return depth(cell) > SHORE;
+	return depth(cell) > 0.0;
+}
+
+bool is_land(vec2 cell) {
+	return depth(cell) <= -SHORE;
 }
 
 float hash(vec2 v) {
@@ -59,15 +64,15 @@ float hash(vec2 v) {
 void fragment() {
 	vec2 cell = floor(local_position / PIXEL);
 	float here = depth(cell);
-	if (here <= 0.0) {
+	if (here <= -SHORE) {
 		discard;
 	}
 	vec3 color;
-	if (here <= SHORE) {
+	if (here <= 0.0) {
 		// Берег со светом сверху слева, как у остальных предметов мира.
-		if (depth(cell + vec2(0.0, 1.0)) <= 0.0 || depth(cell + vec2(1.0, 0.0)) <= 0.0) {
+		if (is_land(cell + vec2(0.0, 1.0)) || is_land(cell + vec2(1.0, 0.0))) {
 			color = path_dark;
-		} else if (depth(cell - vec2(0.0, 1.0)) <= 0.0 || depth(cell - vec2(1.0, 0.0)) <= 0.0) {
+		} else if (is_land(cell - vec2(0.0, 1.0)) || is_land(cell - vec2(1.0, 0.0))) {
 			color = path_light;
 		} else {
 			color = path;
@@ -82,7 +87,7 @@ void fragment() {
 	} else {
 		// Блики — чёрточки в три пикселя, мерцают каждая в своём ритме.
 		float glint = hash(vec2(floor(cell.x / 3.0), cell.y));
-		bool shines = glint < 0.015 && here > SHORE + 4.0 && fract(TIME * 0.4 + glint * 37.0) < 0.6;
+		bool shines = glint < 0.015 && here > 4.0 && fract(TIME * 0.4 + glint * 37.0) < 0.6;
 		color = shines ? water_light : water;
 	}
 	COLOR = vec4(color, 1.0);
