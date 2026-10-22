@@ -14,12 +14,31 @@ const SCENE_ABAI_SAYS := "res://scenes/ui/abai_says.tscn"
 const SCENE_TOGYZ_QUMALAQ := "res://scenes/ui/togyz_qumalaq.tscn"
 const SCENE_AQ_SUYEK := "res://scenes/ui/aq_suyek.tscn"
 
+## Затемнение между экранами, как в atilla: уход и проявление, секунды.
+const FADE_OUT := 0.35
+const FADE_IN := 0.5
+
 var _pending_game_data: Dictionary = {}
 var _pending_results: Dictionary = {}
 ## Какой режим объясняет экран брифинга — id ресурса ModeBriefing.
 var _pending_briefing: String = ""
 
+## Шторка поверх всех экранов; пока идёт переход, она же глотает клики, чтобы
+## двойное нажатие не увело на два экрана подряд.
+var _curtain: ColorRect
+var _changing := false
+
 signal scene_changed(from: String, to: String)
+
+func _ready() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 128
+	add_child(layer)
+	_curtain = ColorRect.new()
+	_curtain.color = Color(UiTokens.INK, 0.0)
+	_curtain.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_curtain.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(_curtain)
 
 func go_to_main_menu() -> void:
 	_change_scene(SCENE_MAIN_MENU)
@@ -96,9 +115,26 @@ func _change_scene(to: String) -> void:
 	var from := ""
 	if get_tree().current_scene:
 		from = get_tree().current_scene.scene_file_path
-	if from == to:
+	if from == to or _changing:
 		return
+	_changing = true
+	# Автотесты и CI (headless) переходят мгновенно, без ожидания анимации.
+	var animate := not RunContext.is_headless()
+	if animate:
+		_curtain.mouse_filter = Control.MOUSE_FILTER_STOP
+		await _fade_curtain(1.0, FADE_OUT)
 	var err := get_tree().change_scene_to_file(to)
 	if err != OK:
 		Telemetry.log_error("change_scene_to_file failed with error %d" % err, to)
 	scene_changed.emit(from, to)
+	if animate:
+		await get_tree().process_frame
+		await _fade_curtain(0.0, FADE_IN)
+		_curtain.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_changing = false
+
+func _fade_curtain(alpha: float, seconds: float) -> void:
+	var tween := create_tween()
+	tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	tween.tween_property(_curtain, "color:a", alpha, seconds)
+	await tween.finished
