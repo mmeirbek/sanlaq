@@ -7,6 +7,8 @@ extends "res://tools/test_case.gd"
 const GAME_SCENE := "res://scenes/world/game.tscn"
 ## Пауза перед итогами в MatchManager._end_round плюс запас.
 const ROUND_END_PAUSE := 3.5
+## Раскладка для проверки курса бота — одна и та же при каждом прогоне.
+const BOT_COURSE_SEED := 7
 
 
 func _init() -> void:
@@ -168,6 +170,9 @@ func _test_quiz_answer_keys() -> void:
 ## кадр выбирал новую случайную точку. Скорость персонажа сглаживается, поэтому
 ## смотрим на ввод бота — по нему же разворачивается спрайт.
 func _test_bot_seeker_keeps_its_course() -> void:
+	# Раскладка карты и места игроков случайны: у камня бот честно огибает
+	# препятствие и поворачивает. Проверяем один и тот же раунд.
+	seed(BOT_COURSE_SEED)
 	var game := await _start_round()
 	var mm = game.match_mgr
 	var seeker = _runners(mm).filter(func(p) -> bool: return p.is_bot)[0]
