@@ -28,7 +28,7 @@
 | Узел | Варианты |
 |---|---|
 | `Button` / `PixelButton` | по умолчанию — бордовая кнопка; `ButtonLarge` — главное действие; `ButtonSecondary` — «Артқа», «Жоқ» |
-| `Label` | по умолчанию — текст на тёмном; `TitleLabel`, `HeadingLabel`, `CaptionLabel`, `HudLabel`, `TimerLabel`; на пергаменте — `InkLabel`, `InkHeadingLabel` |
+| `Label` | по умолчанию — текст на тёмном; `TitleLabel`, `HeadingLabel`, `SubtitleLabel` (на фоне), `WarningLabel`, `CaptionLabel`, `HudLabel`, `TimerLabel`; на пергаменте — `InkLabel`, `InkHeadingLabel` |
 | `PanelContainer` | по умолчанию — бордовая панель; `ParchmentPanel` — длинный текст; `HudPanel`; `InsetPanel`; `Card`, `CardHover`, `CardSelected` |
 
 ## Компоненты

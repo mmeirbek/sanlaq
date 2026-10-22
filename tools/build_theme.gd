@@ -10,7 +10,7 @@ extends SceneTree
 ## Варианты типов (theme_type_variation) — справочник для экранов:
 ##   Button: (по умолчанию — бордовая), ButtonSecondary, ButtonLarge
 ##   Label: (по умолчанию — текст на тёмном), TitleLabel, HeadingLabel,
-##          CaptionLabel, WarningLabel, InkLabel, InkHeadingLabel, HudLabel, TimerLabel
+##          CaptionLabel, SubtitleLabel, WarningLabel, InkLabel, InkHeadingLabel, HudLabel, TimerLabel
 ##   PanelContainer: (по умолчанию — бордовая панель), ParchmentPanel,
 ##          HudPanel, Card, CardHover, CardSelected, InsetPanel
 
@@ -100,6 +100,14 @@ func _labels(theme: Theme, fonts: Dictionary) -> void:
 	_variation(theme, "CaptionLabel", "Label")
 	theme.set_font_size("font_size", "CaptionLabel", UiTokens.BODY_SMALL)
 	theme.set_color("font_color", "CaptionLabel", UiTokens.MUTED)
+
+	# Подзаголовок экрана лежит прямо на фоне — светлый и с тенью, как заголовок.
+	_variation(theme, "SubtitleLabel", "Label")
+	theme.set_font_size("font_size", "SubtitleLabel", UiTokens.BODY_SMALL)
+	theme.set_color("font_color", "SubtitleLabel", UiTokens.PARCHMENT_DARK)
+	theme.set_color("font_shadow_color", "SubtitleLabel", UiTokens.OUTLINE)
+	theme.set_constant("shadow_offset_x", "SubtitleLabel", UiTokens.PIXEL)
+	theme.set_constant("shadow_offset_y", "SubtitleLabel", UiTokens.PIXEL)
 
 	# Предупреждение («сначала введите имя»): жирнее и тёплым цветом.
 	_variation(theme, "WarningLabel", "Label")

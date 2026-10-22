@@ -37,8 +37,11 @@ func _test_mode_select() -> void:
 	var n := await mount("res://scenes/ui/mode_select.tscn")
 	if n == null:
 		return
-	for btn_name in ["%ChasePlayBtn", "%AbaiPlayBtn", "%TogyzPlayBtn", "%BackBtn"]:
+	for btn_name in ["%ChasePlayBtn", "%AbaiPlayBtn", "%TogyzPlayBtn", "%AqSuyekPlayBtn"]:
 		check(_connected(n, btn_name), "выбор режима: %s подключена" % btn_name)
+	var header := n.get_node_or_null("%Header") as ScreenHeader
+	check(header != null and not header.back_pressed.get_connections().is_empty(),
+		"выбор режима: «Артқа» подключена")
 	await unmount(n)
 
 # --- Экраны-объяснения перед режимами ---------------------------------------
