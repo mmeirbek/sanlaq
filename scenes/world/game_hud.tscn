@@ -1,0 +1,227 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/game_hud.gd" id="1_script"]
+[ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="2_theme"]
+[ext_resource type="Texture2D" path="res://assets/ui/hud/clock.png" id="3_clock"]
+[ext_resource type="Texture2D" path="res://assets/ui/hud/sprint.png" id="4_sprint"]
+[ext_resource type="Texture2D" path="res://assets/ui/hud/slow.png" id="5_slow"]
+[ext_resource type="Texture2D" path="res://assets/ui/hud/arrow_left.png" id="6_left"]
+[ext_resource type="Texture2D" path="res://assets/ui/hud/arrow_right.png" id="7_right"]
+[ext_resource type="Script" path="res://scripts/ui/components/toast.gd" id="8_toast"]
+[ext_resource type="Script" path="res://scripts/ui/components/banner.gd" id="9_banner"]
+[ext_resource type="Script" path="res://scripts/ui/components/countdown.gd" id="10_countdown"]
+[ext_resource type="Script" path="res://scripts/ui/components/pixel_button.gd" id="11_button"]
+[ext_resource type="Script" path="res://scripts/ui/components/confirm_dialog.gd" id="12_dialog"]
+
+[node name="GameHUD" type="CanvasLayer"]
+layer = 21
+script = ExtResource("1_script")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+
+[node name="TopPlate" type="PanelContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_top = 12.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_type_variation = &"HudPanel"
+
+[node name="Rows" type="VBoxContainer" parent="Root/TopPlate"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Stats" type="HBoxContainer" parent="Root/TopPlate/Rows"]
+layout_mode = 2
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="Time" type="HBoxContainer" parent="Root/TopPlate/Rows/Stats"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Clock" type="TextureRect" parent="Root/TopPlate/Rows/Stats/Time"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("3_clock")
+stretch_mode = 3
+
+[node name="Timer" type="Label" parent="Root/TopPlate/Rows/Stats/Time"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudTimerLabel"
+text = "1:57"
+
+[node name="Runners" type="HBoxContainer" parent="Root/TopPlate/Rows/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="AbilityBox" type="HBoxContainer" parent="Root/TopPlate/Rows/Stats"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AbilityIcon" type="TextureRect" parent="Root/TopPlate/Rows/Stats/AbilityBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("4_sprint")
+stretch_mode = 3
+
+[node name="Ability" type="Label" parent="Root/TopPlate/Rows/Stats/AbilityBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "SHIFT · ЖҮГІРУ × 1"
+
+[node name="Objective" type="Label" parent="Root/TopPlate/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CaptionLabel"
+text = "МАҚСАТ"
+horizontal_alignment = 1
+
+[node name="Toast" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_top = 128.0
+grow_horizontal = 2
+script = ExtResource("8_toast")
+
+[node name="SlowChip" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_type_variation = &"HudPanel"
+
+[node name="Row" type="HBoxContainer" parent="Root/SlowChip"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Snail" type="TextureRect" parent="Root/SlowChip/Row"]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("5_slow")
+stretch_mode = 3
+
+[node name="Slow" type="Label" parent="Root/SlowChip/Row"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"WarningLabel"
+text = "БАЯУЛАУ 5с"
+
+[node name="SpectateBar" type="VBoxContainer" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 8
+
+[node name="Hint" type="Label" parent="Root/SpectateBar"]
+layout_mode = 2
+theme_type_variation = &"SubtitleLabel"
+text = "Ойынды бақылаңыз: ойыншыны басыңыз / Tab / бағыттар"
+horizontal_alignment = 1
+
+[node name="Controls" type="HBoxContainer" parent="Root/SpectateBar"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="PrevBtn" type="Button" parent="Root/SpectateBar/Controls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+focus_mode = 0
+icon = ExtResource("6_left")
+icon_alignment = 1
+script = ExtResource("11_button")
+
+[node name="TargetPlate" type="PanelContainer" parent="Root/SpectateBar/Controls"]
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"HudPanel"
+
+[node name="TargetName" type="Label" parent="Root/SpectateBar/Controls/TargetPlate"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextBtn" type="Button" parent="Root/SpectateBar/Controls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+focus_mode = 0
+icon = ExtResource("7_right")
+icon_alignment = 1
+script = ExtResource("11_button")
+
+[node name="Countdown" type="CenterContainer" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("10_countdown")
+
+[node name="Banner" type="Control" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("9_banner")
+center_y = 0.27
+
+[node name="CaughtChoice" type="Control" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("12_dialog")
+dialog_title = "ҰСТАЛДЫҢЫЗ"
+dialog_message = "Ойынды бақылауды жалғастырасыз ба?"
+confirm_text = "БАҚЫЛАУ"
+cancel_text = "БАС МӘЗІРГЕ"

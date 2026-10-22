@@ -10,6 +10,8 @@
 |---|---|---|
 | Цвета, шрифты, размеры, отступы | `scripts/ui/ui_tokens.gd` (`UiTokens`) | руками |
 | Пиксельные рамки и иконки интерфейса | `assets/ui/frames/*.png` + `frames.json` | генератором `tools/artgen/` |
+| Иконки HUD и сенсорного стика | `assets/ui/hud/*.png` | генератором `tools/artgen/hud_icons.py` |
+| Цвета мира, которые рисует код (вода, следы, брызги) | `scripts/systems/world_colors.gd` (`WorldColors`) | руками, только из палитры |
 | Тема Godot | `resources/ui/ui_theme.tres`, `resources/ui/fonts/` | генератором `tools/build_theme.gd` |
 | Компоненты | `scripts/ui/components/` | руками |
 | Витрины | `tools/ui_gallery.tscn`, `tools/ui_gallery_overlays.tscn` | руками |
@@ -28,7 +30,7 @@
 | Узел | Варианты |
 |---|---|
 | `Button` / `PixelButton` | по умолчанию — бордовая кнопка; `ButtonLarge` — главное действие; `ButtonSecondary` — «Артқа», «Жоқ» |
-| `Label` | по умолчанию — текст на тёмном; `TitleLabel`, `HeadingLabel`, `SubtitleLabel` (на фоне), `WarningLabel`, `CaptionLabel`, `HudLabel`, `TimerLabel`; на пергаменте — `InkLabel`, `InkHeadingLabel` |
+| `Label` | по умолчанию — текст на тёмном; `TitleLabel`, `HeadingLabel`, `SubtitleLabel` (на фоне), `WarningLabel`, `CaptionLabel`, `HudLabel`, `TimerLabel`, `HudTimerLabel` (таймер на плашке HUD); на пергаменте — `InkLabel`, `InkHeadingLabel` |
 | `PanelContainer` | по умолчанию — бордовая панель; `ParchmentPanel` — длинный текст; `HudPanel`; `InsetPanel`; `Card`, `CardHover`, `CardSelected`; компактные `CardCompact*` |
 
 ## Компоненты
@@ -42,7 +44,8 @@
 | `Toast` | Короткое сообщение: `show_message(text, seconds)` |
 | `Banner` | Полоса через экран: `show_banner(title, subtitle, hold)` |
 | `Countdown` | «3, 2, 1, БАСТА!»: `start(3)`, сигнал `finished` |
-| `ConfirmDialog` | «Иә / Жоқ» с затемнением. API как у старого `SanlaqDialog` |
+| `ConfirmDialog` | «Иә / Жоқ» с затемнением: `open()`, сигналы `confirmed` / `cancelled`; подписи кнопок меняются |
+| `TimeBar` | Полоска оставшегося времени: `ratio` от 0 до 1, последняя треть — красная |
 
 Компоненты не обращаются к автолоадам: они шлют сигналы, а что делать дальше, решает
 экран. Их поведение проверяет `tools/components_test.gd`.
@@ -54,7 +57,11 @@
 - **Масштаб только целый.** Не растягивайте пиксельные картинки на дробный коэффициент
   и не уменьшайте их с размытием.
 - **Пиксель-арт не бывает полупрозрачным.** Затемнения и виньетки делаются цветом с
-  альфой, как в `ConfirmDialog`, а не картинкой.
+  альфой, как в `ConfirmDialog`, а не картинкой. Тени и «полупрозрачность» в мире —
+  шахматкой из непрозрачных пикселей (тень под ногами, край обзора ловца), эффекты
+  не бледнеют, а пропадают по пикселю (`PixelBurst`, звуковые волны, следы).
+- **Код рисует на сетке мира.** Всё, что рисуется в `_draw()` или шейдером, округляется
+  до `UiTokens.PIXEL` в координатах мира, иначе пиксели «плывут» при движении камеры.
 
 ## Как поменять стиль
 

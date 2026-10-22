@@ -10,7 +10,8 @@ extends SceneTree
 ## Варианты типов (theme_type_variation) — справочник для экранов:
 ##   Button: (по умолчанию — бордовая), ButtonSecondary, ButtonLarge
 ##   Label: (по умолчанию — текст на тёмном), TitleLabel, HeadingLabel,
-##          CaptionLabel, SubtitleLabel, WarningLabel, InkLabel, InkHeadingLabel, HudLabel, TimerLabel
+##          CaptionLabel, SubtitleLabel, WarningLabel, InkLabel, InkHeadingLabel, HudLabel, TimerLabel,
+##          HudTimerLabel
 ##   PanelContainer: (по умолчанию — бордовая панель), ParchmentPanel,
 ##          HudPanel, Card*, CardCompact* (плотные списки), InsetPanel
 
@@ -96,6 +97,8 @@ func _labels(theme: Theme, fonts: Dictionary) -> void:
 	_display_label(theme, "HeadingLabel", fonts.display, UiTokens.DISPLAY_SMALL, UiTokens.GOLD)
 	_display_label(theme, "HudLabel", fonts.display, UiTokens.DISPLAY_SMALL, UiTokens.CREAM)
 	_display_label(theme, "TimerLabel", fonts.display, UiTokens.DISPLAY_HERO, UiTokens.GOLD_LIGHT)
+	# Таймер раунда на плашке HUD — крупно, но плашка остаётся компактной.
+	_display_label(theme, "HudTimerLabel", fonts.display, UiTokens.DISPLAY_LARGE, UiTokens.GOLD_LIGHT)
 
 	_variation(theme, "CaptionLabel", "Label")
 	theme.set_font_size("font_size", "CaptionLabel", UiTokens.BODY_SMALL)

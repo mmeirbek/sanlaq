@@ -110,15 +110,17 @@ sokyroteke/
 │   ├── ui/                # main_menu, mode_select, mode_briefing, abai_says,
 │   │                      # togyz_qumalaq, wardrobe, lobby, results, codex,
 │   │                      # settings, about
-│   ├── world/             # game.tscn (основная сцена), map_steppe_village, yurt
+│   ├── world/             # game.tscn (основная сцена), game_hud, quiz_hud,
+│   │                      # map_steppe_village, yurt
 │   └── entities/          # player.tscn, character_visual.tscn
 ├── scripts/
 │   ├── core/              # ресурсы данных: ClothingItem, MapDefinition, GameModeDefinition,
 │   │                      # BotProfile, GameWord, ModeBriefing
 │   │                      # + движок правил GameBoard (тоғыз)
 │   ├── entities/          # player.gd, player_controller.gd, character_visual.gd
-│   ├── systems/           # match_manager, map_manager, vision, sound_wave, camera,
-│   │                      # game_audio, narration (озвучка брифингов)
+│   ├── systems/           # match_manager, map_manager, pond_layer, vision, sound_wave,
+│   │                      # footprints, pixel_burst, camera, game_audio, narration;
+│   │                      # world_layers (порядок отрисовки), world_colors
 │   ├── ai/                # bot_agent.gd (FSM ботов погони), togyz_bot.gd
 │   └── ui/                # game_hud, quiz_hud, wardrobe, touch_controls
 ├── data/                  # контент в ресурсах .tres (менять без кода!)
@@ -133,11 +135,11 @@ sokyroteke/
 │   ├── sprites/           # пиксель-арт (генерируется tools/artgen, см. README внутри)
 │   │   ├── character/     # персонаж по слоям: base/ head/ torso/ pants/ shoes/
 │   │   ├── items/         # иконки предметов одежды (квиз/шкаф/энциклопедия)
+│   │   ├── world/         # мир Соқыртеке: трава, юрта, камни, брёвна, арена, забор
 │   │   ├── backgrounds/   # фоны меню
 │   │   └── ui/            # логотип
 │   ├── ui/frames/         # пиксельные рамки интерфейса (tools/artgen)
-│   ├── character/yurt/    # текстура юрты (до перерисовки мира, этап 4)
-│   ├── tiles/             # ground, water_blob, rock (Kenney CC0, до этапа 4)
+│   ├── ui/hud/            # иконки HUD и сенсорного стика (tools/artgen)
 │   ├── audio/voice/       # озвучка объяснений: kk/ и en/ (см. README внутри)
 │   ├── i18n/              # ui_strings.csv — вся локализация KZ/EN
 └── tools/
@@ -163,6 +165,14 @@ sokyroteke/
   Единственный раунд: победить = выбыть всех бегунов до конца таймера.
 - **Связи через сигналы**: `match_manager` не знает про UI — всё через `game.gd`,
   который соединяет `quiz_hud`, `game_hud`, `vision`, камеру, звук.
+- **Мир в виде 3/4** (`map_manager.gd`): позиция игрока — точка на земле, фигура
+  нарисована выше (`Player.BODY_CENTER`). Всё, что стоит на земле, сортируется по y;
+  плоское (трава, вода, ковры, следы) и эффекты — на своих слоях `WorldLayers`.
+  Коллизии заданы числами и совпадают с картинками. Воду рисует шейдер
+  `resources/shaders/pond.gdshader` прямо по зонам замедления, поэтому
+  пересекающиеся пруды сливаются в одно озеро.
+- **Обзор ловца** (`vision_system.gd` + `resources/shaders/vision.gdshader`):
+  ясный круг в пикселях мира — тот же, по которому `game.gd` решает, кого видно.
 - **Персонаж** (`character_visual.gd`): 5 синхронных `AnimatedSprite2D`-слоёв
   (тело, обувь, штаны, торс, голова), 4 направления × idle/walk. Экипировка =
   смена текстуры слоя из `texture_path` предмета.
@@ -300,9 +310,11 @@ godot --path . --resolution 1280x720 --script tools/screenshot_screens.gd
 
 - ✅ Геймплей: погоня, квиз (10с + заморозка), выбывание, замедление, победа по таймеру
 - ✅ Персонаж: 4 направления, анимации, слои одежды, лица
-- ✅ Карта: трава, вода (замедляет), камни (коллизия), юрты (вход/выход, прятки)
+- ✅ Карта-аул в пиксель-арте 3/4: трава, пруды (замедляют), камни и брёвна (коллизия),
+  юрты (вход спереди, прятки), арена, забор
+- ✅ HUD одной плашкой, баннер роли, обратный отсчёт, квиз с картинкой и клавишами 1–3
 - ✅ Шкаф (вся одежда открыта), рандомная одежда ботов
-- ✅ Спектатор, мобильный джойстик
+- ✅ Спектатор, пиксельный стик и кнопка способности на телефоне
 - ✅ Экраны lobby / results / codex доведены до рабочих
 
 **Абай айтады**
