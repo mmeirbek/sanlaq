@@ -1,15 +1,18 @@
 extends "res://tools/test_case.gd"
-## Smoke-тест: каждая сцена из scenes/ загружается, встаёт в дерево и живёт
-## пару кадров без ошибок движка. Список сцен собирается обходом папки, так что
-## новая сцена попадает в тест автоматически.
+## Smoke-тест: каждая сцена из scenes/ и tools/ (витрины дизайн-системы)
+## загружается, встаёт в дерево и живёт пару кадров без ошибок движка. Список
+## сцен собирается обходом папок, так что новая сцена попадает в тест сама.
 
-const SCENES_ROOT := "res://scenes"
+const SCENE_ROOTS := ["res://scenes", "res://tools"]
 
 
 func _init() -> void:
 	await process_frame
 	await process_frame
-	for path in _find_scenes(SCENES_ROOT):
+	var scenes: PackedStringArray = []
+	for scene_root in SCENE_ROOTS:
+		scenes.append_array(_find_scenes(scene_root))
+	for path in scenes:
 		var instance := await mount(path)
 		if instance == null:
 			continue  # mount() уже записал провал

@@ -1,0 +1,50 @@
+{
+  "button_disabled": {
+    "margin": 14
+  },
+  "button_focus": {
+    "margin": 14
+  },
+  "button_hover": {
+    "margin": 14
+  },
+  "button_normal": {
+    "margin": 14
+  },
+  "button_pressed": {
+    "margin": 14
+  },
+  "button_secondary_hover": {
+    "margin": 14
+  },
+  "button_secondary_normal": {
+    "margin": 14
+  },
+  "button_secondary_pressed": {
+    "margin": 14
+  },
+  "card": {
+    "margin": 16
+  },
+  "card_hover": {
+    "margin": 16
+  },
+  "card_selected": {
+    "margin": 16
+  },
+  "inset": {
+    "margin": 6
+  },
+  "panel_burgundy": {
+    "margin": 18
+  },
+  "panel_hud": {
+    "margin": 8
+  },
+  "panel_parchment": {
+    "margin": 18
+  },
+  "slider_fill": {
+    "margin": 6
+  }
+}
