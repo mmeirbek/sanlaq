@@ -1,0 +1,12 @@
+# Godot всегда пишет файлы с LF. Без этого на Windows (core.autocrlf=true)
+# каждый сохранённый в редакторе файл выглядит изменённым.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.mp3 binary
+*.ogg binary
+*.wav binary
+*.ttf binary
+*.otf binary
