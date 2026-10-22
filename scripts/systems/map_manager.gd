@@ -5,9 +5,10 @@ extends Node2D
 ## без поворота и дробного масштаба; воду рисует PondLayer. Коллизии заданы
 ## числами ниже и совпадают с нарисованным.
 ##
-## Порядок постройки важен: каждый следующий объект отодвигается от всех,
-## поставленных раньше (_occupied), поэтому сначала арена с коврами и юрты,
-## потом вода, потом твёрдые препятствия, в конце декор.
+## Расстановка — как до редизайна: каждый следующий объект отодвигается от всех,
+## поставленных раньше (_occupied), и возвращается в границы карты. Поэтому
+## порядок важен: юрты, вода, камни, брёвна, кусты. Ковры и цветы — только
+## украшение: они встают в конце и только на свободное место, механику не трогают.
 
 @export var map_data: MapDefinition
 
@@ -32,7 +33,7 @@ const GROUND_DECOR: Array[Texture2D] = [
 	preload("res://assets/sprites/world/tuft.png"),
 ]
 
-## Слой коллизий препятствий — тот же, что у игроков.
+## Маска слоёв коллизий препятствий (слои 1 и 3) — та же, что у игроков.
 const OBSTACLE_LAYER := 5
 const ROCK_RADIUS := 18.0
 ## Бревно вдоль x; бревно вдоль y — тот же прямоугольник, повёрнутый на 90°.
@@ -83,14 +84,13 @@ const BUSH_SPOTS: Array[Vector2] = [
 const RUG_SPOTS: Array[Vector2] = [
 	Vector2(-740, -467), Vector2(735, -467), Vector2(-740, 468), Vector2(735, 468),
 ]
-## Свободное место вокруг объекта при расстановке (радиус).
-const ROCK_CLEARANCE := 30.0
-const LOG_CLEARANCE := 40.0
-const BUSH_CLEARANCE := 30.0
-const RUG_CLEARANCE := 100.0
-const DECOR_CLEARANCE := 16.0
-## Сколько раз чередовать «отодвинуть от соседей» и «вернуть в границы».
-const CLAIM_PASSES := 3
+## Радиус места, которое объект занимает при расстановке. Не путать с
+## ROCK_CLEAR — это зазор для спавна игроков.
+const ROCK_SPACING := 30.0
+const LOG_SPACING := 40.0
+const BUSH_SPACING := 30.0
+const RUG_SPACING := 90.0
+const DECOR_SPACING := 16.0
 
 var bounds: Rect2:
 	get:
@@ -107,12 +107,12 @@ var _occupied: Array[Dictionary] = []
 
 func _ready() -> void:
 	_build_ground()
-	_build_arena()
 	_build_yurts()
 	_build_water()
 	_build_rocks()
 	_build_logs()
 	_build_bushes()
+	_build_arena()
 	_build_decor()
 
 func _build_ground() -> void:
@@ -129,18 +129,22 @@ func _build_ground() -> void:
 	_add_tiled(FENCE_ALONG_X, Rect2(outer_x, bounds.end.y, outer_w, rail_h), WorldLayers.DECALS)
 
 func _build_arena() -> void:
-	# Арена и ковры остаются открытыми: пруды и препятствия на них не встают.
+	# Пруд у края может заходить на кольцо арены — так было и до редизайна.
 	_add_sprite(ARENA, ARENA_CENTER, WorldLayers.ARENA)
-	_register_occupied(ARENA_CENTER, ARENA_RADIUS)
+	# Ковёр, которому не нашлось места, просто не кладём.
 	for spot in RUG_SPOTS:
-		_add_sprite(RUG, spot, WorldLayers.DECALS)
-		_register_occupied(spot, RUG_CLEARANCE)
+		var pos := clamp_to_bounds(_avoid_occupied(spot, RUG_SPACING), RUG_SPACING)
+		if not _is_occupied(pos, RUG_SPACING):
+			_add_sprite(RUG, pos, WorldLayers.DECALS)
+			_register_occupied(pos, RUG_SPACING)
 
 func _build_yurts() -> void:
 	yurt_positions.clear()
 	for spot in YURT_SPOTS:
 		var yurt := YURT_SCENE.instantiate() as Node2D
 		yurt.position = spot
+		# Стены — точно на месте юрты, картинка — на ближайшей сетке пикселя арта.
+		(yurt.get_node("Body") as Node2D).position += _snap(spot) - spot
 		add_child(yurt)
 		yurt_positions.append(spot)
 		_register_occupied(spot, YURT_BLOCK_RADIUS)
@@ -160,7 +164,7 @@ func _build_rocks() -> void:
 	for spot in ROCK_SPOTS:
 		var shape := CircleShape2D.new()
 		shape.radius = ROCK_RADIUS
-		obstacle_positions.append(_add_obstacle(spot, ROCK_CLEARANCE, ROCKS.pick_random(), shape))
+		obstacle_positions.append(_add_obstacle(spot, ROCK_SPACING, ROCKS.pick_random(), shape))
 
 func _build_logs() -> void:
 	for spot in LOG_SPOTS:
@@ -168,32 +172,32 @@ func _build_logs() -> void:
 		var shape := RectangleShape2D.new()
 		shape.size = LOG_SIZE if along_x else Vector2(LOG_SIZE.y, LOG_SIZE.x)
 		var texture := LOG_ALONG_X if along_x else LOG_ALONG_Y
-		obstacle_positions.append(_add_obstacle(spot, LOG_CLEARANCE, texture, shape))
+		obstacle_positions.append(_add_obstacle(spot, LOG_SPACING, texture, shape))
 
 func _build_bushes() -> void:
 	# Кусты — декор без коллизий, но стоят в сортировке: за кустом прячутся ноги.
 	for spot in BUSH_SPOTS:
-		var bush := _add_sprite(BUSH, _claim_spot(spot, BUSH_CLEARANCE), WorldLayers.SORTED)
-		bush.offset = BUSH_OFFSET
+		var bush := _add_sprite(BUSH, _claim_spot(spot, BUSH_SPACING), WorldLayers.SORTED)
+		bush.offset += BUSH_OFFSET
 
 func _build_decor() -> void:
-	# Цветы и пучки травы: плоские, только на свободной траве.
+	# Цветы и пучки травы: плоские, только на свободной траве вне арены.
 	var placed := 0
 	for _attempt in DECOR_COUNT * 4:
 		if placed == DECOR_COUNT:
 			return
 		var pos := Vector2(
-			randf_range(bounds.position.x + DECOR_CLEARANCE, bounds.end.x - DECOR_CLEARANCE),
-			randf_range(bounds.position.y + DECOR_CLEARANCE, bounds.end.y - DECOR_CLEARANCE))
-		if _is_occupied(pos, DECOR_CLEARANCE):
+			randf_range(bounds.position.x + DECOR_SPACING, bounds.end.x - DECOR_SPACING),
+			randf_range(bounds.position.y + DECOR_SPACING, bounds.end.y - DECOR_SPACING))
+		if pos.distance_to(ARENA_CENTER) < ARENA_RADIUS + DECOR_SPACING or _is_occupied(pos, DECOR_SPACING):
 			continue
 		_add_sprite(GROUND_DECOR.pick_random(), pos, WorldLayers.DECALS)
 		placed += 1
 
 ## Твёрдое препятствие: StaticBody2D с явной формой и спрайтом по её центру.
 ## Возвращает итоговую позицию — после того как её отодвинули от соседей.
-func _add_obstacle(spot: Vector2, clearance: float, texture: Texture2D, shape: Shape2D) -> Vector2:
-	var pos := _claim_spot(spot, clearance)
+func _add_obstacle(spot: Vector2, spacing: float, texture: Texture2D, shape: Shape2D) -> Vector2:
+	var pos := _claim_spot(spot, spacing)
 	var body := StaticBody2D.new()
 	body.position = pos
 	body.collision_layer = OBSTACLE_LAYER
@@ -201,19 +205,31 @@ func _add_obstacle(spot: Vector2, clearance: float, texture: Texture2D, shape: S
 	var collision := CollisionShape2D.new()
 	collision.shape = shape
 	body.add_child(collision)
-	var sprite := Sprite2D.new()
-	sprite.texture = texture
+	# Тело стоит точно на своём месте, картинка — на ближайшей сетке пикселя арта.
+	var sprite := _pixel_sprite(texture)
+	sprite.position = _snap(pos) - pos
 	body.add_child(sprite)
 	add_child(body)
 	return pos
 
 func _add_sprite(texture: Texture2D, pos: Vector2, layer: int) -> Sprite2D:
-	var sprite := Sprite2D.new()
-	sprite.texture = texture
-	sprite.position = pos
+	var sprite := _pixel_sprite(texture)
+	sprite.position = _snap(pos)
 	sprite.z_index = layer
 	add_child(sprite)
 	return sprite
+
+## Спрайт с центром в своей точке и левым верхним углом на сетке пикселя арта —
+## даже если сторона картинки не делится на 4 и центр выпадает на полпикселя.
+func _pixel_sprite(texture: Texture2D) -> Sprite2D:
+	var sprite := Sprite2D.new()
+	sprite.texture = texture
+	sprite.centered = false
+	sprite.offset = -_snap(texture.get_size() / 2.0)
+	return sprite
+
+func _snap(pos: Vector2) -> Vector2:
+	return (pos / UiTokens.PIXEL).floor() * UiTokens.PIXEL
 
 ## Плитка, повторяющаяся на весь rect. Узор привязан к миру, а не к краю rect.
 func _add_tiled(texture: Texture2D, rect: Rect2, layer: int) -> void:
@@ -227,15 +243,11 @@ func _add_tiled(texture: Texture2D, rect: Rect2, layer: int) -> void:
 	sprite.z_index = layer
 	add_child(sprite)
 
-## Отодвигает точку от занятых мест и края карты, ставит на сетку пикселя
-## арта и занимает её. Край карты может вдавить точку обратно в соседа —
-## тогда объекты накладываются: пруды сливаются в озеро, а не уезжают далеко
-## от своих мест.
+## Отодвигает точку от занятых мест, возвращает в границы карты и занимает её.
+## Край карты может вдавить точку обратно в соседа — тогда объекты
+## накладываются (пруды сливаются в озеро). Так было и до редизайна.
 func _claim_spot(spot: Vector2, radius: float) -> Vector2:
-	var pos := spot
-	for _pass in CLAIM_PASSES:
-		pos = clamp_to_bounds(_avoid_occupied(pos, radius), radius)
-	pos = (pos / UiTokens.PIXEL).round() * UiTokens.PIXEL
+	var pos := clamp_to_bounds(_avoid_occupied(spot, radius), radius)
 	_register_occupied(pos, radius)
 	return pos
 
