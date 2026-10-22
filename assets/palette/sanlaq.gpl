@@ -1,0 +1,110 @@
+GIMP Palette
+Name: SANLAQ
+Columns: 4
+#
+# Общая палитра всего пиксель-арта САҢЛАҚ: интерфейс, персонажи, мир, фоны.
+# Генераторы tools/artgen рисуют только этими цветами (или сводят к ним),
+# tools/style_test.gd проверяет по этому файлу каждую картинку.
+# Цвета интерфейса совпадают с UiTokens (это тоже проверяется тестом).
+# Цвета идут «лесенками»: светлый → основной → тень.
+#
+# --- Контур и «чернила» ---
+ 38  22  18	outline
+ 43  26  20	ink
+ 58  36  25	ink_soft
+# --- Бордо (интерфейс, красные ткани) ---
+196  69  47	red_light
+139  46  36	burgundy_light
+109  29  23	burgundy
+ 71  19  16	burgundy_dark
+# --- Золото ---
+246 204 122	gold_light
+231 165  91	ember
+217 154  85	gold
+150  92  42	gold_dark
+# --- Светлое: текст, пергамент, белые ткани, войлок ---
+247 241 227	parchment
+247 230 209	cream
+226 207 174	parchment_dark
+200 184 150	cloth_shadow
+184 155 126	muted
+# --- Кожа ---
+236 195 154	skin_light
+212 158 116	skin
+176 122  88	skin_dark
+138  90  60	skin_deep
+# --- Волосы ---
+ 90  58  38	hair_brown
+176 172 164	hair_grey
+# --- Мех ---
+236 222 194	fur_light
+190 168 136	fur
+138 114  88	fur_dark
+# --- Кожа выделанная, обувь ---
+142  96  64	leather_light
+ 92  58  36	leather
+ 62  38  24	leather_dark
+# --- Синие ткани ---
+ 79 127 194	blue_light
+ 47  79 140	blue
+ 31  48  88	blue_dark
+# --- Зелёные ткани ---
+106 154  80	green_light
+ 62 106  58	green
+ 37  64  42	green_dark
+# --- Бирюза ---
+ 52 128 118	teal
+ 26  74  70	teal_dark
+# --- Трава ---
+166 200 106	grass_light
+122 160  74	grass
+ 90 138  58	grass_mid
+ 59  94  36	grass_dark
+ 40  64  24	grass_deep
+# --- Тропа, земля ---
+216 184 136	path_light
+196 154 104	path
+154 116  72	path_dark
+# --- Камень ---
+180 174 158	stone_light
+138 132 120	stone
+ 94  90  82	stone_dark
+# --- Дерево ---
+160 112  62	wood_light
+120  78  44	wood
+ 78  50  28	wood_dark
+# --- Вода ---
+207 232 240	water_foam
+122 180 216	water_light
+ 62 127 184	water
+ 36  90 142	water_dark
+ 24  62 102	water_deep
+# --- Войлок юрты ---
+220 200 164	felt
+184 160 124	felt_dark
+# --- Металл ---
+196 198 206	steel_light
+154 156 166	steel
+104 106 120	steel_dark
+# --- Небо: закат и ночь (фоны меню) ---
+255 224 160	sun
+240 180 120	peach
+232 140  76	sunset
+216 120 106	sunset_pink
+# Ржавые тона — степь и облака на закате
+210 118  62	rust_light
+176  92  46	rust
+130  62  34	rust_dark
+# Пыльная роза — небо и дальние облака
+204 110  82	rose_light
+168  98  84	rose
+130  72  66	rose_dark
+# Сиреневая дымка — дальние горы
+150 116 126	haze
+118  88 100	haze_dark
+106  74 104	mauve
+ 74  46  68	plum
+ 58  42  74	dusk
+ 40  30  56	night_violet
+ 34  48  74	night_blue
+ 26  20  38	night

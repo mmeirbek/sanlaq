@@ -1,10 +1,12 @@
 extends "res://tools/test_case.gd"
 ## Единый стиль (docs/REDESIGN_PLAN.md, «Единый стиль»), проверяемый автоматически:
-## - пиксель-арт только из палитры UiTokens, альфа только 0 или 255;
+## - пиксель-арт только из общей палитры assets/palette/sanlaq.gpl, альфа 0 или 255;
+## - цвета интерфейса UiTokens — часть этой палитры;
 ## - размер кратен пикселю арта (UiTokens.PIXEL);
 ## - каждый theme_type_variation, упомянутый в коде, есть в теме.
 
 const THEME := preload("res://resources/ui/ui_theme.tres")
+const PALETTE_PATH := "res://assets/palette/sanlaq.gpl"
 ## Папки с пиксель-артом, который обязан следовать правилам. Этап 2 добавит
 ## сюда весь арт игры.
 const PIXEL_ART_DIRS := ["res://assets/ui/frames"]
@@ -13,7 +15,8 @@ const CODE_DIRS := ["res://scenes", "res://scripts", "res://tools"]
 
 func _init() -> void:
 	var palette := _palette()
-	check(palette.size() > 10, "палитра UiTokens прочитана, цветов: %d" % palette.size())
+	check(palette.size() > 10, "палитра sanlaq.gpl прочитана, цветов: %d" % palette.size())
+	_check_tokens_in_palette(palette)
 	for dir_path in PIXEL_ART_DIRS:
 		for file in DirAccess.get_files_at(dir_path):
 			if file.get_extension() == "png":
@@ -22,14 +25,23 @@ func _init() -> void:
 	finish("STYLE")
 
 
-## Все цвета-константы UiTokens как "rrggbb".
+## Цвета палитры GIMP (.gpl) как {"rrggbb": имя}.
 func _palette() -> Dictionary:
 	var colors := {}
-	var constants: Dictionary = UiTokens.new().get_script().get_script_constant_map()
-	for value in constants.values():
-		if value is Color:
-			colors[value.to_html(false)] = true
+	var row := RegEx.create_from_string("^\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\w+)\\s*$")
+	for line in FileAccess.get_file_as_string(PALETTE_PATH).split("\n"):
+		var found := row.search(line)
+		if found:
+			var rgb := Color8(found.get_string(1).to_int(), found.get_string(2).to_int(), found.get_string(3).to_int())
+			colors[rgb.to_html(false)] = found.get_string(4)
 	return colors
+
+
+func _check_tokens_in_palette(palette: Dictionary) -> void:
+	var constants: Dictionary = UiTokens.new().get_script().get_script_constant_map()
+	for token: String in constants:
+		if constants[token] is Color:
+			check(palette.has(constants[token].to_html(false)), "UiTokens.%s есть в палитре" % token)
 
 
 func _check_pixel_art(path: String, palette: Dictionary) -> void:
