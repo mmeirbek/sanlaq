@@ -16,6 +16,8 @@ func _init() -> void:
 	await _test_wrong_answer_slows_and_blocks_catch()
 	await _test_last_catch_ends_round_once()
 	await _test_next_quiz_survives_previous_result()
+	await _test_quiz_checks_answer_by_button()
+	await _test_quiz_answer_keys()
 	await _test_bot_seeker_keeps_its_course()
 	await _test_shield_wears_off_fully()
 	finish("MECHANICS")
@@ -93,11 +95,72 @@ func _test_next_quiz_survives_previous_result() -> void:
 	var item = _runners(mm)[0].get_random_clothing_item_for_quiz()
 
 	hud.show_quiz(item, 30.0)
-	hud.btn_a.pressed.emit()
+	hud.answer_button(0).pressed.emit()
 	await create_timer(1.0).timeout
 	hud.show_quiz(item, 30.0)
 	await create_timer(hud.RESULT_SHOW_TIME).timeout
-	check(hud.panel.visible, "квиз второй поимки остаётся на экране")
+	check(hud.is_open(), "квиз второй поимки остаётся на экране")
+	await _stop(game)
+
+
+## Верность ответа решает номер нажатой кнопки. Раньше сравнивался текст
+## кнопки с названием вещи: неверный вариант с тем же текстом засчитывался.
+func _test_quiz_checks_answer_by_button() -> void:
+	var game := await _start_round()
+	var hud = game.quiz_hud
+	var item = _runners(game.match_mgr)[0].get_random_clothing_item_for_quiz().duplicate()
+	var correct_name: String = item.get_name_for_lang(autoload("GameSettings").get_lang_code())
+	# Данные с ошибкой: среди неверных вариантов — само верное название.
+	var wrongs: Array[String] = [correct_name, "Жоқ нұсқа", "Тағы жоқ нұсқа"]
+	item.wrong_answers_kz = wrongs
+	item.wrong_answers_en = wrongs
+	var answers: Array[bool] = []
+	hud.answer_submitted.connect(func(correct: bool) -> void: answers.append(correct))
+
+	# Варианты перемешиваются — смотрим несколько раздач.
+	for _deal in 8:
+		hud.show_quiz(item, 30.0)
+		var labels: Array[String] = []
+		for i in 3:
+			labels.append(hud.answer_button(i).text.substr(3))
+		check(labels.count(correct_name) == 1, "верное название на одной кнопке: %s" % [labels])
+	var wrong_index: int = (hud.correct_index() + 1) % 3
+	hud.answer_button(wrong_index).pressed.emit()
+	check(answers == [false], "неверная кнопка — неверный ответ, получено %s" % [answers])
+
+	hud.show_quiz(item, 30.0)
+	answers.clear()
+	hud.answer_button(hud.correct_index()).pressed.emit()
+	check(answers == [true], "верная кнопка — верный ответ, получено %s" % [answers])
+	await _stop(game)
+
+
+## Ответ клавишей: 1–3 верхнего ряда по физическому месту (на казахской
+## раскладке там буквы) и 1–3 цифрового блока.
+func _test_quiz_answer_keys() -> void:
+	var game := await _start_round()
+	var hud = game.quiz_hud
+	var item = _runners(game.match_mgr)[0].get_random_clothing_item_for_quiz()
+	var answers: Array[bool] = []
+	hud.answer_submitted.connect(func(correct: bool) -> void: answers.append(correct))
+
+	# Клавиша верного ответа в верхнем ряду; символ на ней — не цифра.
+	hud.show_quiz(item, 30.0)
+	var top_row := InputEventKey.new()
+	top_row.physical_keycode = [KEY_1, KEY_2, KEY_3][hud.correct_index()]
+	top_row.keycode = KEY_UNKNOWN
+	top_row.pressed = true
+	root.push_input(top_row)
+	check(answers == [true], "клавиша верного ответа в верхнем ряду, получено %s" % [answers])
+
+	# Клавиша неверного ответа на цифровом блоке.
+	hud.show_quiz(item, 30.0)
+	answers.clear()
+	var keypad := InputEventKey.new()
+	keypad.keycode = [KEY_KP_1, KEY_KP_2, KEY_KP_3][(hud.correct_index() + 1) % 3]
+	keypad.pressed = true
+	root.push_input(keypad)
+	check(answers == [false], "клавиша неверного ответа на цифровом блоке, получено %s" % [answers])
 	await _stop(game)
 
 

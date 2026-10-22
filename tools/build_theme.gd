@@ -8,9 +8,10 @@ extends SceneTree
 ##     godot --headless --path . --script res://tools/build_theme.gd
 ##
 ## Варианты типов (theme_type_variation) — справочник для экранов:
-##   Button: (по умолчанию — бордовая), ButtonSecondary, ButtonLarge
+##   Button: (по умолчанию — бордовая), ButtonSecondary, ButtonLarge, AnswerButton
 ##   Label: (по умолчанию — текст на тёмном), TitleLabel, HeadingLabel,
-##          CaptionLabel, SubtitleLabel, WarningLabel, InkLabel, InkHeadingLabel, HudLabel, TimerLabel
+##          CaptionLabel, SubtitleLabel, WarningLabel, InkLabel, InkHeadingLabel, HudLabel, TimerLabel,
+##          HudTimerLabel, LeadLabel, NameTagLabel
 ##   PanelContainer: (по умолчанию — бордовая панель), ParchmentPanel,
 ##          HudPanel, Card*, CardCompact* (плотные списки), InsetPanel
 
@@ -55,6 +56,10 @@ func _buttons(theme: Theme, fonts: Dictionary) -> void:
 	# Крупная — главные действия экрана (ОЙНАУ, БАСТАУ).
 	_variation(theme, "ButtonLarge", "Button")
 	theme.set_font_size("font_size", "ButtonLarge", UiTokens.DISPLAY_MEDIUM)
+	# Ответ квиза: название вещи читаемым шрифтом, крупно.
+	_variation(theme, "AnswerButton", "Button")
+	theme.set_font("font", "AnswerButton", fonts.body_bold)
+	theme.set_font_size("font_size", "AnswerButton", UiTokens.BODY_LARGE)
 
 
 func _button_type(theme: Theme, type: String, frame: String, font: Font, size: int) -> void:
@@ -96,6 +101,19 @@ func _labels(theme: Theme, fonts: Dictionary) -> void:
 	_display_label(theme, "HeadingLabel", fonts.display, UiTokens.DISPLAY_SMALL, UiTokens.GOLD)
 	_display_label(theme, "HudLabel", fonts.display, UiTokens.DISPLAY_SMALL, UiTokens.CREAM)
 	_display_label(theme, "TimerLabel", fonts.display, UiTokens.DISPLAY_HERO, UiTokens.GOLD_LIGHT)
+	# Таймер раунда на плашке HUD — крупно, но плашка остаётся компактной.
+	_display_label(theme, "HudTimerLabel", fonts.display, UiTokens.DISPLAY_LARGE, UiTokens.GOLD_LIGHT)
+
+	# Крупный текст: вопрос квиза.
+	_variation(theme, "LeadLabel", "Label")
+	theme.set_font_size("font_size", "LeadLabel", UiTokens.BODY_LARGE)
+
+	# Имя над игроком в мире: обводка контуром читается на траве и на воде.
+	_variation(theme, "NameTagLabel", "Label")
+	theme.set_font("font", "NameTagLabel", fonts.body_bold)
+	theme.set_font_size("font_size", "NameTagLabel", UiTokens.BODY_SMALL)
+	theme.set_color("font_outline_color", "NameTagLabel", UiTokens.OUTLINE)
+	theme.set_constant("outline_size", "NameTagLabel", UiTokens.PIXEL * 3)
 
 	_variation(theme, "CaptionLabel", "Label")
 	theme.set_font_size("font_size", "CaptionLabel", UiTokens.BODY_SMALL)

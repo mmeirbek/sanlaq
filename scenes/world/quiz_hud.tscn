@@ -1,0 +1,96 @@
+[gd_scene format=3 uid="uid://bqctticvlwplq"]
+
+[ext_resource type="Script" path="res://scripts/ui/quiz_hud.gd" id="1_script"]
+[ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://scripts/ui/components/time_bar.gd" id="3_time_bar"]
+[ext_resource type="Script" path="res://scripts/ui/components/pixel_button.gd" id="4_button"]
+
+[node name="QuizHUD" type="CanvasLayer"]
+layer = 20
+script = ExtResource("1_script")
+
+[node name="Root" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_theme")
+
+[node name="Panel" type="PanelContainer" parent="Root"]
+custom_minimum_size = Vector2(720, 0)
+layout_mode = 2
+
+[node name="Rows" type="VBoxContainer" parent="Root/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Kicker" type="Label" parent="Root/Panel/Rows"]
+layout_mode = 2
+theme_type_variation = &"HeadingLabel"
+text = "БІЛІМ СЫНАҒЫ · QUIZ"
+horizontal_alignment = 1
+
+[node name="Columns" type="HBoxContainer" parent="Root/Panel/Rows"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Picture" type="PanelContainer" parent="Root/Panel/Rows/Columns"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"InsetPanel"
+
+[node name="ItemIcon" type="TextureRect" parent="Root/Panel/Rows/Columns/Picture"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Side" type="VBoxContainer" parent="Root/Panel/Rows/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="Question" type="Label" parent="Root/Panel/Rows/Columns/Side"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"LeadLabel"
+text = "Бұл қандай бас киім?"
+autowrap_mode = 2
+
+[node name="TimeBar" type="Control" parent="Root/Panel/Rows/Columns/Side"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("3_time_bar")
+
+[node name="Answer1" type="Button" parent="Root/Panel/Rows/Columns/Side"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"AnswerButton"
+text = "1. Бөрік"
+alignment = 0
+icon_alignment = 2
+script = ExtResource("4_button")
+
+[node name="Answer2" type="Button" parent="Root/Panel/Rows/Columns/Side"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"AnswerButton"
+text = "2. Тақия"
+alignment = 0
+icon_alignment = 2
+script = ExtResource("4_button")
+
+[node name="Answer3" type="Button" parent="Root/Panel/Rows/Columns/Side"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+theme_type_variation = &"AnswerButton"
+text = "3. Тымақ"
+alignment = 0
+icon_alignment = 2
+script = ExtResource("4_button")

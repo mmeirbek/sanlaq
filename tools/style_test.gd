@@ -1,7 +1,7 @@
 extends "res://tools/test_case.gd"
 ## Единый стиль (docs/REDESIGN_PLAN.md, «Единый стиль»), проверяемый автоматически:
 ## - пиксель-арт только из общей палитры assets/palette/sanlaq.gpl, альфа 0 или 255;
-## - цвета интерфейса UiTokens — часть этой палитры;
+## - цвета интерфейса UiTokens и цвета мира WorldColors — часть этой палитры;
 ## - картинка лежит на сетке пикселя арта (UiTokens.PIXEL): каждый пиксель арта —
 ##   ровный квадрат, без сглаживания и дробного масштаба;
 ## - каждый theme_type_variation, упомянутый в коде, есть в теме.
@@ -9,7 +9,7 @@ extends "res://tools/test_case.gd"
 const THEME := preload("res://resources/ui/ui_theme.tres")
 const PALETTE_PATH := "res://assets/palette/sanlaq.gpl"
 ## Папки с пиксель-артом, который обязан следовать правилам (с подпапками).
-const PIXEL_ART_DIRS := ["res://assets/ui/frames", "res://assets/sprites"]
+const PIXEL_ART_DIRS := ["res://assets/ui/frames", "res://assets/ui/hud", "res://assets/sprites"]
 const CODE_DIRS := ["res://scenes", "res://scripts", "res://tools"]
 
 
@@ -37,10 +37,12 @@ func _palette() -> Dictionary:
 
 
 func _check_tokens_in_palette(palette: Dictionary) -> void:
-	var constants: Dictionary = UiTokens.new().get_script().get_script_constant_map()
-	for token: String in constants:
-		if constants[token] is Color:
-			check(palette.has(constants[token].to_rgba32() >> 8), "UiTokens.%s есть в палитре" % token)
+	for owner: Script in [UiTokens, WorldColors]:
+		var constants := owner.get_script_constant_map()
+		for token: String in constants:
+			if constants[token] is Color:
+				check(palette.has(constants[token].to_rgba32() >> 8),
+					"%s.%s есть в палитре" % [owner.get_global_name(), token])
 
 
 func _check_pixel_art(path: String, palette: Dictionary) -> void:

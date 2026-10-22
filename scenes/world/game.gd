@@ -31,7 +31,7 @@ var _yurt_reveal := {} # key: player_index -> seconds remaining of reveal
 
 @onready var _players_container: Node2D = $Players
 @onready var _systems: Node2D = $Systems
-@onready var _touch_controls = $TouchControls
+@onready var _touch_controls: TouchControls = $TouchControls
 
 func _ready() -> void:
 	var game_data := SceneRouter.get_pending_game_data()
@@ -74,7 +74,7 @@ func _ready() -> void:
 
 	_wire_sound_for_players()
 	_wire_catch_areas()
-	_wire_spectate_buttons()
+	game_hud.spectate_cycled.connect(_cycle_spectate)
 	game_hud.spectate_requested.connect(_start_spectate)
 	game_hud.leave_requested.connect(func() -> void: SceneRouter.go_to_main_menu())
 
@@ -108,12 +108,6 @@ func _wire_catch_areas() -> void:
 		if area:
 			area.body_entered.connect(_on_catch_area_entered.bind(p))
 
-func _wire_spectate_buttons() -> void:
-	var prev_btn := game_hud.get_node("SpectateBar/PrevBtn") as Button
-	var next_btn := game_hud.get_node("SpectateBar/NextBtn") as Button
-	prev_btn.pressed.connect(_cycle_spectate.bind(-1))
-	next_btn.pressed.connect(_cycle_spectate.bind(1))
-
 func _on_catch_area_entered(body: Node2D, catcher: Player) -> void:
 	if not catcher.is_sokyroteke:
 		return
@@ -134,7 +128,6 @@ func _spawn_human_player() -> void:
 
 	if camera:
 		camera.set_target(p)
-	game_hud.player = p
 	_touch_controls.player = p
 	p.runner_sprint_changed.connect(func(time_left: float, uses_left: int) -> void:
 		if not p.is_sokyroteke:
@@ -172,13 +165,19 @@ func _spawn_bot(idx: int, profile_id: String = "") -> void:
 	p.set_display_name(_player_display_name(p))
 
 func _on_sokyroteke_assigned(player: Player) -> void:
+	# Баннер роли висит, пока ловец «жабады көзін» и идёт обратный отсчёт.
+	var seconds := match_mgr.mode.headstart_secs
 	if player.is_bot:
 		vision.set_active(false)
-		game_hud.show_message(tr("«%s» — Соқыртеке! Қашыңыз!") % player.bot_name, 3.0)
+		var objective := tr("МАҚСАТ: УАҚЫТ АЯҚТАЛҒАНША АМАН ҚАЛ")
+		# Бегуну важнее всего, кто ловец, — это вторая строка баннера.
+		var seeker := tr("«%s» — Соқыртеке! Қашыңыз!") % player.bot_name
+		game_hud.show_role(tr("СІЗ ҚАШУШЫСЫЗ!"), seeker, objective, seconds)
 	else:
 		vision.set_active(true)
-		vision.set_target_position(player.global_position)
-		game_hud.show_message(tr("Сіз — Соқыртеке! Қуып ұстаңыз!"), 3.0)
+		vision.set_target_position(player.global_position + Player.BODY_CENTER)
+		var objective := tr("МАҚСАТ: БАРЛЫҚ ҚАШУШЫНЫ ҰСТА")
+		game_hud.show_role(tr("СІЗ СОҚЫРТЕКЕСІЗ!"), objective, objective, seconds)
 
 func _on_quiz_triggered(catcher: Player, target: Player, item: ClothingItem) -> void:
 	if catcher.is_bot:
@@ -205,13 +204,12 @@ func _on_quiz_answer(correct: bool) -> void:
 	match_mgr.submit_quiz_answer(correct)
 
 func _on_round_started() -> void:
-	game_hud.update_round(1, 1)
+	# Пока ловец «жабады көзін», бегуны разбегаются: отсчёт идёт ровно столько.
+	game_hud.start_countdown(match_mgr.mode.headstart_secs)
 
+## Итог сразу, а не через паузу до экрана результатов.
 func _on_round_ended(winner: String) -> void:
-	if winner == "sokyroteke":
-		game_hud.show_message(tr("СОҚЫРТЕКЕ ҰТТЫ! Барлығы ұсталды!"), 3.0)
-	else:
-		game_hud.show_message(tr("ҚАШУШЫЛАР ҰТТЫ! Уақыт бітті!"), 3.0)
+	game_hud.show_result(tr("СОҚЫРТЕКЕ ЖЕҢДІ!") if winner == "sokyroteke" else tr("ҚАШУШЫЛАР ЖЕҢДІ!"))
 
 func _on_player_caught(_catcher: Player, target: Player) -> void:
 	game_audio.play_catch()
@@ -221,11 +219,9 @@ func _on_player_caught(_catcher: Player, target: Player) -> void:
 			camera.add_shake(4.0)
 
 func _on_player_eliminated(player: Player) -> void:
-	_spawn_pop(player.global_position, Color(1, 0.9, 0.4))
+	_burst_caught(player)
 	if player.is_bot:
 		game_hud.show_message(tr("«%s» ұсталды!") % player.bot_name, 2.5)
-		if match_mgr.sokyroteke == match_mgr.human_player:
-			game_hud.set_objective(tr("МАҚСАТ: %d/%d ҚАШУШЫ ҰСТАЛДЫ") % [match_mgr.eliminated_count, match_mgr.runners_total])
 	else:
 		game_audio.play_defeat()
 		if GameSettings.screen_shake_enabled:
@@ -248,10 +244,6 @@ func _on_match_ended(results: Dictionary) -> void:
 		"human_won": human_won,
 		"correct_answers": _correct_answers,
 	})
-	if winner == "sokyroteke":
-		game_hud.show_message(tr("ЖЕҢІС: Соқыртеке!"), 2.0)
-	else:
-		game_hud.show_message(tr("ЖЕҢІС: Қашушылар!"), 2.0)
 	if human_won:
 		game_audio.play_victory()
 	else:
@@ -260,11 +252,11 @@ func _on_match_ended(results: Dictionary) -> void:
 	SceneRouter.go_to_results(results)
 
 func _setup_match_features() -> void:
+	_touch_controls.set_sprint_mode(_selected_role == "runner")
+	_touch_controls.echo_pressed.connect(_activate_echo)
 	if _selected_role == "runner":
-		game_hud.set_objective(tr("МАҚСАТ: УАҚЫТ АЯҚТАЛҒАНША АМАН ҚАЛ"))
 		game_hud.update_runner_sprint(0.0, _players[0].runner_sprint_uses)
 	else:
-		game_hud.set_objective(tr("МАҚСАТ: БАРЛЫҚ ҚАШУШЫНЫ ҰСТА"))
 		game_hud.update_sokyroteke_echo(0.0, _echo_uses)
 
 func _update_match_features(delta: float) -> void:
@@ -284,7 +276,6 @@ func _update_match_features(delta: float) -> void:
 			game_hud.show_message(tr("ТҰМАН ТҮСТІ: КӨРІНІС АЗАЙДЫ"), 2.0)
 		vision.radius = 65.0 if _fog_time > 0.0 else (180.0 if _echo_time > 0.0 else 100.0)
 	else:
-		game_hud.set_objective(tr("МАҚСАТ: %.0f СЕКУНД АМАН ҚАЛ") % maxf(0.0, match_mgr.round_timer))
 		game_hud.update_runner_sprint(_players[0].runner_sprint_time, _players[0].runner_sprint_uses)
 
 func _activate_echo() -> void:
@@ -299,7 +290,6 @@ func _activate_echo() -> void:
 func _start_spectate() -> void:
 	_spectating = true
 	_spectate_index = 0
-	game_hud.hide_defeat()
 	game_hud.show_spectate_bar()
 	_cycle_spectate(0)
 
@@ -315,7 +305,11 @@ func _cycle_spectate(dir: int) -> void:
 	if targets.is_empty():
 		return
 	_spectate_index = posmod(_spectate_index + dir, targets.size())
-	camera.set_target(targets[_spectate_index])
+	_watch(targets[_spectate_index])
+
+func _watch(target: Player) -> void:
+	camera.set_target(target)
+	game_hud.set_spectate_target(_player_display_name(target))
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not _spectating and event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_E:
@@ -342,50 +336,26 @@ func _pick_spectate_target(screen_pos: Vector2) -> void:
 			best_d = d
 			best = p
 	if best:
-		camera.set_target(best)
+		_watch(best)
 
 func _player_display_name(p: Player) -> String:
 	return SaveManager.nickname if p.is_bot == false else p.bot_name
 
-func _spawn_pop(pos: Vector2, col: Color) -> void:
-	var parts := CPUParticles2D.new()
-	parts.position = pos
-	parts.amount = 18
-	parts.lifetime = 0.6
-	parts.one_shot = true
-	parts.explosiveness = 1.0
-	parts.direction = Vector2.UP
-	parts.spread = 180.0
-	parts.gravity = Vector2(0, 200)
-	parts.initial_velocity_min = 80.0
-	parts.initial_velocity_max = 200.0
-	parts.scale_amount_min = 2.0
-	parts.scale_amount_max = 4.0
-	parts.color = col
-	_players_container.add_child(parts)
-	parts.emitting = true
-	var timer := get_tree().create_timer(1.0)
-	timer.timeout.connect(parts.queue_free)
+## Вспышка над выбитым игроком.
+func _burst_caught(player: Player) -> void:
+	var colors: Array[Color] = [UiTokens.GOLD_LIGHT, UiTokens.GOLD, UiTokens.EMBER, UiTokens.CREAM]
+	PixelBurst.spawn(_systems, player.global_position + Player.BODY_CENTER, colors, 18,
+		Vector2(80, 200), Vector2(0, 200), 0.6)
 
-func _spawn_zone_puff(pos: Vector2, col: Color, amount := 14) -> void:
-	var parts := CPUParticles2D.new()
-	parts.position = pos
-	parts.amount = amount
-	parts.lifetime = 0.9
-	parts.one_shot = true
-	parts.explosiveness = 1.0
-	parts.direction = Vector2(0, -1)
-	parts.spread = 120.0
-	parts.gravity = Vector2(0, -60)
-	parts.initial_velocity_min = 40.0
-	parts.initial_velocity_max = 120.0
-	parts.scale_amount_min = 1.6
-	parts.scale_amount_max = 3.2
-	parts.color = col
-	_players_container.add_child(parts)
-	parts.emitting = true
-	var timer := get_tree().create_timer(1.2)
-	timer.timeout.connect(parts.queue_free)
+## Брызги у ног, когда игрок заходит в пруд.
+func _burst_splash(player: Player) -> void:
+	var colors: Array[Color] = [WorldColors.WATER_FOAM, WorldColors.WATER_LIGHT, WorldColors.WATER]
+	PixelBurst.spawn(_systems, player.global_position, colors, 20, Vector2(60, 140), Vector2(0, 300), 0.6)
+
+## Пыль войлока, когда игрок заходит в юрту.
+func _burst_yurt_dust(player: Player) -> void:
+	var colors: Array[Color] = [WorldColors.FELT, WorldColors.FELT_DARK, WorldColors.PATH_LIGHT]
+	PixelBurst.spawn(_systems, player.global_position, colors, 16, Vector2(30, 90), Vector2(0, -40), 0.9)
 
 func _flash(col: Color, strength: float) -> void:
 	var rect := ColorRect.new()
@@ -409,7 +379,7 @@ func _process(_delta: float) -> void:
 			fp_radius = 65.0
 		match_mgr.sokyroteke.set_footprint_boost(footprint_system.has_visible_print(match_mgr.sokyroteke.global_position, fp_radius))
 		if human_is_sokyroteke:
-			vision.set_target_position(match_mgr.sokyroteke.global_position)
+			vision.set_target_position(match_mgr.sokyroteke.global_position + Player.BODY_CENTER)
 			var center := match_mgr.sokyroteke.global_position
 			var light := vision.radius
 			for p in _players:
@@ -465,9 +435,9 @@ func _process(_delta: float) -> void:
 			if in_water and not _prev_human_water:
 				# Звук всплеска идёт по шагам (_on_player_stepped) — привязан к реальной
 				# ходьбе, а не к самому факту стояния в воде.
-				_spawn_zone_puff(human.global_position, Color(0.35, 0.6, 0.9, 0.7), 20)
+				_burst_splash(human)
 			if in_yurt and not _prev_human_yurt:
-				_spawn_zone_puff(human.global_position, Color(0.8, 0.62, 0.4, 0.85), 16)
+				_burst_yurt_dust(human)
 				game_audio.start_zone_loop("yurt")
 			if not in_yurt and _prev_human_yurt:
 				game_audio.stop_zone_loop("yurt")

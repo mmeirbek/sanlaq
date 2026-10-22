@@ -1,89 +1,135 @@
+class_name TouchControls
 extends CanvasLayer
+## Сенсорное управление: пиксельный стик слева и кнопка способности справа —
+## рывок у бегуна (держать), «үн тыңдау» у ловца (нажать). Есть только на
+## сенсорных экранах. Раскладка не заходит в вырезы и скругления экрана.
 
-const RADIUS := 90.0
-const EDGE_MARGIN := 40.0
+## Ловец нажал кнопку способности.
+signal echo_pressed
+
+const THEME := preload("res://resources/ui/ui_theme.tres")
+const BASE := preload("res://assets/ui/hud/joystick_base.png")
+const KNOB := preload("res://assets/ui/hud/joystick_knob.png")
+const SPRINT_ICON := preload("res://assets/ui/hud/sprint.png")
+const ECHO_ICON := preload("res://assets/ui/hud/echo.png")
+## Насколько далеко ручка уходит от центра стика, px.
+const KNOB_TRAVEL := 56.0
+const EDGE_MARGIN := 32.0
+const ACTION_SIZE := Vector2(112, 112)
 
 var player: Player
-var _joy_active: bool = false
-var _joy_vec: Vector2 = Vector2.ZERO
-var _sprint_active: bool = false
+var _joy_active := false
+var _joy_vec := Vector2.ZERO
+var _sprint_held := false
+## Кнопка способности — рывок (true) или «үн тыңдау» (false).
+var _sprint_mode := true
 
-var _joy_base: Control
-var _knob: Control
-var _sprint_btn: Button
+var _joy_base: TextureRect
+var _knob: TextureRect
+var _action: PanelContainer
+var _action_icon: TextureRect
 
 func _ready() -> void:
 	if not DisplayServer.is_touchscreen_available():
 		visible = false
 		set_process(false)
 		return
+	var root := Control.new()
+	root.theme = THEME
+	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(root)
 
-	_joy_base = Control.new()
-	_joy_base.custom_minimum_size = Vector2(RADIUS * 2, RADIUS * 2)
-	_joy_base.size = Vector2(RADIUS * 2, RADIUS * 2)
-	_joy_base.gui_input.connect(_on_joy_input)
+	_joy_base = TextureRect.new()
+	_joy_base.texture = BASE
 	_joy_base.mouse_filter = Control.MOUSE_FILTER_STOP
-	_joy_base.draw.connect(func(): _draw_circle(_joy_base, Color(1, 1, 1, 0.15)))
-	add_child(_joy_base)
-
-	_knob = Control.new()
-	_knob.custom_minimum_size = Vector2(70, 70)
-	_knob.size = Vector2(70, 70)
-	_knob.position = Vector2(RADIUS - 35, RADIUS - 35)
+	_joy_base.gui_input.connect(_on_joy_input)
+	root.add_child(_joy_base)
+	_knob = TextureRect.new()
+	_knob.texture = KNOB
 	_knob.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_knob.draw.connect(func(): _draw_circle(_knob, Color(1, 1, 1, 0.45)))
 	_joy_base.add_child(_knob)
+	_place_knob(Vector2.ZERO)
 
-	_sprint_btn = Button.new()
-	_sprint_btn.text = "SPRINT"
-	_sprint_btn.custom_minimum_size = Vector2(140, 90)
-	_sprint_btn.focus_mode = Control.FOCUS_NONE
-	_sprint_btn.button_down.connect(func(): _sprint_active = true)
-	_sprint_btn.button_up.connect(func(): _sprint_active = false)
-	add_child(_sprint_btn)
+	# Не Button: обычная кнопка слышит только первый палец, а он обычно на стике.
+	# Касания любого пальца приходят в gui_input — как у стика.
+	_action = PanelContainer.new()
+	_action.custom_minimum_size = ACTION_SIZE
+	_action.mouse_filter = Control.MOUSE_FILTER_STOP
+	_action.gui_input.connect(_on_action_input)
+	root.add_child(_action)
+	_action_icon = TextureRect.new()
+	_action_icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+	_action_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_action_icon.texture = SPRINT_ICON if _sprint_mode else ECHO_ICON
+	_action.add_child(_action_icon)
+	_show_action_pressed(false)
 
-	# Screen size varies per device (canvas_items/expand stretch, any aspect ratio) —
-	# hardcoding 1280x720 here left the joystick/sprint button off-screen or misplaced
-	# on phones with a different aspect ratio. Position relative to the real viewport
-	# and re-lay-out on resize (covers orientation changes too).
+	# Экраны бывают любой формы (растяжение canvas_items/expand), и телефон
+	# можно повернуть — раскладываем от реального размера при каждом изменении.
 	get_viewport().size_changed.connect(_layout_controls)
 	_layout_controls()
 
-func _layout_controls() -> void:
-	var vp_size := get_viewport().get_visible_rect().size
-	_joy_base.position = Vector2(EDGE_MARGIN, vp_size.y - RADIUS * 2 - EDGE_MARGIN)
-	_sprint_btn.position = Vector2(
-		vp_size.x - _sprint_btn.custom_minimum_size.x - EDGE_MARGIN,
-		vp_size.y - _sprint_btn.custom_minimum_size.y - EDGE_MARGIN
-	)
+## Бегун держит кнопку для рывка, ловец нажимает для «үн тыңдау».
+func set_sprint_mode(sprint: bool) -> void:
+	_sprint_mode = sprint
+	if _action_icon:
+		_action_icon.texture = SPRINT_ICON if sprint else ECHO_ICON
 
-func _draw_circle(c: Control, col: Color) -> void:
-	var r := c.size / 2.0
-	c.draw_circle(r, minf(c.size.x, c.size.y) * 0.5, col)
+func _layout_controls() -> void:
+	var safe := _safe_rect()
+	_joy_base.size = BASE.get_size()
+	_joy_base.position = Vector2(safe.position.x + EDGE_MARGIN, safe.end.y - _joy_base.size.y - EDGE_MARGIN)
+	_action.size = ACTION_SIZE
+	_action.position = safe.end - ACTION_SIZE - Vector2(EDGE_MARGIN, EDGE_MARGIN)
+
+## Безопасная зона экрана в координатах интерфейса.
+func _safe_rect() -> Rect2:
+	var visible_rect := get_viewport().get_visible_rect()
+	var window_size := Vector2(DisplayServer.window_get_size())
+	var safe_area := Rect2(DisplayServer.get_display_safe_area())
+	if window_size.x <= 0.0 or safe_area.size.x <= 0.0:
+		return visible_rect
+	var to_ui := visible_rect.size / window_size
+	safe_area.position -= Vector2(DisplayServer.window_get_position())
+	var safe := Rect2(safe_area.position * to_ui, safe_area.size * to_ui).intersection(visible_rect)
+	return safe if safe.has_area() else visible_rect
+
+func _on_action_input(event: InputEvent) -> void:
+	if not (event is InputEventScreenTouch):
+		return
+	_show_action_pressed(event.pressed)
+	_sprint_held = event.pressed and _sprint_mode
+	if event.pressed and not _sprint_mode:
+		echo_pressed.emit()
+
+## Рамка кнопки из темы: нажатая или обычная.
+func _show_action_pressed(pressed: bool) -> void:
+	var frame := _action.get_theme_stylebox("pressed" if pressed else "normal", "Button")
+	_action.add_theme_stylebox_override("panel", frame)
 
 func _on_joy_input(event: InputEvent) -> void:
 	var center := _joy_base.size / 2.0
 	if event is InputEventScreenTouch:
-		if event.pressed:
-			_joy_active = true
-			_joy_vec = ((event.position - center) / RADIUS).limit_length(1.0)
-		else:
-			_joy_active = false
-			_joy_vec = Vector2.ZERO
+		_joy_active = event.pressed
+		_joy_vec = ((event.position - center) / KNOB_TRAVEL).limit_length(1.0) if event.pressed else Vector2.ZERO
 	elif event is InputEventScreenDrag:
-		_joy_vec = ((event.position - center) / RADIUS).limit_length(1.0)
+		_joy_vec = ((event.position - center) / KNOB_TRAVEL).limit_length(1.0)
+	_place_knob(_joy_vec if _joy_active else Vector2.ZERO)
 
-	if _joy_active:
-		_knob.position = center + _joy_vec * RADIUS - _knob.size / 2.0
-	else:
-		_knob.position = center - _knob.size / 2.0
+## Ручка на сетке пикселя арта, смещение — доля KNOB_TRAVEL.
+func _place_knob(offset: Vector2) -> void:
+	var px := float(UiTokens.PIXEL)
+	var at := _joy_base.size / 2.0 + offset * KNOB_TRAVEL - KNOB.get_size() / 2.0
+	_knob.position = (at / px).round() * px
 
 func _process(_delta: float) -> void:
 	if player == null or player.eliminated:
 		return
-	# Sprint is an ability modifier. It cannot take over the controller, otherwise
-	# pressing it while using WASD/arrow keys replaces movement with Vector2.ZERO.
-	player._controller.set_touch_sprint_active(_sprint_active)
-	player._controller.touch_override = _joy_active
+	# Рывок — модификатор: он не забирает управление, иначе нажатие при ходьбе
+	# с клавиатуры заменило бы движение нулём.
+	var controller := player.get_controller()
+	controller.set_touch_sprint_active(_sprint_held)
+	controller.touch_override = _joy_active
 	if _joy_active:
-		player._controller.set_remote_input(_joy_vec, _sprint_active)
+		controller.set_remote_input(_joy_vec, _sprint_held)

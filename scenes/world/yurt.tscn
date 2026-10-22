@@ -1,18 +1,18 @@
 [gd_scene format=3 uid="uid://yurt"]
 
-[ext_resource type="Texture2D" path="res://assets/character/yurt/yurt.png" id="1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/world/yurt.png" id="1"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_wall"]
 radius = 11.0
 
 [node name="Yurt" type="Node2D"]
+y_sort_enabled = true
 
-[node name="Roof" type="Sprite2D" parent="."]
-z_index = 50
-texture_filter = 2
+[node name="Body" type="Sprite2D" parent="."]
+position = Vector2(0, 100)
 texture = ExtResource("1")
-centered = true
-scale = Vector2(0.75, 0.75)
+centered = false
+offset = Vector2(-104, -220)
 
 [node name="Walls" type="StaticBody2D" parent="."]
 collision_layer = 5

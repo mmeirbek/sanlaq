@@ -1,18 +1,27 @@
 extends Node2D
+## Звуковые волны шагов: кольца из квадратиков в пиксель арта. Волна не
+## бледнеет, а редеет — к концу жизни квадратики пропадают через один.
 
 @onready var _sound_system: SoundWaveSystem = $"../SoundWaveSystem"
+
+func _ready() -> void:
+	z_index = WorldLayers.SOUND_WAVES
+
+func _process(_delta: float) -> void:
+	queue_redraw()
 
 func _draw() -> void:
 	if _sound_system == null:
 		return
 	for wave in _sound_system.get_waves():
-		var pos: Vector2 = to_local(wave.pos)
-		var r: float = wave.radius
-		var life: float = wave.life
-		var max_life: float = wave.max_life
-		var alpha: float = 1.0 - clampf(life / max_life, 0.0, 1.0)
-		var color: Color = Color(1.0, 1.0, 1.0, alpha * 0.5)
-		draw_arc(pos, r, 0, TAU, 32, color, 2.0)
+		var life := clampf(wave.life / wave.max_life, 0.0, 1.0)
+		# Сначала каждый квадратик, затем каждый второй, затем каждый третий.
+		var keep_every := 1 + int(life * 3.0)
+		_draw_ring(to_local(wave.pos), wave.radius, keep_every)
 
-func _process(_dt: float) -> void:
-	queue_redraw()
+func _draw_ring(center: Vector2, radius: float, keep_every: int) -> void:
+	var px := float(UiTokens.PIXEL)
+	var dots := maxi(8, int(TAU * radius / (px * 2.0)))
+	for i in range(0, dots, keep_every):
+		var at := center + Vector2.from_angle(TAU * i / dots) * radius
+		draw_rect(Rect2((at / px).floor() * px, Vector2(px, px)), UiTokens.CREAM)
