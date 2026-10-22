@@ -12,7 +12,6 @@ desc_kz = "Дәстүрлі қазақ шалбары. Кең, ыңғайлы п
 desc_en = "Traditional Kazakh pants. Wide, comfortable cut."
 color = Color(0.25, 0.2, 0.15, 1)
 rarity = 0
-unlock_by_default = true
 wrong_answers_kz = Array[String](["Мәсі", "Шапан", "Кебіс"])
 wrong_answers_en = Array[String](["Masi", "Shapan", "Kebis"])
 texture_path = "res://assets/character/pants/pants_shalbar_01.png"

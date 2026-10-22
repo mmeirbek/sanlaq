@@ -12,7 +12,6 @@ desc_kz = "Жеңіл дәстүрлі бас киім. Жазда және кү
 desc_en = "Light traditional skullcap. Worn in summer and daily life. Often made of velvet."
 color = Color(0.6, 0.15, 0.15, 1)
 rarity = 0
-unlock_by_default = true
 wrong_answers_kz = Array[String](["Тымақ", "Сәукеле", "Бөрік"])
 wrong_answers_en = Array[String](["Tymaq", "Saukele", "Borik"])
 texture_path = "res://assets/character/head/head_takiya_01.png"

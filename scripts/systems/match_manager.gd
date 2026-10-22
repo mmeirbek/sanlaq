@@ -10,7 +10,6 @@ signal player_caught(catcher: Player, caught: Player)
 signal player_eliminated(player: Player)
 signal quiz_triggered(catcher: Player, target: Player, item: ClothingItem)
 signal quiz_resolved(catcher: Player, target: Player, correct: bool)
-signal item_unlocked(item: ClothingItem)
 signal round_ended(winner: String)
 signal match_ended(results: Dictionary)
 
@@ -32,7 +31,6 @@ var quiz_active: bool = false
 var runners_total: int = 0
 var eliminated_count: int = 0
 var catch_cooldown: float = 0.0
-var _last_quiz_item: ClothingItem
 var _last_target: Player
 var _last_winner: String = "players"
 
@@ -147,7 +145,6 @@ func _trigger_quiz(target: Player) -> void:
 	var item := target.get_random_clothing_item_for_quiz()
 	if item == null:
 		return
-	_last_quiz_item = item
 	_last_target = target
 
 	quiz_active = true
@@ -190,9 +187,6 @@ func submit_quiz_answer(correct: bool) -> void:
 			_last_target.eliminate()
 			eliminated_count += 1
 			player_eliminated.emit(_last_target)
-		if _last_quiz_item and not SaveManager.is_unlocked(_last_quiz_item.id):
-			SaveManager.unlock_item(_last_quiz_item.id)
-			item_unlocked.emit(_last_quiz_item)
 		if eliminated_count >= runners_total:
 			_end_round(true)
 			return

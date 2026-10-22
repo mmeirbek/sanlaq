@@ -12,7 +12,6 @@ desc_kz = "Дәстүрлі қазақтың сырт киімі. Кең, ұзы
 desc_en = "Traditional Kazakh outer garment. A wide long robe. Given as a gift to honored guests."
 color = Color(0.15, 0.3, 0.55, 1)
 rarity = 0
-unlock_by_default = true
 wrong_answers_kz = Array[String](["Камзол", "Көйлек", "Саптама етік"])
 wrong_answers_en = Array[String](["Kamzol", "Koylek", "Saptama Etik"])
 texture_path = "res://assets/character/torso/torso_shapan_01.png"

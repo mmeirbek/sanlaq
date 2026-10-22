@@ -7,7 +7,6 @@ const RARITY_COLORS := {
 	2: SanlaqDesignTokens.RED_ACCENT,
 }
 const SLOT_NAMES := {0: "Бас киім", 1: "Сырт киім", 2: "Шалбар", 3: "Аяқ киім"}
-const LOCKED_COLOR := Color("857d70")
 ## Спокойная рамка обычной карточки. Редкость раньше красила рамку целиком, и
 ## редкие предметы выглядели как выбранные — отличить настоящий выбор было
 ## невозможно. Теперь редкость живёт только в подписи и в метке-точке.
@@ -63,20 +62,13 @@ func _build_grid() -> void:
 	_cards.clear()
 	_selected_id = ""
 
-	var first_item: ClothingItem = null
-	var first_unlocked: ClothingItem = null
-	for item in AssetRegistry.get_clothing(_current_slot):
+	var items := AssetRegistry.get_clothing(_current_slot)
+	for item in items:
 		_grid.add_child(_make_card(item))
-		if first_item == null:
-			first_item = item
-		if first_unlocked == null and SaveManager.is_unlocked(item.id):
-			first_unlocked = item
 	for item_id in _cards:
 		_refresh_card(item_id)
-	if first_unlocked:
-		_select(first_unlocked)
-	elif first_item:
-		_select(first_item)
+	if not items.is_empty():
+		_select(items[0])
 
 func _make_card(item: ClothingItem) -> Control:
 	var card := Control.new()
@@ -89,11 +81,7 @@ func _make_card(item: ClothingItem) -> Control:
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(panel)
 
-	var unlocked := SaveManager.is_unlocked(item.id)
-	var rarity_col: Color = RARITY_COLORS.get(item.rarity, LOCKED_COLOR)
-	if not unlocked:
-		rarity_col = LOCKED_COLOR
-
+	var rarity_col: Color = RARITY_COLORS.get(item.rarity, RARITY_COLORS[ClothingItem.Rarity.COMMON])
 	panel.add_theme_stylebox_override("panel", _card_style())
 
 	var box := VBoxContainer.new()
@@ -118,29 +106,26 @@ func _make_card(item: ClothingItem) -> Control:
 	tex.texture = _photo_for(item)
 	if tex.texture == null and not item.icon_path.is_empty():
 		tex.texture = load(item.icon_path) as Texture2D
-	if not unlocked:
-		tex.modulate = Color(0.32, 0.32, 0.32, 0.85)
 	photo_frame.add_child(tex)
 	box.add_child(photo_frame)
 
 	var name_lbl := Label.new()
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_lbl.add_theme_font_size_override("font_size", 14)
-	name_lbl.text = item.get_name_for_lang(GameSettings.get_lang_code()) if unlocked else "???"
+	name_lbl.text = item.get_name_for_lang(GameSettings.get_lang_code())
 	box.add_child(name_lbl)
 
-	var status := Label.new()
-	status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	status.add_theme_font_size_override("font_size", 12)
-	status.text = "✓ ашық" if unlocked else "жабық · квизде аш"
-	box.add_child(status)
+	var rarity_lbl := Label.new()
+	rarity_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	rarity_lbl.add_theme_font_size_override("font_size", 12)
+	rarity_lbl.text = RARITY_NAMES.get(item.rarity, "")
+	box.add_child(rarity_lbl)
 
 	_cards[item.id] = {
 		"panel": panel,
 		"name": name_lbl,
-		"status": status,
+		"rarity_label": rarity_lbl,
 		"rarity": rarity_col,
-		"unlocked": unlocked,
 	}
 
 	panel.add_child(box)
@@ -187,21 +172,17 @@ func _refresh_card(item_id: String, hovered: bool = false) -> void:
 	if parts.is_empty():
 		return
 	var selected := item_id == _selected_id
-	var unlocked: bool = parts["unlocked"]
 	(parts["panel"] as PanelContainer).add_theme_stylebox_override(
 		"panel", _card_style(selected, hovered))
 
 	var name_lbl: Label = parts["name"]
-	var status: Label = parts["status"]
+	var rarity_lbl: Label = parts["rarity_label"]
 	if selected:
 		name_lbl.add_theme_color_override("font_color", SanlaqDesignTokens.CREAM_LIGHT)
-		status.add_theme_color_override("font_color", SanlaqDesignTokens.GOLD)
-	elif unlocked:
-		name_lbl.add_theme_color_override("font_color", SanlaqDesignTokens.NAVY)
-		status.add_theme_color_override("font_color", parts["rarity"])
+		rarity_lbl.add_theme_color_override("font_color", SanlaqDesignTokens.GOLD)
 	else:
-		name_lbl.add_theme_color_override("font_color", Color(0.42, 0.40, 0.36, 1))
-		status.add_theme_color_override("font_color", Color(0.42, 0.40, 0.36, 1))
+		name_lbl.add_theme_color_override("font_color", SanlaqDesignTokens.NAVY)
+		rarity_lbl.add_theme_color_override("font_color", parts["rarity"])
 
 func _photo_style() -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
@@ -220,7 +201,6 @@ func _select(item: ClothingItem) -> void:
 	_refresh_card(item.id)
 
 	var lang := GameSettings.get_lang_code()
-	var unlocked := SaveManager.is_unlocked(item.id)
 
 	_detail_icon.texture = _photo_for(item)
 	if _detail_icon.texture == null and not item.icon_path.is_empty():
@@ -229,17 +209,12 @@ func _select(item: ClothingItem) -> void:
 		_detail_icon.texture = null
 	_photo_credit.text = "Дереккөз: Wikimedia Commons · лицензиясы CREDITS.md файлында"
 
-	if unlocked:
-		_detail_name.text = item.get_name_for_lang(lang)
-		_detail_meta.text = "%s · %s" % [
-			tr(SLOT_NAMES.get(item.slot_type, "?")),
-			tr(RARITY_NAMES.get(item.rarity, "?")),
-		]
-		_detail_desc.text = item.get_desc_for_lang(lang)
-	else:
-		_detail_name.text = "???"
-		_detail_meta.text = "Жабық киім"
-		_detail_desc.text = "Бұл киім әлі ашылған жоқ. Дұрыс жауап беріп, квизде ашыңыз."
+	_detail_name.text = item.get_name_for_lang(lang)
+	_detail_meta.text = "%s · %s" % [
+		tr(SLOT_NAMES.get(item.slot_type, "?")),
+		tr(RARITY_NAMES.get(item.rarity, "?")),
+	]
+	_detail_desc.text = item.get_desc_for_lang(lang)
 
 func _photo_for(item: ClothingItem) -> Texture2D:
 	var path: String = item.reference_photo_path

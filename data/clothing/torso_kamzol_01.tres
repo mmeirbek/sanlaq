@@ -12,7 +12,6 @@ desc_kz = "Жеңіл жеңсіз сырт киім. Көбінесе әйел�
 desc_en = "Light sleeveless outerwear. Often worn by women. Decorated with ornaments."
 color = Color(0.7, 0.1, 0.1, 1)
 rarity = 1
-unlock_by_default = true
 wrong_answers_kz = Array[String](["Шапан", "Көйлек", "Тымақ"])
 wrong_answers_en = Array[String](["Shapan", "Koylek", "Tymaq"])
 texture_path = "res://assets/character/torso/torso_kamzol_01.png"
