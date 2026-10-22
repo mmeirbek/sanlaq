@@ -1,25 +1,31 @@
 extends Node2D
+## Следы бегунов: пара отпечатков в пиксель арта поперёк направления шага.
+## След не бледнеет, а стирается: последнюю треть жизни виден один отпечаток.
+
+## Отпечатки — пара квадратиков в 2×3 пикселя арта, на расстоянии шага.
+const PRINT_SIZE := Vector2(2, 3)
+const FEET_APART := 3.0
 
 @onready var _footprints: FootprintSystem = $"../FootprintSystem"
+
+func _ready() -> void:
+	z_index = WorldLayers.FOOTPRINTS
+
+func _process(_delta: float) -> void:
+	queue_redraw()
 
 func _draw() -> void:
 	if _footprints == null:
 		return
-	for pr in _footprints.get_prints():
-		var pos: Vector2 = to_local(pr.pos)
-		var facing: Vector2 = pr.facing
-		var life: float = pr.life
-		var alpha: float = clampf(1.0 - life / FootprintSystem.PRINT_LIFETIME, 0.0, 1.0) * 0.55
-		_draw_oval(pos, facing, alpha)
-
-func _draw_oval(pos: Vector2, facing: Vector2, alpha: float) -> void:
-	var angle := facing.angle() if facing.length() > 0.01 else 0.0
-	var points := PackedVector2Array()
-	for i in range(8):
-		var a := TAU * float(i) / 8.0
-		var local_pt := Vector2(cos(a) * 3.5, sin(a) * 5.5).rotated(angle)
-		points.append(pos + local_pt)
-	draw_colored_polygon(points, Color(0.16, 0.12, 0.08, alpha))
-
-func _process(_dt: float) -> void:
-	queue_redraw()
+	var px := float(UiTokens.PIXEL)
+	for footprint in _footprints.get_prints():
+		var pos: Vector2 = to_local(footprint.pos)
+		var facing: Vector2 = footprint.facing
+		var life: float = footprint.life / FootprintSystem.PRINT_LIFETIME
+		var across := facing.orthogonal().normalized() if facing.length() > 0.01 else Vector2.RIGHT
+		var feet := [pos + across * FEET_APART * px, pos - across * FEET_APART * px]
+		if life > 2.0 / 3.0:
+			feet.resize(1)
+		for foot: Vector2 in feet:
+			var corner := ((foot - PRINT_SIZE * px / 2.0) / px).floor() * px
+			draw_rect(Rect2(corner, PRINT_SIZE * px), WorldColors.GRASS_DEEP)

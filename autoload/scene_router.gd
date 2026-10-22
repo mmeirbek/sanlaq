@@ -93,6 +93,11 @@ func go_to_togyz_qumalaq() -> void:
 func go_to_aq_suyek() -> void:
 	_change_scene(SCENE_AQ_SUYEK)
 
+## Как set_pending_briefing: для тестов и скриншотов, которые поднимают сцену
+## игры сами.
+func set_pending_game_data(game_data: Dictionary) -> void:
+	_pending_game_data = game_data
+
 func get_pending_game_data() -> Dictionary:
 	var data := _pending_game_data
 	_pending_game_data = {}

@@ -8,6 +8,9 @@ extends CharacterBody2D
 signal stepped(sound_radius: float)
 signal runner_sprint_changed(time_left: float, uses_left: int)
 
+## Позиция игрока — точка на земле под ногами: по ней работают коллизии и
+## сортировка по глубине. Фигура нарисована выше, её центр — здесь.
+const BODY_CENTER := Vector2(0, -24)
 const RUNNER_SPRINT_DURATION := 3.0
 const RUNNER_SPRINT_USES := 1
 
@@ -23,6 +26,8 @@ var _controller: PlayerController
 var _visual: CharacterVisual
 var _name_label: Label
 var _shield_timer: float = 0.0
+var _shadow: Sprite2D
+var _wade: Sprite2D
 var _noise_timer: float = 0.0
 var _noise_random: float = 0.0
 var _equipped_items: Dictionary = {}
@@ -48,7 +53,13 @@ const OUTFIT_PROFILES := [
 func _ready() -> void:
 	_controller = $PlayerController
 	_visual = $CharacterVisual
+	_visual.set_rest_position(BODY_CENTER)
 	_name_label = $NameLabel
+	_shadow = $Shadow
+	_wade = $Wade
+	# Тень лежит на земле под всеми стоящими объектами (см. WorldLayers).
+	_shadow.z_as_relative = false
+	_shadow.z_index = WorldLayers.SHADOWS
 	_mode = AssetRegistry.get_default_mode()
 	if _mode == null:
 		_mode = GameModeDefinition.new()
@@ -99,7 +110,7 @@ func revive() -> void:
 	set_deferred("collision_mask", 5)
 	slow_timer = 0.0
 	_shield_timer = 0.0
-	_in_water = false
+	set_water_override(false)
 	runner_sprint_time = 0.0
 	runner_sprint_uses = RUNNER_SPRINT_USES
 	runner_sprint_changed.emit(runner_sprint_time, runner_sprint_uses)
@@ -133,8 +144,14 @@ func apply_slow(duration: float) -> void:
 func is_slowed() -> bool:
 	return slow_timer > 0
 
+func get_controller() -> PlayerController:
+	return _controller
+
 func set_water_override(in_water: bool) -> void:
 	_in_water = in_water
+	# В воде вместо тени — вода поверх ног: видно, что игрок бредёт и замедлен.
+	_shadow.visible = not in_water
+	_wade.visible = in_water
 
 func _physics_process(delta: float) -> void:
 	if eliminated:
