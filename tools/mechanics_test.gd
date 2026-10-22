@@ -1,8 +1,8 @@
-extends SceneTree
+extends "res://tools/test_case.gd"
+## Поимка, квиз и замедление ловца в MatchManager.
 
 var game: Node2D
 var mm: Node
-var fails: int = 0
 
 func _init() -> void:
 	await process_frame
@@ -15,7 +15,7 @@ func _init() -> void:
 	await process_frame
 
 	mm = game.match_mgr
-	_check(mm.players.size() == 6, "6 players spawned, got %d" % mm.players.size())
+	check(mm.players.size() == 6, "6 players spawned, got %d" % mm.players.size())
 
 	var human = mm.human_player
 	mm.sokyroteke = human
@@ -36,8 +36,8 @@ func _init() -> void:
 	await process_frame
 	mm.submit_quiz_answer(true)
 	await process_frame
-	_check(target.eliminated, "target eliminated after correct answer")
-	_check(mm.eliminated_count == 1, "eliminated_count==1, got %d" % mm.eliminated_count)
+	check(target.eliminated, "target eliminated after correct answer")
+	check(mm.eliminated_count == 1, "eliminated_count==1, got %d" % mm.eliminated_count)
 
 	var target2 = null
 	for p in mm.players:
@@ -49,23 +49,15 @@ func _init() -> void:
 	await process_frame
 	mm.submit_quiz_answer(false)
 	await process_frame
-	_check(human.is_slowed(), "sokyroteke slowed after wrong answer")
-	_check(not target2.eliminated, "runner NOT eliminated on wrong answer")
-	_check(mm.eliminated_count == 1, "eliminated_count still 1, got %d" % mm.eliminated_count)
+	check(human.is_slowed(), "sokyroteke slowed after wrong answer")
+	check(not target2.eliminated, "runner NOT eliminated on wrong answer")
+	check(mm.eliminated_count == 1, "eliminated_count still 1, got %d" % mm.eliminated_count)
 
 	var before: int = mm.eliminated_count
 	mm.on_player_touches_sokyroteke(target2)
 	await process_frame
 	await process_frame
-	_check(mm.eliminated_count == before, "catch blocked while sokyroteke slowed")
+	check(mm.eliminated_count == before, "catch blocked while sokyroteke slowed")
 
-	print("[test] " + ("MECHANICS OK" if fails == 0 else "MECHANICS FAILED (%d)" % fails))
 	game.queue_free()
-	quit()
-
-func _check(cond: bool, msg: String) -> void:
-	if not cond:
-		fails += 1
-		print("[test] FAIL: ", msg)
-	else:
-		print("[test] ok: ", msg)
+	finish("MECHANICS")

@@ -1,47 +1,28 @@
-extends SceneTree
+extends "res://tools/test_case.gd"
+## Smoke-тест: каждая сцена из scenes/ загружается, встаёт в дерево и живёт
+## пару кадров без ошибок движка. Список сцен собирается обходом папки, так что
+## новая сцена попадает в тест автоматически.
 
-const SCENES := [
-	"res://scenes/ui/main_menu.tscn",
-	"res://scenes/ui/lobby.tscn",
-	"res://scenes/ui/wardrobe.tscn",
-	"res://scenes/ui/codex.tscn",
-	"res://scenes/ui/results.tscn",
-	"res://scenes/ui/settings.tscn",
-	"res://scenes/ui/components/sanlaq_ornament.tscn",
-	"res://scenes/ui/components/sanlaq_panel.tscn",
-	"res://scenes/ui/components/sanlaq_button.tscn",
-	"res://scenes/ui/components/sanlaq_label.tscn",
-	"res://scenes/ui/components/sanlaq_divider.tscn",
-	"res://scenes/world/game.tscn",
-]
+const SCENES_ROOT := "res://scenes"
+
 
 func _init() -> void:
 	await process_frame
 	await process_frame
-	var failed := 0
-	for path in SCENES:
-		var err := await _try_load(path)
-		if err != OK:
-			failed += 1
-			print("[test] FAILED ", path, " -> ", err)
-		else:
-			print("[test] OK ", path)
-	if failed == 0:
-		print("[test] ALL PASSED")
-	else:
-		print("[test] FAILURES: ", failed)
-	quit()
+	for path in _find_scenes(SCENES_ROOT):
+		var instance := await mount(path)
+		if instance == null:
+			continue  # mount() уже записал провал
+		await unmount(instance)
+		print("[test] ok: ", path)
+	finish("SMOKE")
 
-func _try_load(path: String) -> Error:
-	var pack := load(path) as PackedScene
-	if pack == null:
-		return ERR_CANT_OPEN
-	var inst := pack.instantiate()
-	if inst == null:
-		return ERR_CANT_CREATE
-	root.add_child(inst)
-	await process_frame
-	await process_frame
-	inst.queue_free()
-	await process_frame
-	return OK
+
+func _find_scenes(dir_path: String) -> PackedStringArray:
+	var scenes: PackedStringArray = []
+	for file in DirAccess.get_files_at(dir_path):
+		if file.get_extension() == "tscn":
+			scenes.append(dir_path.path_join(file))
+	for sub_dir in DirAccess.get_directories_at(dir_path):
+		scenes.append_array(_find_scenes(dir_path.path_join(sub_dir)))
+	return scenes
