@@ -4,7 +4,7 @@ import os
 
 from PIL import Image
 
-from palette import PIXEL, TRANSPARENT
+from palette import PIXEL, TRANSPARENT, color
 
 
 class Canvas:
@@ -56,3 +56,42 @@ def save(canvas, path, scale=PIXEL):
     image = canvas.image.resize((canvas.width * scale, canvas.height * scale), Image.Resampling.NEAREST)
     image.save(path)
     return path
+
+
+# --- Маски и заливка --------------------------------------------------------
+
+def rows(spans):
+    """{y: (x0, x1)} -> множество пикселей (границы включительно)."""
+    return {(x, y) for y, (x0, x1) in spans.items() for x in range(x0, x1 + 1)}
+
+
+def shifted(mask, dx=0, dy=0):
+    return {(x + dx, y + dy) for x, y in mask}
+
+
+def paint(canvas, mask, colors):
+    """Заливка со светом сверху слева: край с пустым соседом слева/сверху —
+    светлый, справа/снизу — тень, остальное — основной цвет."""
+    light, base, dark = colors
+    for x, y in mask:
+        if (x + 1, y) not in mask or (x, y + 1) not in mask:
+            canvas.put(x, y, dark)
+        elif (x - 1, y) not in mask or (x, y - 1) not in mask:
+            canvas.put(x, y, light)
+        else:
+            canvas.put(x, y, base)
+
+
+def fill(canvas, mask, color):
+    for x, y in mask:
+        canvas.put(x, y, color)
+
+
+def outline(canvas):
+    """Контур в пиксель вокруг всего, что нарисовано на слое."""
+    filled = {(x, y) for y in range(canvas.height) for x in range(canvas.width)
+              if canvas.image.getpixel((x, y))[3]}
+    for x, y in filled:
+        for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
+            if (nx, ny) not in filled:
+                canvas.put(nx, ny, color("outline"))
