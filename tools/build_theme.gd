@@ -12,7 +12,7 @@ extends SceneTree
 ##   Label: (по умолчанию — текст на тёмном), TitleLabel, HeadingLabel,
 ##          CaptionLabel, SubtitleLabel, WarningLabel, InkLabel, InkHeadingLabel, HudLabel, TimerLabel
 ##   PanelContainer: (по умолчанию — бордовая панель), ParchmentPanel,
-##          HudPanel, Card, CardHover, CardSelected, InsetPanel
+##          HudPanel, Card*, CardCompact* (плотные списки), InsetPanel
 
 const THEME_PATH := "res://resources/ui/ui_theme.tres"
 const FONTS_DIR := "res://resources/ui/fonts/"
@@ -152,12 +152,17 @@ func _panels(theme: Theme) -> void:
 		"Card": "card",
 		"CardHover": "card_hover",
 		"CardSelected": "card_selected",
+		# Компактные карточки — для плотных списков (роли, предметы шкафа).
+		"CardCompact": "card",
+		"CardCompactHover": "card_hover",
+		"CardCompactSelected": "card_selected",
 		"InsetPanel": "inset",
 	}
+	var tight := Vector2(UiTokens.SPACE_S, UiTokens.SPACE_XS)
 	for type: String in variations:
 		_variation(theme, type, "PanelContainer")
-		var small := type == "HudPanel" or type == "InsetPanel"
-		theme.set_stylebox("panel", type, _frame(variations[type], Vector2(UiTokens.SPACE_S, UiTokens.SPACE_XS) if small else padding))
+		var small := type in ["HudPanel", "InsetPanel"] or type.begins_with("CardCompact")
+		theme.set_stylebox("panel", type, _frame(variations[type], tight if small else padding))
 
 	var line := StyleBoxLine.new()
 	line.color = UiTokens.GOLD_DARK

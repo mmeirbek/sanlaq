@@ -40,9 +40,7 @@ def sokyroteke():
     _ground(canvas, 0, ("grass_light", "grass_mid", "grass_dark"))
     seeker = _character("base", ["shoes_kebis_01", "pants_shalbar_01", "torso_koylek_01"], "down", 0)
     canvas.image.alpha_composite(seeker, (8, 20))
-    blindfold = rows({30: (19, 28), 31: (19, 28)})  # поверх глаз на кадре в (8, 20)
-    fill(canvas, blindfold, c("red_light"))
-    fill(canvas, {(29, 31), (30, 32)}, c("red_light"))
+    _blindfold(canvas, 8, 20)
     runner_a = _character("base_02", ["shoes_masi_01", "pants_shalbar_decorated_01", "torso_kamzol_01", "head_takiya_01"], "right", 2)
     runner_b = _character("base_03", ["shoes_saptama_etik_01", "pants_shalbar_01", "torso_shapan_01", "head_borik_01"], "right", 4)
     canvas.image.alpha_composite(runner_a, (46, 18))
@@ -109,6 +107,29 @@ def aq_suyek():
     return canvas
 
 
+def _blindfold(canvas, x, y):
+    """Красная повязка на глазах персонажа, нарисованного в клетке с углом (x, y)."""
+    fill(canvas, rows({y + 10: (x + 11, x + 20), y + 11: (x + 11, x + 20)}), c("red_light"))
+    fill(canvas, {(x + 21, y + 11), (x + 22, y + 12)}, c("red_light"))
+
+
+def role_seeker():
+    """Роль «Соқыртеке»: ловец с завязанными глазами."""
+    canvas = Canvas(ch.CELL, ch.CELL)
+    canvas.image.alpha_composite(_character("base", ["shoes_kebis_01", "pants_shalbar_01", "torso_koylek_01"], "down", 0))
+    _blindfold(canvas, 0, 0)
+    return canvas
+
+
+def role_runner():
+    """Роль «Қашушы»: бегущий в профиль."""
+    canvas = Canvas(ch.CELL, ch.CELL)
+    canvas.image.alpha_composite(_character("base_02", ["shoes_masi_01", "pants_shalbar_decorated_01", "torso_kamzol_01", "head_takiya_01"], "right", 2))
+    return canvas
+
+
+ROLES = {"role_seeker": role_seeker, "role_runner": role_runner}
+
 ART = {
     "sokyroteke": sokyroteke,
     "abai_says": abai_says,
@@ -118,4 +139,5 @@ ART = {
 
 
 def build():
-    return [save(draw(), os.path.join(OUT_DIR, mode + ".png")) for mode, draw in ART.items()]
+    drawings = {**ART, **ROLES}
+    return [save(draw(), os.path.join(OUT_DIR, name + ".png")) for name, draw in drawings.items()]
