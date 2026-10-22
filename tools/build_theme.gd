@@ -159,10 +159,15 @@ func _panels(theme: Theme) -> void:
 		"InsetPanel": "inset",
 	}
 	var tight := Vector2(UiTokens.SPACE_S, UiTokens.SPACE_XS)
+	var compact := Vector2(UiTokens.SPACE_XS, UiTokens.SPACE_XS)
 	for type: String in variations:
 		_variation(theme, type, "PanelContainer")
-		var small := type in ["HudPanel", "InsetPanel"] or type.begins_with("CardCompact")
-		theme.set_stylebox("panel", type, _frame(variations[type], tight if small else padding))
+		var inner := padding
+		if type.begins_with("CardCompact"):
+			inner = compact
+		elif type in ["HudPanel", "InsetPanel"]:
+			inner = tight
+		theme.set_stylebox("panel", type, _frame(variations[type], inner))
 
 	var line := StyleBoxLine.new()
 	line.color = UiTokens.GOLD_DARK

@@ -82,7 +82,6 @@ keys,kk,en
 Сирек,Сирек,Rare
 Сырт киім,Сырт киім,Outerwear
 Шалбар,Шалбар,Pants
-[color=#a36b24](✓ жабдықталған)[/color],[color=#a36b24](✓ жабдықталған)[/color],[color=#a36b24](✓ equipped)[/color]
 Баяулау уақыты −30%,Баяулау уақыты −30%,Slow duration −30%
 Киім санатын ашу · Open category,Киім санатын ашу · Open category,Open clothing category
 Киім,Киім,Clothing
@@ -345,3 +344,4 @@ This is: %s"
 Иә,Иә,Yes
 Жоқ,Жоқ,No
 БАСТА!,БАСТА!,GO!
+Жабдықталған,Жабдықталған,Equipped

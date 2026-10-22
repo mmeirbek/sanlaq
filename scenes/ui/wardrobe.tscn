@@ -1,216 +1,159 @@
 [gd_scene format=3 uid="uid://bforoqlykbpu"]
 
-[ext_resource type="Script" uid="uid://dmlav6clpqoy8" path="res://scripts/ui/wardrobe.gd" id="1"]
-[ext_resource type="FontFile" uid="uid://dtqjd8bgha67o" path="res://assets/fonts/NotoSans-Bold.ttf" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="4"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_header.tscn" id="2"]
+[ext_resource type="Script" uid="uid://dmlav6clpqoy8" path="res://scripts/ui/wardrobe.gd" id="1_script"]
+[ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://scripts/ui/components/pixel_backdrop.gd" id="3_backdrop"]
+[ext_resource type="Script" path="res://scripts/ui/components/screen_header.gd" id="4_header"]
+[ext_resource type="Texture2D" path="res://assets/ui/frames/check.png" id="5_check"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pedestal"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
-bg_color = Color(0.984, 0.969, 0.933, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.918, 0.761, 0.357, 1)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
-shadow_color = Color(0.039, 0.169, 0.239, 0.2)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel_right"]
-content_margin_left = 16.0
-content_margin_top = 16.0
-content_margin_right = 16.0
-content_margin_bottom = 16.0
-bg_color = Color(0.984, 0.969, 0.933, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.918, 0.761, 0.357, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_info"]
-content_margin_left = 16.0
-content_margin_top = 12.0
-content_margin_right = 16.0
-content_margin_bottom = 12.0
-bg_color = Color(0.918, 0.761, 0.357, 0.14)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.851, 0.663, 0.247, 0.55)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[node name="Wardrobe" type="Control" unique_id=991088828]
+[node name="Wardrobe" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1")
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
 
-[node name="Background" parent="." unique_id=1238293650 instance=ExtResource("4")]
+[node name="Background" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_backdrop")
 variant = 1
+veil = 0.35
 
-[node name="Header" parent="." instance=ExtResource("2")]
+[node name="Header" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 0
-offset_left = 44.0
-offset_top = 48.0
-offset_right = 44.0
-offset_bottom = 48.0
-grow_horizontal = 1
-grow_vertical = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 32.0
+offset_top = 24.0
+offset_right = -32.0
+offset_bottom = 120.0
+grow_horizontal = 2
+script = ExtResource("4_header")
 title = "КИІМ ШКАФЫ"
 subtitle = "КИІМДІ ТАҢДА · ОБРАЗЫҢДЫ ҚҰР"
 
-[node name="BackBtn" type="Button" parent="." unique_id=2061992093]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -204.0
-offset_top = 60.0
-offset_right = -44.0
-offset_bottom = 112.0
-grow_horizontal = 0
-theme_override_font_sizes/font_size = 18
-text = "← Артқа"
-
-[node name="Content" type="HBoxContainer" parent="."]
+[node name="Columns" type="HBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 44.0
-offset_top = 172.0
-offset_right = -44.0
-offset_bottom = -40.0
+offset_left = 32.0
+offset_top = 136.0
+offset_right = -32.0
+offset_bottom = -24.0
 grow_horizontal = 2
-grow_vertical = 1
-theme_override_constants/separation = 28
+grow_vertical = 2
+theme_override_constants/separation = 16
 
-[node name="Pedestal" type="PanelContainer" parent="Content" unique_id=176541691]
+[node name="Pedestal" type="PanelContainer" parent="Columns"]
+custom_minimum_size = Vector2(272, 0)
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.78
-theme_override_styles/panel = SubResource("StyleBoxFlat_pedestal")
 
-[node name="Margin" type="MarginContainer" parent="Content/Pedestal"]
+[node name="VBox" type="VBoxContainer" parent="Columns/Pedestal"]
 layout_mode = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 12
 
-[node name="VBox" type="VBoxContainer" parent="Content/Pedestal/Margin"]
+[node name="PreviewTitle" type="Label" parent="Columns/Pedestal/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="PreviewKicker" type="Label" parent="Content/Pedestal/Margin/VBox" unique_id=1355430351]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"HeadingLabel"
 text = "СЫНАП КӨРУ"
+horizontal_alignment = 1
 
-[node name="MannequinSlot" type="Control" parent="Content/Pedestal/Margin/VBox"]
+[node name="MannequinSlot" type="Control" parent="Columns/Pedestal/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
 
-[node name="MannequinCaption" type="Label" parent="Content/Pedestal/Margin/VBox" unique_id=412952221]
+[node name="MannequinCaption" type="Label" parent="Columns/Pedestal/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 18
+theme_type_variation = &"CaptionLabel"
 text = "СІЗДІҢ КЕЙПІҢІЗ"
 horizontal_alignment = 1
 
-[node name="RightPanel" type="PanelContainer" parent="Content" unique_id=905331183]
+[node name="Collection" type="PanelContainer" parent="Columns"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel_right")
 
-[node name="Margin" type="MarginContainer" parent="Content/RightPanel" unique_id=1830229821]
+[node name="VBox" type="VBoxContainer" parent="Columns/Collection"]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 18
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 18
 
-[node name="VBox" type="VBoxContainer" parent="Content/RightPanel/Margin" unique_id=624490030]
+[node name="CollectionTitle" type="Label" parent="Columns/Collection/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="CollectionKicker" type="Label" parent="Content/RightPanel/Margin/VBox" unique_id=1789399434]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 15
+theme_type_variation = &"HeadingLabel"
 text = "КОЛЛЕКЦИЯ"
 
-[node name="Tabs" type="HBoxContainer" parent="Content/RightPanel/Margin/VBox" unique_id=1541904567]
+[node name="Tabs" type="HBoxContainer" parent="Columns/Collection/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 8
+alignment = 1
 
-[node name="Scroll" type="ScrollContainer" parent="Content/RightPanel/Margin/VBox" unique_id=2136521320]
+[node name="SlotName" type="Label" parent="Columns/Collection/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Бас киім"
+horizontal_alignment = 1
+
+[node name="Items" type="GridContainer" parent="Columns/Collection/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-horizontal_scroll_mode = 0
+columns = 3
 
-[node name="Items" type="GridContainer" parent="Content/RightPanel/Margin/VBox/Scroll" unique_id=134762910]
+[node name="Details" type="VBoxContainer" parent="Columns"]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+
+[node name="EffectPanel" type="PanelContainer" parent="Columns/Details"]
+layout_mode = 2
+theme_type_variation = &"HudPanel"
+
+[node name="EffectLabel" type="Label" parent="Columns/Details/EffectPanel"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/h_separation = 10
-theme_override_constants/v_separation = 10
-columns = 2
-
-[node name="EffectPanel" type="PanelContainer" parent="Content/RightPanel/Margin/VBox" unique_id=382460009]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_info")
-
-[node name="EffectLabel" type="Label" parent="Content/RightPanel/Margin/VBox/EffectPanel" unique_id=133438916]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.64, 0.35, 0.08, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 15
 text = "ҚАСИЕТІ: —"
-horizontal_alignment = 1
-vertical_alignment = 1
+autowrap_mode = 2
 
-[node name="InfoPanel" type="PanelContainer" parent="Content/RightPanel/Margin/VBox" unique_id=1709245776]
-custom_minimum_size = Vector2(0, 96)
+[node name="InfoPanel" type="PanelContainer" parent="Columns/Details"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_info")
+size_flags_vertical = 3
+theme_type_variation = &"ParchmentPanel"
 
-[node name="Info" type="RichTextLabel" parent="Content/RightPanel/Margin/VBox/InfoPanel" unique_id=2112438317]
+[node name="VBox" type="VBoxContainer" parent="Columns/Details/InfoPanel"]
+layout_mode = 2
+
+[node name="ItemName" type="Label" parent="Columns/Details/InfoPanel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-bbcode_enabled = true
-scroll_active = false
+theme_type_variation = &"InkHeadingLabel"
+text = "Киімді таңдаңыз"
+autowrap_mode = 2
+
+[node name="ItemDesc" type="Label" parent="Columns/Details/InfoPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"InkLabel"
+autowrap_mode = 2
+
+[node name="Equipped" type="HBoxContainer" parent="Columns/Details/InfoPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Check" type="TextureRect" parent="Columns/Details/InfoPanel/VBox/Equipped"]
+layout_mode = 2
+texture = ExtResource("5_check")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="Columns/Details/InfoPanel/VBox/Equipped"]
+layout_mode = 2
+theme_type_variation = &"InkHeadingLabel"
+text = "Жабдықталған"

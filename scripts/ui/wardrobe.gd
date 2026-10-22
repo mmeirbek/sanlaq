@@ -1,148 +1,132 @@
 class_name WardrobeUI
 extends Control
+## Шкаф: игрок выбирает одежду по слотам и сразу видит её на своём персонаже,
+## который медленно поворачивается, — одежду видно со всех сторон.
 
 const SLOT_NAMES := {
-	0: "Бас киім",
-	1: "Сырт киім",
-	2: "Шалбар",
-	3: "Аяқ киім",
+	ClothingItem.SlotType.HEAD: "Бас киім",
+	ClothingItem.SlotType.TORSO: "Сырт киім",
+	ClothingItem.SlotType.PANTS: "Шалбар",
+	ClothingItem.SlotType.SHOES: "Аяқ киім",
 }
+## Иконка вкладки слота — узнаваемая вещь этого слота.
+const SLOT_ICONS := {
+	ClothingItem.SlotType.HEAD: preload("res://assets/sprites/items/head_borik_01.png"),
+	ClothingItem.SlotType.TORSO: preload("res://assets/sprites/items/torso_koylek_01.png"),
+	ClothingItem.SlotType.PANTS: preload("res://assets/sprites/items/pants_shalbar_01.png"),
+	ClothingItem.SlotType.SHOES: preload("res://assets/sprites/items/shoes_saptama_etik_01.png"),
+}
+const CHARACTER_SCENE := preload("res://scenes/entities/character_visual.tscn")
+const CHECK_ICON := preload("res://assets/ui/frames/check.png")
+## Персонаж на пьедестале — ×4, целым масштабом.
+const MANNEQUIN_SCALE := 4
+## Порядок поворота и пауза на каждой стороне, секунды.
+const TURN_ORDER: Array[Vector2] = [Vector2.DOWN, Vector2.LEFT, Vector2.UP, Vector2.RIGHT]
+const TURN_SECONDS := 1.1
 
 var _current_slot: ClothingItem.SlotType = ClothingItem.SlotType.HEAD
-var _mannequin: Node2D
-var _item_buttons: Array[Button] = []
-var _tab_buttons: Array[Button] = []
+var _mannequin: CharacterVisual
+var _turn := 0
+var _tab_cards: Dictionary = {}
 
 @onready var _slot_tabs: HBoxContainer = %Tabs
 @onready var _items_grid: GridContainer = %Items
-@onready var _effect_label: Label = %EffectLabel
-@onready var _info_label: RichTextLabel = %Info
-@onready var _back_btn: Button = %BackBtn
 @onready var _mannequin_slot: Control = %MannequinSlot
 
 func _ready() -> void:
+	(%Header as ScreenHeader).back_pressed.connect(SceneRouter.go_to_main_menu)
 	_build_tabs()
-	_build_back_button()
 	_build_mannequin()
 	_show_slot(_current_slot)
 
 func _build_tabs() -> void:
-	for slot in ClothingItem.SlotType.values():
-		var btn := Button.new()
-		btn.text = SLOT_NAMES.get(slot, str(slot))
-		btn.custom_minimum_size = Vector2(0, 40)
-		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		btn.focus_mode = Control.FOCUS_NONE
-		btn.tooltip_text = tr("Киім санатын ашу · Open category")
-		btn.pressed.connect(_show_slot.bind(slot as ClothingItem.SlotType))
-		_slot_tabs.add_child(btn)
-		_tab_buttons.append(btn)
-
-func _build_back_button() -> void:
-	_back_btn.text = "← Артқа"
-	_back_btn.pressed.connect(func(): SceneRouter.go_to_main_menu())
+	for slot: ClothingItem.SlotType in SLOT_ICONS:
+		var card := SelectableCard.new()
+		card.compact = true
+		card.tooltip_text = tr("Киім санатын ашу · Open category")
+		var icon := TextureRect.new()
+		icon.texture = SLOT_ICONS[slot]
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(icon)
+		card.pressed.connect(_show_slot.bind(slot))
+		_slot_tabs.add_child(card)
+		_tab_cards[slot] = card
 
 func _build_mannequin() -> void:
-	var pack := load("res://scenes/entities/character_visual.tscn") as PackedScene
-	_mannequin = pack.instantiate() as Node2D
+	_mannequin = CHARACTER_SCENE.instantiate()
+	_mannequin.scale = Vector2.ONE * MANNEQUIN_SCALE
 	_mannequin_slot.add_child(_mannequin)
-	(_mannequin as CharacterVisual).set_direction(Vector2.DOWN)
-	_mannequin_slot.resized.connect(_fit_mannequin)
-	_fit_mannequin()
+	_mannequin_slot.resized.connect(_place_mannequin)
+	_place_mannequin()
 	_apply_equipped_outfit()
+	var timer := Timer.new()
+	timer.wait_time = TURN_SECONDS
+	timer.autostart = true
+	timer.timeout.connect(_turn_mannequin)
+	add_child(timer)
+	_turn_mannequin()
 
-## Манекен рисуется вокруг своей точки, поэтому ставим его в центр ячейки и
-## подбираем масштаб под её высоту — карточка меняет размер вместе с экраном.
-func _fit_mannequin() -> void:
-	if _mannequin == null:
-		return
-	var area := _mannequin_slot.size
-	if area.x < 8.0 or area.y < 8.0:
-		return
-	var zoom := clampf(minf(area.x / 88.0, area.y / 82.0), 1.0, 6.0)
-	_mannequin.scale = Vector2(zoom, zoom)
-	(_mannequin as CharacterVisual).set_rest_position(area * 0.5)
+## Персонаж стоит по центру пьедестала; позиция — по пикселю арта.
+func _place_mannequin() -> void:
+	var step := UiTokens.PIXEL * MANNEQUIN_SCALE
+	_mannequin.set_rest_position((_mannequin_slot.size / 2 / step).floor() * step)
+
+func _turn_mannequin() -> void:
+	_mannequin.set_direction(TURN_ORDER[_turn % TURN_ORDER.size()])
+	_turn += 1
 
 func _apply_equipped_outfit() -> void:
-	var visual := _mannequin as CharacterVisual
 	for slot in ClothingItem.SlotType.values():
-		var item_id := SaveManager.get_equipped(slot as ClothingItem.SlotType)
-		var item := AssetRegistry.get_clothing_by_id(item_id)
-		visual.set_clothing(slot as ClothingItem.SlotType, item)
+		_mannequin.set_clothing(slot, AssetRegistry.get_clothing_by_id(SaveManager.get_equipped(slot)))
 
 func _show_slot(slot: ClothingItem.SlotType) -> void:
 	_current_slot = slot
-	for i in _tab_buttons.size():
-		_tab_buttons[i].add_theme_stylebox_override("normal", _tab_style(i == int(slot)))
-		_tab_buttons[i].add_theme_stylebox_override("hover", _tab_style(i == int(slot), true))
-		_tab_buttons[i].add_theme_color_override("font_color", SanlaqDesignTokens.NAVY if i == int(slot) else SanlaqDesignTokens.NAVY_LIGHT)
-		_tab_buttons[i].add_theme_color_override("font_hover_color", SanlaqDesignTokens.NAVY)
+	for tab_slot in _tab_cards:
+		(_tab_cards[tab_slot] as SelectableCard).selected = tab_slot == slot
+	%SlotName.text = SLOT_NAMES[slot]
 	_refresh_items()
 
 func _refresh_items() -> void:
-	for b in _item_buttons:
-		b.queue_free()
-	_item_buttons.clear()
-
-	var items := AssetRegistry.get_clothing(_current_slot)
+	for child in _items_grid.get_children():
+		_items_grid.remove_child(child)
+		child.queue_free()
 	var equipped_id := SaveManager.get_equipped(_current_slot)
-	_items_grid.columns = 3
-	_items_grid.add_theme_constant_override("h_separation", 10)
-	_items_grid.add_theme_constant_override("v_separation", 10)
-
-	for item in items:
-		var btn := Button.new()
-		btn.custom_minimum_size = Vector2(0, 90)
-		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		btn.focus_mode = Control.FOCUS_NONE
-		btn.icon_alignment = HorizontalAlignment.HORIZONTAL_ALIGNMENT_CENTER
-		btn.vertical_icon_alignment = VerticalAlignment.VERTICAL_ALIGNMENT_TOP
-		btn.add_theme_font_size_override("font_size", 14)
-		btn.add_theme_color_override("font_color", SanlaqDesignTokens.NAVY)
-		btn.add_theme_color_override("font_hover_color", SanlaqDesignTokens.NAVY)
-		btn.expand_icon = true
-		btn.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
-		btn.tooltip_text = item.get_desc_for_lang(GameSettings.get_lang_code())
-		btn.text = _card_text(item)
-		if not item.icon_path.is_empty():
-			var ico := load(item.icon_path) as Texture2D
-			if ico:
-				btn.icon = ico
-
-		if item.id == equipped_id:
-			btn.add_theme_stylebox_override("normal", _item_style(true))
-			btn.add_theme_stylebox_override("hover", _item_style(true, true))
-		else:
-			btn.add_theme_stylebox_override("normal", _item_style())
-			btn.add_theme_stylebox_override("hover", _item_style(false, true))
-			btn.pressed.connect(_equip_item.bind(item))
-
-		_items_grid.add_child(btn)
-		_item_buttons.append(btn)
-
-	var selected := AssetRegistry.get_clothing_by_id(equipped_id)
-	if selected == null and not items.is_empty():
-		selected = items[0]
-	if selected:
-		var lang := GameSettings.get_lang_code()
-		var status := tr("[color=#a36b24](✓ жабдықталған)[/color]") if selected.id == equipped_id else ""
-		_effect_label.text = tr("ҚАСИЕТІ: %s") % _effect_for(selected.id)
-		_info_label.text = "[b]%s[/b]\n%s\n%s" % [
-			selected.get_name_for_lang(lang),
-			selected.get_desc_for_lang(lang),
-			status,
-		]
-		_info_label.bbcode_enabled = true
-	else:
-		_effect_label.text = "ҚАСИЕТІ: —"
-		_info_label.text = "Киімді таңдаңыз"
-
-func _card_text(item: ClothingItem) -> String:
 	var lang := GameSettings.get_lang_code()
-	var name := item.get_name_for_lang(lang)
-	if item.id == SaveManager.get_equipped(_current_slot):
-		return "%s\n✓" % name
-	return name
+	for item in AssetRegistry.get_clothing(_current_slot):
+		var card := SelectableCard.new()
+		card.compact = true
+		card.selected = item.id == equipped_id
+		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		card.tooltip_text = item.get_desc_for_lang(lang)
+		var box := VBoxContainer.new()
+		box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var icon := TextureRect.new()
+		icon.texture = load(item.icon_path) as Texture2D
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.add_child(icon)
+		var name_label := Label.new()
+		name_label.text = item.get_name_for_lang(lang)
+		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.add_child(name_label)
+		card.add_child(box)
+		card.pressed.connect(_equip_item.bind(item))
+		_items_grid.add_child(card)
+	_show_details(AssetRegistry.get_clothing_by_id(equipped_id), equipped_id)
+
+func _show_details(item: ClothingItem, equipped_id: String) -> void:
+	if item == null:
+		%EffectLabel.text = tr("ҚАСИЕТІ: —")
+		%ItemName.text = tr("Киімді таңдаңыз")
+		%ItemDesc.text = ""
+		%Equipped.visible = false
+		return
+	var lang := GameSettings.get_lang_code()
+	%EffectLabel.text = tr("ҚАСИЕТІ: %s") % _effect_for(item.id)
+	%ItemName.text = item.get_name_for_lang(lang)
+	%ItemDesc.text = item.get_desc_for_lang(lang)
+	%Equipped.visible = item.id == equipped_id
 
 func _effect_for(item_id: String) -> String:
 	match item_id:
@@ -150,29 +134,6 @@ func _effect_for(item_id: String) -> String:
 		"torso_shapan_01": return tr("Соқыртекеге азырақ көрінесіз")
 		"shoes_saptama_etik_01": return tr("Құрғақ жерде жылдамдық +8%")
 	return tr("Сәндік зат")
-
-func _item_style(equipped: bool = false, hovered: bool = false) -> StyleBoxFlat:
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color("f6e8c8") if equipped else Color("fffaf0")
-	sb.border_color = SanlaqDesignTokens.GOLD_DARK if equipped else Color("d8c39a")
-	sb.set_border_width_all(3 if equipped else 1)
-	sb.set_corner_radius_all(12)
-	sb.set_content_margin_all(8)
-	if hovered:
-		sb.shadow_color = Color(0.04, 0.16, 0.23, 0.20)
-		sb.shadow_size = 7
-		sb.shadow_offset = Vector2(0, 3)
-	return sb
-
-func _tab_style(selected: bool, hovered: bool = false) -> StyleBoxFlat:
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = SanlaqDesignTokens.GOLD if selected else Color("f8eed9")
-	sb.border_color = SanlaqDesignTokens.GOLD_DARK if selected else Color("d6bf91")
-	sb.set_border_width_all(2 if selected else 1)
-	sb.set_corner_radius_all(10)
-	if hovered and not selected:
-		sb.bg_color = Color("f2dfb6")
-	return sb
 
 func _equip_item(item: ClothingItem) -> void:
 	SaveManager.set_equipped(_current_slot, item.id)
