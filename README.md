@@ -129,18 +129,20 @@ sokyroteke/
 │   ├── game_modes/        # настройки режима погони classic
 │   └── bots/              # bot_easy / bot_medium / bot_hard
 ├── assets/
-│   ├── character/         # мягкий 2D-мультяшный персонаж + одежда (см. README внутри)
-│   │   ├── base/          # тело (кожа/волосы/лицо)
-│   │   ├── head/ torso/ pants/ shoes/   # слои одежды
-│   │   ├── yurt/          # текстура юрты
-│   │   └── TEMPLATE.png   # сетка 4x6 для перерисовки
-│   ├── items/             # превью предметов 128x128 (квиз/шкаф)
-│   ├── tiles/             # ground, water_blob, rock (Kenney CC0)
+│   ├── palette/sanlaq.gpl # общая палитра всего пиксель-арта
+│   ├── sprites/           # пиксель-арт (генерируется tools/artgen, см. README внутри)
+│   │   ├── character/     # персонаж по слоям: base/ head/ torso/ pants/ shoes/
+│   │   ├── items/         # иконки предметов одежды (квиз/шкаф/энциклопедия)
+│   │   ├── backgrounds/   # фоны меню
+│   │   └── ui/            # логотип
+│   ├── ui/frames/         # пиксельные рамки интерфейса (tools/artgen)
+│   ├── character/yurt/    # текстура юрты (до перерисовки мира, этап 4)
+│   ├── tiles/             # ground, water_blob, rock (Kenney CC0, до этапа 4)
 │   ├── audio/voice/       # озвучка объяснений: kk/ и en/ (см. README внутри)
 │   ├── i18n/              # ui_strings.csv — вся локализация KZ/EN
-│   └── character/README.md
 └── tools/
-    ├── generate_character.py  # генератор всех ассетов персонажа/одежды/текстур
+    ├── artgen/                # генераторы пиксель-арта: python tools/artgen/build.py
+    ├── build_theme.gd         # сборка темы интерфейса из UiTokens и рамок
     ├── generate_voice_lines.py # озвучка объяснений через системный синтезатор
     ├── screenshot_screens.gd  # PNG со всех экранов для проверки глазами
     ├── smoke_test.gd          # проверка загрузки сцен
@@ -178,16 +180,12 @@ sokyroteke/
 
 ## Как добавить одежду (быстро)
 
-1. В `tools/generate_character.py` добавь строку в `ITEMS`:
-   ```python
-   "head_borik_02": {"slot": "head", "color": (70, 90, 140), "hat": "cap"},
-   ```
-2. `python3 tools/generate_character.py` — сгенерирует лист и превью.
-3. Создай `data/clothing/<id>.tres` (скопируй любой существующий, замени id/имена/цвет/пути).
-4. Открой проект — предмет появится в шкафу, квизе и у ботов.
+1. Нарисуй слой и иконку в генераторах `tools/artgen/characters.py` и
+   `tools/artgen/item_icons.py`, пересобери: `python tools/artgen/build.py`.
+2. Создай `data/clothing/<id>.tres` (скопируй любой существующий, замени id/имена/пути).
+3. Открой проект — предмет появится в шкафу, квизе и у ботов.
 
-Вручную: нарисуй лист 384×256 по `assets/character/TEMPLATE.png`, превью 128×128,
-укажи пути в `.tres`. Подробнее — `assets/character/README.md` и пример `.tres` ниже.
+Формат листа и порядок слоёв — в `assets/sprites/character/README.md`.
 
 ```gdscript
 id = "head_borik_02"
@@ -196,8 +194,8 @@ name_kz/ru/en = ...
 color = Color(0.27, 0.35, 0.55, 1)
 rarity = 1             # 0=common,1=rare,2=legendary
 wrong_answers_kz/ru = Array[String](["Тақия","Сәукеле"])  # минимум 2
-texture_path = "res://assets/character/head/head_borik_02.png"
-icon_path    = "res://assets/items/head_borik_02.png"
+texture_path = "res://assets/sprites/character/head/head_borik_02.png"
+icon_path    = "res://assets/sprites/items/head_borik_02.png"
 ```
 
 ---
@@ -291,10 +289,10 @@ godot --path . --resolution 1280x720 --script tools/screenshot_screens.gd
 
 - Репозиторий **приватный** (GitHub). Добавляй коллег через Settings → Collaborators.
 - Ветка `main` — рабочая. Правки через отдельные ветки + Pull Request.
-- Не коммить: `.godot/`, `export/`, `build/`, `*.uid`, `*.import` (уже в `.gitignore`,
-  Годот пересоздаёт их при открытии).
-- Обновления ассетов — только через `tools/generate_character.py` или ручную замену PNG
-  (с сохранением формата листа 384×256).
+- Не коммить: `.godot/`, `export/`, `build/` (уже в `.gitignore`). Файлы `*.uid` и
+  `*.import` **коммитятся**: сцены ссылаются на ресурсы по UID.
+- Пиксель-арт — только через генераторы `tools/artgen/` или импорт с проверкой
+  `tools/style_test.gd` (палитра `assets/palette/sanlaq.gpl`, пиксельная сетка).
 
 ## Статус
 
