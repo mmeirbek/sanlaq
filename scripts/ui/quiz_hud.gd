@@ -3,7 +3,13 @@ extends CanvasLayer
 
 signal answer_submitted(correct: bool)
 
+## Сколько секунд после ответа виден результат «Дұрыс!/Қате!».
+const RESULT_SHOW_TIME := 2.0
+
 var _current_item: ClothingItem
+## Растёт с каждым новым квизом. Отложенное скрытие результата прошлого квиза
+## сверяет номер, чтобы не закрыть квиз, открытый следующей поимкой.
+var _quiz_serial: int = 0
 var _current_options: Array[String] = []
 var _timer: float = 0.0
 var _max_time: float = 4.0
@@ -24,6 +30,7 @@ func _ready() -> void:
 	btn_c.pressed.connect(_on_answer.bind(2))
 
 func show_quiz(item: ClothingItem, answer_time: float) -> void:
+	_quiz_serial += 1
 	_current_item = item
 	_max_time = answer_time
 	_timer = answer_time
@@ -81,8 +88,10 @@ func _on_answer(index: int) -> void:
 	var correct := _current_options[index] == correct_name
 	answer_submitted.emit(correct)
 	show_result(correct, _current_item)
-	await get_tree().create_timer(2.0).timeout
-	hide_quiz()
+	var serial := _quiz_serial
+	await get_tree().create_timer(RESULT_SHOW_TIME).timeout
+	if serial == _quiz_serial:
+		hide_quiz()
 
 func _build_options(item: ClothingItem) -> Array[String]:
 	var lang := GameSettings.get_lang_code()

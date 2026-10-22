@@ -12,14 +12,12 @@ enum Rarity { COMMON, RARE, LEGENDARY }
 @export_multiline var desc_en: String = ""
 @export var color: Color = Color.WHITE
 @export var rarity: Rarity = Rarity.COMMON
-@export var unlock_by_default: bool = true
 @export var wrong_answers_kz: Array[String] = []
 @export var wrong_answers_en: Array[String] = []
 @export var texture_path: String = ""
 @export var icon_path: String = ""
 @export var reference_photo_path: String = ""
 @export var price: int = 0
-@export var unlock_condition: int = 0
 
 func get_name_for_lang(lang: String) -> String:
 	match lang:

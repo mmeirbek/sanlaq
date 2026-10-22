@@ -178,7 +178,7 @@ theme_override_font_sizes/font_size = 15
 
 [node name="LoreText" type="Label" parent="Content/DetailPanel/Margin/VBox"]
 layout_mode = 2
-text = "Дұрыс жауаптар киімдер топтамасын ашады. Әр заттың тарихын оқып, өз образыңды жина."
+text = "Әр заттың тарихын оқып, өз образыңды жина."
 autowrap_mode = 2
 theme_override_colors/font_color = Color(0.28, 0.25, 0.22, 1)
 theme_override_font_sizes/font_size = 14

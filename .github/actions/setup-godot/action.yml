@@ -1,0 +1,43 @@
+name: Setup Godot
+description: Ставит Godot в PATH как `godot` и, по запросу, шаблоны экспорта. Загрузки кэшируются.
+
+inputs:
+  version:
+    description: Версия Godot без суффикса -stable
+    default: "4.7.2"
+  export-templates:
+    description: Нужны ли шаблоны экспорта (только для сборки)
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Restore Godot from cache
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/godot
+        key: godot-${{ inputs.version }}-templates-${{ inputs.export-templates }}
+
+    - name: Download Godot
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        mkdir -p ~/.cache/godot && cd ~/.cache/godot
+        base="https://github.com/godotengine/godot/releases/download/${{ inputs.version }}-stable"
+        curl -fsSL -o godot.zip "$base/Godot_v${{ inputs.version }}-stable_linux.x86_64.zip"
+        unzip -q godot.zip && rm godot.zip
+        if [ "${{ inputs.export-templates }}" = "true" ]; then
+          curl -fsSL -o templates.tpz "$base/Godot_v${{ inputs.version }}-stable_export_templates.tpz"
+          unzip -q templates.tpz && rm templates.tpz
+        fi
+
+    - name: Install Godot
+      shell: bash
+      run: |
+        sudo ln -sf ~/.cache/godot/Godot_v${{ inputs.version }}-stable_linux.x86_64 /usr/local/bin/godot
+        if [ "${{ inputs.export-templates }}" = "true" ]; then
+          dest=~/.local/share/godot/export_templates/${{ inputs.version }}.stable
+          mkdir -p "$dest" && cp -r ~/.cache/godot/templates/* "$dest/"
+        fi
+        godot --version

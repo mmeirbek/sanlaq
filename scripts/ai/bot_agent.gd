@@ -8,6 +8,8 @@ const HIDE_TRIGGER_RADIUS := 260.0  # only worth ducking into a yurt that's reas
 const HIDE_DURATION := 3.5      # shorter than the game's 5s yurt-reveal delay, on purpose
 const HIDE_REACHED_DIST := 24.0
 const ARENA_CENTER_APPROX := Vector2.ZERO
+const PATROL_REACHED_DIST := 24.0
+const PATROL_RETARGET_TIME := 6.0  # if a rock or yurt blocks the way, give up on that point eventually
 
 @export var bot_profile: BotProfile
 
@@ -26,6 +28,9 @@ var _flee_hide_rolled: bool = false
 
 var _last_seen_pos: Vector2 = Vector2.ZERO
 var _last_seen_timer: float = 0.0
+
+var _patrol_target: Vector2 = Vector2.ZERO
+var _patrol_timer: float = 0.0
 
 var _match_mgr: MatchManager
 var _map: MapManager
@@ -212,7 +217,13 @@ func _process_sokyroteke(delta: float) -> void:
 			_player._controller.set_remote_input(_avoid_obstacles(dir), true)
 			return
 
-	dir = (_map.get_random_spawn() - _player.global_position).normalized()
+	# Keep one patrol point until it's reached: picking a fresh random point every
+	# frame made the seeker jitter in place with a flickering facing.
+	_patrol_timer -= delta
+	if _patrol_timer <= 0.0 or _player.global_position.distance_to(_patrol_target) < PATROL_REACHED_DIST:
+		_patrol_target = _map.get_random_spawn()
+		_patrol_timer = PATROL_RETARGET_TIME
+	dir = (_patrol_target - _player.global_position).normalized()
 	# A blind beeline toward the target can wedge the seeker against a rock/yurt with
 	# nothing to route around it — this is what made it look "stuck in one place".
 	_player._controller.set_remote_input(_avoid_obstacles(dir), false)

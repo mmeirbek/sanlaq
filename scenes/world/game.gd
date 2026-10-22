@@ -67,7 +67,6 @@ func _ready() -> void:
 	match_mgr.match_ended.connect(_on_match_ended)
 	match_mgr.player_caught.connect(_on_player_caught)
 	match_mgr.player_eliminated.connect(_on_player_eliminated)
-	match_mgr.item_unlocked.connect(_on_item_unlocked)
 	match_mgr.quiz_resolved.connect(_on_quiz_resolved)
 
 	quiz_hud.answer_submitted.connect(_on_quiz_answer)
@@ -233,11 +232,6 @@ func _on_player_eliminated(player: Player) -> void:
 			camera.add_shake(6.0)
 		_flash(Color(0.6, 0.05, 0.05), 0.32)
 		game_hud.show_caught_choice()
-
-func _on_item_unlocked(item: ClothingItem) -> void:
-	var lang := GameSettings.get_lang_code()
-	var name_str := item.get_name_for_lang(lang)
-	game_hud.show_message(tr("Ашылды: %s!") % name_str, 3.0)
 
 func _on_match_ended(results: Dictionary) -> void:
 	var winner: String = results.get("winner", "players")

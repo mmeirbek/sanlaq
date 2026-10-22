@@ -12,7 +12,6 @@ desc_kz = "Қысқы жылы бас киім. Көбінесе аң теріс
 desc_en = "Warm winter hat. Often made of fur."
 color = Color(0.25, 0.2, 0.1, 1)
 rarity = 0
-unlock_by_default = true
 wrong_answers_kz = Array[String](["Тақия", "Тымақ", "Кимешек"])
 wrong_answers_en = Array[String](["Takiya", "Tymaq", "Kimeshek"])
 texture_path = "res://assets/character/head/head_borik_01.png"

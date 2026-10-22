@@ -1,14 +1,20 @@
 extends SceneTree
-## Снимает по PNG с каждого экрана в tools/preview/screens/ — чтобы глазами
-## проверить раскладку и читаемость. ui_audit.gd ловит перекрытия контролов, но
-## не видит, например, тёмный заголовок на тёмном фоне.
+## Снимает PNG с каждого экрана и с самой игры — чтобы глазами проверить
+## раскладку и читаемость и сравнить «до/после» редизайна. ui_audit.gd ловит
+## перекрытия контролов, но не видит, например, тёмный заголовок на тёмном фоне.
 ##
-##     godot --path . --resolution 1280x720 --script tools/screenshot_screens.gd
+##     godot --path . --script tools/screenshot_screens.gd
+##     godot --path . --script tools/screenshot_screens.gd -- --size=1560x720 --out=C:/shots/phone
+##
+##   --size  размер окна, по умолчанию 1280x720. 1560x720 — телефон 19.5:9,
+##           960x720 — планшет 4:3.
+##   --out   папка для PNG, по умолчанию tools/preview/screens/.
 ##
 ## Запускать НЕ в headless: без рендера картинки будут пустыми. Сами PNG не
 ## коммитятся (см. .gitignore) — это расходный материал для ревью.
 
-const OUT_DIR := "res://tools/preview/screens/"
+const DEFAULT_OUT_DIR := "res://tools/preview/screens/"
+const DEFAULT_SIZE := Vector2i(1280, 720)
 
 ## Экраны без особых условий.
 const SCENES := {
@@ -22,38 +28,99 @@ const SCENES := {
 	"codex": "res://scenes/ui/codex.tscn",
 	"settings": "res://scenes/ui/settings.tscn",
 	"about": "res://scenes/ui/about.tscn",
+	"results": "res://scenes/ui/results.tscn",
 }
 ## Брифинг общий для всех режимов, поэтому снимается по разу на каждый.
 const BRIEFINGS := ["sokyroteke", "abai_says", "togyz_qumalaq", "aq_suyek"]
+## Соқыртеке снимается дважды из одного запуска: секунда от старта
+## (обратный отсчёт) и разгар раунда.
+const GAME_SCENE := "res://scenes/world/game.tscn"
+const GAME_SHOTS := {"game_countdown": 1.0, "game_playing": 6.0}
+
+var _out_dir := ""
+
 
 func _init() -> void:
+	var args := _parse_user_args()
+	_out_dir = ProjectSettings.globalize_path(args.get("out", DEFAULT_OUT_DIR))
 	# Автолоады добавляются в дерево не сразу — ждём, иначе их не найти.
+	# Окно к этому моменту тоже уже создано и развёрнуто по настройкам проекта.
 	await process_frame
 	await process_frame
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT_DIR))
+	# Без фиксированного размера снимок зависел бы от монитора.
+	root.mode = Window.MODE_WINDOWED
+	root.size = _parse_size(args.get("size", ""))
+	await process_frame
+	DirAccess.make_dir_recursive_absolute(_out_dir)
 
 	for name in SCENES:
 		await _shoot(name, SCENES[name])
 	for mode_id in BRIEFINGS:
 		root.get_node("/root/SceneRouter").set_pending_briefing(mode_id)
 		await _shoot("briefing_" + mode_id, "res://scenes/ui/mode_briefing.tscn")
+	await _shoot_game()
 
-	print("\nготово: ", ProjectSettings.globalize_path(OUT_DIR))
+	print("\nготово: ", _out_dir)
 	quit()
 
+
 func _shoot(name: String, scene_path: String) -> void:
-	var pack := load(scene_path) as PackedScene
-	if pack == null:
-		print("не загрузилась сцена: ", scene_path)
+	var instance := _mount(scene_path)
+	if instance == null:
 		return
-	var inst := pack.instantiate()
-	root.add_child(inst)
 	# Даём раскладке и шрифтам устояться, иначе попадёт кадр до вёрстки.
 	for _i in 12:
 		await process_frame
-	var path := ProjectSettings.globalize_path(OUT_DIR + name + ".png")
-	root.get_texture().get_image().save_png(path)
-	print("снято: ", name)
-	root.remove_child(inst)
-	inst.queue_free()
+	_capture(name)
+	await _unmount(instance)
+
+
+func _shoot_game() -> void:
+	var game := _mount(GAME_SCENE)
+	if game == null:
+		return
+	var elapsed := 0.0
+	for name in GAME_SHOTS:
+		var at: float = GAME_SHOTS[name]
+		await create_timer(at - elapsed).timeout
+		elapsed = at
+		_capture(name)
+	await _unmount(game)
+
+
+func _mount(scene_path: String) -> Node:
+	var pack := load(scene_path) as PackedScene
+	if pack == null:
+		print("не загрузилась сцена: ", scene_path)
+		return null
+	var instance := pack.instantiate()
+	root.add_child(instance)
+	return instance
+
+
+func _unmount(instance: Node) -> void:
+	root.remove_child(instance)
+	instance.queue_free()
 	await process_frame
+
+
+func _capture(name: String) -> void:
+	root.get_texture().get_image().save_png(_out_dir.path_join(name + ".png"))
+	print("снято: ", name)
+
+
+## Аргументы после «--» в виде --ключ=значение.
+func _parse_user_args() -> Dictionary:
+	var args := {}
+	for arg in OS.get_cmdline_user_args():
+		var pair := arg.trim_prefix("--").split("=", true, 1)
+		if pair.size() == 2:
+			args[pair[0]] = pair[1]
+	return args
+
+
+func _parse_size(text: String) -> Vector2i:
+	var parts := text.split("x")
+	if parts.size() == 2 and parts[0].is_valid_int() and parts[1].is_valid_int():
+		return Vector2i(parts[0].to_int(), parts[1].to_int())
+	return DEFAULT_SIZE

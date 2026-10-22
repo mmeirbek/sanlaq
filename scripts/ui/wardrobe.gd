@@ -109,11 +109,7 @@ func _refresh_items() -> void:
 			if ico:
 				btn.icon = ico
 
-		var unlocked := SaveManager.is_unlocked(item.id)
-		if not unlocked:
-			btn.disabled = true
-			btn.modulate = Color(0.5, 0.5, 0.5, 1)
-		elif item.id == equipped_id:
+		if item.id == equipped_id:
 			btn.add_theme_stylebox_override("normal", _item_style(true))
 			btn.add_theme_stylebox_override("hover", _item_style(true, true))
 		else:
@@ -146,9 +142,7 @@ func _card_text(item: ClothingItem) -> String:
 	var name := item.get_name_for_lang(lang)
 	if item.id == SaveManager.get_equipped(_current_slot):
 		return "%s\n✓" % name
-	if not SaveManager.is_unlocked(item.id):
-		return tr("%s\n🔒 Жабық") % name
-	return "%s" % name
+	return name
 
 func _effect_for(item_id: String) -> String:
 	match item_id:

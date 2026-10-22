@@ -1,6 +1,7 @@
 .godot/
-*.uid
-*.import
+# *.uid и *.import коммитятся: сцены ссылаются на ресурсы по UID, а настройки
+# импорта (фильтр, сжатие) должны быть у всех одинаковыми.
+# *.translation собирается из assets/i18n/ui_strings.csv при импорте.
 *.translation
 export/
 # Скриншоты экранов для ревью — расходный материал (tools/screenshot_screens.gd)

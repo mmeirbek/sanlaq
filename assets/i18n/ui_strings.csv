@@ -20,7 +20,7 @@ keys,kk,en
 ДЫБЫС ПЕН ОЙЫНШЫ ПРОФИЛІ,ДЫБЫС ПЕН ОЙЫНШЫ ПРОФИЛІ,SOUND & PLAYER PROFILE
 ДЫБЫС ӘСЕРЛЕРІ,ДЫБЫС ӘСЕРЛЕРІ,SOUND EFFECTS
 Дереккөз: Wikimedia Commons,Дереккөз: Wikimedia Commons,Source: Wikimedia Commons
-"Дұрыс жауаптар киімдер топтамасын ашады. Әр заттың тарихын оқып, өз образыңды жина.","Дұрыс жауаптар киімдер топтамасын ашады. Әр заттың тарихын оқып, өз образыңды жина.",Correct answers unlock the clothing collection. Read each item's history and build your own look.
+"Әр заттың тарихын оқып, өз образыңды жина.","Әр заттың тарихын оқып, өз образыңды жина.",Read each item's history and build your own look.
 ЗАТТАРДЫ АШ · ТАРИХЫН ТАНЫ,ЗАТТАРДЫ АШ · ТАРИХЫН ТАНЫ,UNLOCK ITEMS · LEARN THEIR HISTORY
 КИІМ ШКАФЫ,КИІМ ШКАФЫ,WARDROBE
 КИІМДІ ТАҢДА · ОБРАЗЫҢДЫ ҚҰР,КИІМДІ ТАҢДА · ОБРАЗЫҢДЫ ҚҰР,CHOOSE CLOTHING · BUILD YOUR LOOK
@@ -77,19 +77,11 @@ keys,kk,en
 Ойыннан шығасыз ба?,Ойыннан шығасыз ба?,Exit the game?
 Аяқ киім,Аяқ киім,Footwear
 Аңыз,Аңыз,Legendary
-"Бұл киім әлі ашылған жоқ. Дұрыс жауап беріп, квизде ашыңыз.","Бұл киім әлі ашылған жоқ. Дұрыс жауап беріп, квизде ашыңыз.",This clothing item hasn't been unlocked yet. Answer correctly in the quiz to unlock it.
 Дереккөз: Wikimedia Commons · лицензиясы CREDITS.md файлында,Дереккөз: Wikimedia Commons · лицензиясы CREDITS.md файлында,Source: Wikimedia Commons · license in CREDITS.md
-Жабық киім,Жабық киім,Locked item
 Кәдімгі,Кәдімгі,Common
 Сирек,Сирек,Rare
 Сырт киім,Сырт киім,Outerwear
 Шалбар,Шалбар,Pants
-жабық · квизде аш,жабық · квизде аш,locked · unlock in quiz
-✓ ашық,✓ ашық,✓ unlocked
-"%s
-🔒 Жабық","%s
-🔒 Жабық","%s
-🔒 Locked"
 [color=#a36b24](✓ жабдықталған)[/color],[color=#a36b24](✓ жабдықталған)[/color],[color=#a36b24](✓ equipped)[/color]
 Баяулау уақыты −30%,Баяулау уақыты −30%,Slow duration −30%
 Киім санатын ашу · Open category,Киім санатын ашу · Open category,Open clothing category
@@ -110,7 +102,6 @@ SHIFT · ЖҮГІРУ × %d,SHIFT · ЖҮГІРУ × %d,SHIFT · SPRINT × %d
 «%s» қателесті — қашып кеттіңіз!,«%s» қателесті — қашып кеттіңіз!,«%s» guessed wrong — you got away!
 «%s» ұсталды!,«%s» ұсталды!,«%s» was caught!
 «%s» — Соқыртеке! Қашыңыз!,«%s» — Соқыртеке! Қашыңыз!,«%s» is the Sokyroteke! Run!
-Ашылды: %s!,Ашылды: %s!,Unlocked: %s!
 ЖЕҢІС: Соқыртеке!,ЖЕҢІС: Соқыртеке!,VICTORY: Sokyroteke!
 ЖЕҢІС: Қашушылар!,ЖЕҢІС: Қашушылар!,VICTORY: Runners!
 МАҚСАТ: %.0f СЕКУНД АМАН ҚАЛ,МАҚСАТ: %.0f СЕКУНД АМАН ҚАЛ,OBJECTIVE: SURVIVE %.0f SECONDS
@@ -230,7 +221,7 @@ This is: %s"
 Дыбыстық сүйемелдеу,Дыбыстық сүйемелдеу,Play narration
 "Соқыртекенің көзі байлаулы: жарық шеңберінен тыс қашушыларды көрмейді, тек дыбысты естиді.","Соқыртекенің көзі байлаулы: жарық шеңберінен тыс қашушыларды көрмейді, тек дыбысты естиді.",The blind goat's eyes are covered: it cannot see runners outside the ring of light and only hears them.
 Қашушыны қуып жетіп ұстаңыз. Ұстаған сәтте оның үстіндегі киімді суреттен тану керек.,Қашушыны қуып жетіп ұстаңыз. Ұстаған сәтте оның үстіндегі киімді суреттен тану керек.,Chase a runner down and tag them. At the moment of the tag you must identify the clothing they are wearing from a picture.
-"Дұрыс жауап — ойыншы ойыннан шығады, ал сол киім гардеробтан ашылады. Қате жауап — бес секунд баяулау.","Дұрыс жауап — ойыншы ойыннан шығады, ал сол киім гардеробтан ашылады. Қате жауап — бес секунд баяулау.",A correct answer knocks that player out and unlocks the item in your wardrobe. A wrong answer slows you down for five seconds.
+Дұрыс жауап — ойыншы ойыннан шығады. Қате жауап — бес секунд баяулау.,Дұрыс жауап — ойыншы ойыннан шығады. Қате жауап — бес секунд баяулау.,A correct answer knocks that player out. A wrong answer slows you down for five seconds.
 "Су бәрін баяулатады, киіз үй ішіне кіріп жасырынуға болады. Тоқсан секунд ішінде бәрін ұстаңыз.","Су бәрін баяулатады, киіз үй ішіне кіріп жасырынуға болады. Тоқсан секунд ішінде бәрін ұстаңыз.","Water slows everyone down, and you can hide inside a yurt. Catch them all within ninety seconds."
 "Ұлттық киім атауларын танып, есте сақтауға үйретеді.","Ұлттық киім атауларын танып, есте сақтауға үйретеді.",Teaches you to recognise and remember the names of traditional clothing.
 Кеңістікте бағдарлау мен жылдам шешім қабылдауды жаттықтырады.,Кеңістікте бағдарлау мен жылдам шешім қабылдауды жаттықтырады.,Trains spatial awareness and fast decision-making.
