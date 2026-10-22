@@ -1,36 +1,17 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3]
 
-[ext_resource type="Script" path="res://scenes/ui/about.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="3"]
-[ext_resource type="FontFile" path="res://assets/fonts/NotoSans-Bold.ttf" id="4"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_header.tscn" id="2"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_page"]
-bg_color = Color(0.984, 0.969, 0.933, 0.94)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.851, 0.663, 0.247, 0.8)
-corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
-shadow_color = Color(0.04, 0.16, 0.23, 0.22)
-shadow_size = 14
-shadow_offset = Vector2(0, 6)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
-bg_color = Color(1, 0.98, 0.91, 0.94)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.76, 0.60, 0.30, 0.72)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
+[ext_resource type="Script" path="res://scenes/ui/about.gd" id="1_script"]
+[ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://scripts/ui/components/pixel_backdrop.gd" id="3_backdrop"]
+[ext_resource type="Script" path="res://scripts/ui/components/screen_header.gd" id="4_header"]
+[ext_resource type="Texture2D" path="res://assets/sprites/items/head_borik_01.png" id="10_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/items/head_kimeshek_01.png" id="11_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/items/head_saukele_01.png" id="12_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/items/head_tymaq_01.png" id="13_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/items/shoes_saptama_etik_01.png" id="14_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/items/torso_shapan_01.png" id="15_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/modes/role_runner.png" id="16_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/modes/role_seeker.png" id="17_tex"]
 
 [node name="About" type="Control"]
 layout_mode = 3
@@ -39,193 +20,214 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1")
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
 
-[node name="Background" parent="." instance=ExtResource("3")]
+[node name="Background" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-variant = 0
+mouse_filter = 2
+script = ExtResource("3_backdrop")
+variant = 1
+veil = 0.35
 
-[node name="Header" parent="." instance=ExtResource("2")]
+[node name="Header" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 0
-offset_left = 60.0
-offset_top = 48.0
-offset_right = 60.0
-offset_bottom = 48.0
-grow_horizontal = 1
-grow_vertical = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 32.0
+offset_top = 24.0
+offset_right = -32.0
+offset_bottom = 120.0
+grow_horizontal = 2
+script = ExtResource("4_header")
 title = "САҢЛАҚ ТУРАЛЫ"
 subtitle = "ОЙЫН ЕРЕЖЕСІ · МӘДЕНИ МАЗМҰНЫ"
 
-[node name="BackBtn" type="Button" parent="."]
+[node name="Page" type="VBoxContainer" parent="."]
 layout_mode = 1
-anchors_preset = 1
+anchors_preset = 15
 anchor_right = 1.0
-offset_left = -220.0
-offset_top = 60.0
-offset_right = -60.0
-offset_bottom = 112.0
-grow_horizontal = 0
-text = "← Артқа"
-theme_override_font_sizes/font_size = 18
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = 136.0
+offset_right = -32.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="Page" type="PanelContainer" parent="."]
-layout_mode = 0
-offset_left = 60.0
-offset_top = 148.0
-offset_right = 1220.0
-offset_bottom = 654.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_page")
-
-[node name="Margin" type="MarginContainer" parent="Page"]
+[node name="IntroPanel" type="PanelContainer" parent="Page"]
 layout_mode = 2
-theme_override_constants/margin_left = 22
-theme_override_constants/margin_top = 18
-theme_override_constants/margin_right = 22
-theme_override_constants/margin_bottom = 18
+theme_type_variation = &"HudPanel"
 
-[node name="VBox" type="VBoxContainer" parent="Page/Margin"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="Intro" type="Label" parent="Page/Margin/VBox"]
+[node name="Intro" type="Label" parent="Page/IntroPanel"]
 layout_mode = 2
 text = "Соқыртеке — қуып жету, жасырынып қалу және ұлттық киімді тану арқылы өтетін ойын. Әр матчта рөлді таңдап, қарсыластың әрекетін оқыңыз."
 autowrap_mode = 2
-theme_override_colors/font_color = Color(0.16, 0.20, 0.20, 1)
-theme_override_font_sizes/font_size = 17
 
-[node name="RowOne" type="HBoxContainer" parent="Page/Margin/VBox"]
-custom_minimum_size = Vector2(0, 188)
+[node name="Grid" type="GridContainer" parent="Page"]
 layout_mode = 2
-theme_override_constants/separation = 14
+size_flags_vertical = 3
+columns = 2
 
-[node name="RulesCard" type="PanelContainer" parent="Page/Margin/VBox/RowOne"]
-custom_minimum_size = Vector2(0, 188)
+[node name="RulesCard" type="PanelContainer" parent="Page/Grid"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+size_flags_vertical = 3
+theme_type_variation = &"Card"
 
-[node name="Margin" type="MarginContainer" parent="Page/Margin/VBox/RowOne/RulesCard"]
+[node name="Row" type="HBoxContainer" parent="Page/Grid/RulesCard"]
 layout_mode = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 14
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 14
+theme_override_constants/separation = 16
 
-[node name="VBox" type="VBoxContainer" parent="Page/Margin/VBox/RowOne/RulesCard/Margin"]
+[node name="Icons" type="VBoxContainer" parent="Page/Grid/RulesCard/Row"]
 layout_mode = 2
-theme_override_constants/separation = 8
+alignment = 1
 
-[node name="Title" type="Label" parent="Page/Margin/VBox/RowOne/RulesCard/Margin/VBox"]
+[node name="Icon0" type="TextureRect" parent="Page/Grid/RulesCard/Row/Icons"]
 layout_mode = 2
+texture = ExtResource("17_tex")
+stretch_mode = 3
+
+[node name="Icon1" type="TextureRect" parent="Page/Grid/RulesCard/Row/Icons"]
+layout_mode = 2
+texture = ExtResource("16_tex")
+stretch_mode = 3
+
+[node name="Text" type="VBoxContainer" parent="Page/Grid/RulesCard/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Title" type="Label" parent="Page/Grid/RulesCard/Row/Text"]
+layout_mode = 2
+theme_type_variation = &"HeadingLabel"
 text = "01  ОЙЫН ЕРЕЖЕСІ"
-theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
-theme_override_fonts/font = ExtResource("4")
-theme_override_font_sizes/font_size = 17
 
-[node name="Text" type="Label" parent="Page/Margin/VBox/RowOne/RulesCard/Margin/VBox"]
+[node name="Body" type="Label" parent="Page/Grid/RulesCard/Row/Text"]
 layout_mode = 2
 text = "Соқыртеке қашушыларды ұстайды. Ұстағаннан кейін киімге қатысты сұраққа дұрыс жауап беру керек. Қашушы уақыт біткенше аман қалса — жеңеді."
 autowrap_mode = 2
-theme_override_font_sizes/font_size = 15
 
-[node name="EventsCard" type="PanelContainer" parent="Page/Margin/VBox/RowOne"]
-custom_minimum_size = Vector2(0, 188)
+[node name="EventsCard" type="PanelContainer" parent="Page/Grid"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+size_flags_vertical = 3
+theme_type_variation = &"Card"
 
-[node name="Margin" type="MarginContainer" parent="Page/Margin/VBox/RowOne/EventsCard"]
+[node name="Row" type="HBoxContainer" parent="Page/Grid/EventsCard"]
 layout_mode = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 14
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 14
+theme_override_constants/separation = 16
 
-[node name="VBox" type="VBoxContainer" parent="Page/Margin/VBox/RowOne/EventsCard/Margin"]
+[node name="Icons" type="VBoxContainer" parent="Page/Grid/EventsCard/Row"]
 layout_mode = 2
-theme_override_constants/separation = 8
+alignment = 1
 
-[node name="Title" type="Label" parent="Page/Margin/VBox/RowOne/EventsCard/Margin/VBox"]
+[node name="Icon0" type="TextureRect" parent="Page/Grid/EventsCard/Row/Icons"]
 layout_mode = 2
+texture = ExtResource("16_tex")
+stretch_mode = 3
+
+[node name="Text" type="VBoxContainer" parent="Page/Grid/EventsCard/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Title" type="Label" parent="Page/Grid/EventsCard/Row/Text"]
+layout_mode = 2
+theme_type_variation = &"HeadingLabel"
 text = "02  ОЙЫНДАҒЫ ОҚИҒАЛАР"
-theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
-theme_override_fonts/font = ExtResource("4")
-theme_override_font_sizes/font_size = 17
 
-[node name="Text" type="Label" parent="Page/Margin/VBox/RowOne/EventsCard/Margin/VBox"]
+[node name="Body" type="Label" parent="Page/Grid/EventsCard/Row/Text"]
 layout_mode = 2
 text = "Қашушы бір рет 3 секунд жүгіре алады. Соқыртекеде бір рет Үн тыңдау бар. Тұман түскенде Соқыртекенің көру аймағы азаяды."
 autowrap_mode = 2
-theme_override_font_sizes/font_size = 15
 
-[node name="RowTwo" type="HBoxContainer" parent="Page/Margin/VBox"]
-custom_minimum_size = Vector2(0, 188)
-layout_mode = 2
-theme_override_constants/separation = 14
-
-[node name="ClothesCard" type="PanelContainer" parent="Page/Margin/VBox/RowTwo"]
-custom_minimum_size = Vector2(0, 188)
+[node name="ClothesCard" type="PanelContainer" parent="Page/Grid"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+size_flags_vertical = 3
+theme_type_variation = &"Card"
 
-[node name="Margin" type="MarginContainer" parent="Page/Margin/VBox/RowTwo/ClothesCard"]
+[node name="Row" type="HBoxContainer" parent="Page/Grid/ClothesCard"]
 layout_mode = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 14
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 14
+theme_override_constants/separation = 16
 
-[node name="VBox" type="VBoxContainer" parent="Page/Margin/VBox/RowTwo/ClothesCard/Margin"]
+[node name="Icons" type="VBoxContainer" parent="Page/Grid/ClothesCard/Row"]
 layout_mode = 2
-theme_override_constants/separation = 8
+alignment = 1
 
-[node name="Title" type="Label" parent="Page/Margin/VBox/RowTwo/ClothesCard/Margin/VBox"]
+[node name="Icon0" type="TextureRect" parent="Page/Grid/ClothesCard/Row/Icons"]
 layout_mode = 2
+texture = ExtResource("13_tex")
+stretch_mode = 3
+
+[node name="Icon1" type="TextureRect" parent="Page/Grid/ClothesCard/Row/Icons"]
+layout_mode = 2
+texture = ExtResource("15_tex")
+stretch_mode = 3
+
+[node name="Icon2" type="TextureRect" parent="Page/Grid/ClothesCard/Row/Icons"]
+layout_mode = 2
+texture = ExtResource("14_tex")
+stretch_mode = 3
+
+[node name="Text" type="VBoxContainer" parent="Page/Grid/ClothesCard/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Title" type="Label" parent="Page/Grid/ClothesCard/Row/Text"]
+layout_mode = 2
+theme_type_variation = &"HeadingLabel"
 text = "03  КИІМ ҚАСИЕТТЕРІ"
-theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
-theme_override_fonts/font = ExtResource("4")
-theme_override_font_sizes/font_size = 17
 
-[node name="Text" type="Label" parent="Page/Margin/VBox/RowTwo/ClothesCard/Margin/VBox"]
+[node name="Body" type="Label" parent="Page/Grid/ClothesCard/Row/Text"]
 layout_mode = 2
 text = "Тымақ баяулау уақытын 30% қысқартады. Шапан қарсыласқа азырақ көрінуге көмектеседі. Саптама етік құрғақ жерде жылдамдықты 8% арттырады."
 autowrap_mode = 2
-theme_override_font_sizes/font_size = 15
 
-[node name="ValueCard" type="PanelContainer" parent="Page/Margin/VBox/RowTwo"]
-custom_minimum_size = Vector2(0, 188)
+[node name="ValueCard" type="PanelContainer" parent="Page/Grid"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+size_flags_vertical = 3
+theme_type_variation = &"Card"
 
-[node name="Margin" type="MarginContainer" parent="Page/Margin/VBox/RowTwo/ValueCard"]
+[node name="Row" type="HBoxContainer" parent="Page/Grid/ValueCard"]
 layout_mode = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 14
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 14
+theme_override_constants/separation = 16
 
-[node name="VBox" type="VBoxContainer" parent="Page/Margin/VBox/RowTwo/ValueCard/Margin"]
+[node name="Icons" type="VBoxContainer" parent="Page/Grid/ValueCard/Row"]
 layout_mode = 2
-theme_override_constants/separation = 8
+alignment = 1
 
-[node name="Title" type="Label" parent="Page/Margin/VBox/RowTwo/ValueCard/Margin/VBox"]
+[node name="Icon0" type="TextureRect" parent="Page/Grid/ValueCard/Row/Icons"]
 layout_mode = 2
+texture = ExtResource("12_tex")
+stretch_mode = 3
+
+[node name="Icon1" type="TextureRect" parent="Page/Grid/ValueCard/Row/Icons"]
+layout_mode = 2
+texture = ExtResource("11_tex")
+stretch_mode = 3
+
+[node name="Icon2" type="TextureRect" parent="Page/Grid/ValueCard/Row/Icons"]
+layout_mode = 2
+texture = ExtResource("10_tex")
+stretch_mode = 3
+
+[node name="Text" type="VBoxContainer" parent="Page/Grid/ValueCard/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Title" type="Label" parent="Page/Grid/ValueCard/Row/Text"]
+layout_mode = 2
+theme_type_variation = &"HeadingLabel"
 text = "04  НЕГЕ МАҢЫЗДЫ?"
-theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
-theme_override_fonts/font = ExtResource("4")
-theme_override_font_sizes/font_size = 17
 
-[node name="Text" type="Label" parent="Page/Margin/VBox/RowTwo/ValueCard/Margin/VBox"]
+[node name="Body" type="Label" parent="Page/Grid/ValueCard/Row/Text"]
 layout_mode = 2
 text = "Ойын кеңістікте бағдарлауды, жылдам шешім қабылдауды және өзара әрекеттесуді жаттықтырады. Киім атаулары мен тарихы ұлттық мұраны танып-білуге жол ашады."
 autowrap_mode = 2
-theme_override_font_sizes/font_size = 15
