@@ -231,7 +231,7 @@ icon_path    = "res://assets/sprites/items/head_borik_02.png"
   `modes_smoke_test.gd` уронит сборку, если строка осталась без перевода, без
   озвучки или без своей схемы.
 - **Новое слово для «Абай айтады»**: `GameWord` в `data/words/`
-  (id, category, name_kz/en, icon_path, sound_path) + иконка в `assets/words/food/`.
+  (id, category, name_kz/en, icon_path, sound_path) + иконка в `assets/sprites/food/` (генератор `tools/artgen/food_icons.py`).
   `AssetRegistry` подхватит на старте, код менять не нужно.
 - **Новый бот**: `BotProfile` в `data/bots/` (скорость, страх, реакция, шанс угадать).
 - **Баланс на лету**: все настройки режима — в `data/game_modes/mode_classic.tres`.

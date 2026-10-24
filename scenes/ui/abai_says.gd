@@ -17,10 +17,14 @@ const SHOW_ON := 0.55
 const SHOW_GAP := 0.22
 const TAP_FLASH := 0.18
 const FEEDBACK_TIME := 0.9
+## Иконка 32×32 пикселя арта уже сохранена ×2; на карточке — ещё ×2.
+const ICON_SCALE := 2
+const CARD_WIDTH := 208
+const CROSS := preload("res://assets/ui/frames/cross.png")
 
 var _state: State = State.SETUP
 var _words: Array[GameWord] = []
-var _card_panels: Array[PanelContainer] = []
+var _cards: Array[SelectableCard] = []
 var _sequence: Array[int] = []
 var _round: int = 0
 ## Каждый игрок: {name: String, active: bool, failed: bool}
@@ -37,6 +41,7 @@ var _audio: GameAudio
 @onready var _handoff_panel: PanelContainer = %HandoffPanel
 @onready var _end_panel: PanelContainer = %EndPanel
 @onready var _grid: GridContainer = %CardGrid
+@onready var _players_row: HBoxContainer = %PlayersRow
 @onready var _round_label: Label = %RoundLabel
 @onready var _status_label: Label = %StatusLabel
 @onready var _progress_label: Label = %ProgressLabel
@@ -47,7 +52,6 @@ var _audio: GameAudio
 @onready var _rounds_label: Label = %RoundsLabel
 @onready var _again_btn: Button = %AgainBtn
 @onready var _menu_btn: Button = %MenuBtn
-@onready var _back_btn: Button = %BackBtn
 @onready var _p2_btn: Button = %P2Btn
 @onready var _p3_btn: Button = %P3Btn
 @onready var _p4_btn: Button = %P4Btn
@@ -61,7 +65,7 @@ func _ready() -> void:
 	_ready_btn.pressed.connect(_on_ready_pressed)
 	_again_btn.pressed.connect(_reset_to_setup)
 	_menu_btn.pressed.connect(func() -> void: SceneRouter.go_to_main_menu())
-	_back_btn.pressed.connect(func() -> void: SceneRouter.go_to_mode_select())
+	(%Header as ScreenHeader).back_pressed.connect(SceneRouter.go_to_mode_select)
 	_show_only(_setup_panel)
 
 func _start_game(player_count: int) -> void:
@@ -69,7 +73,7 @@ func _start_game(player_count: int) -> void:
 	if _words.is_empty():
 		Telemetry.log_error("no GameWord resources found", "abai_says")
 		_show_only(_play_panel)
-		_status_label.text = tr("Сөздер табылмады")
+		_set_status(tr("Сөздер табылмады"), UiTokens.DANGER)
 		return
 
 	_build_cards()
@@ -97,85 +101,78 @@ func _build_cards() -> void:
 	for c in _grid.get_children():
 		_grid.remove_child(c)
 		c.queue_free()
-	_card_panels.clear()
+	_cards.clear()
 	for i in _words.size():
 		_grid.add_child(_make_card(_words[i], i))
 
-## Карточка собрана как в codex.gd: обычный Control-хост, внутри оформленная
-## панель с содержимым и поверх неё прозрачная кнопка на всю площадь — так
-## контейнер не спорит с раскладкой кликабельного слоя.
-func _make_card(word: GameWord, index: int) -> Control:
-	var card := Control.new()
-	card.custom_minimum_size = Vector2(190, 180)
-	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
-	var panel := PanelContainer.new()
-	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	panel.add_theme_stylebox_override("panel", _card_style())
-	card.add_child(panel)
-	_card_panels.append(panel)
+## Карточка блюда: иконка ×2 (целый масштаб) и название. Подсветка показа и
+## нажатия — выбранный вид карточки из темы.
+func _make_card(word: GameWord, index: int) -> SelectableCard:
+	var card := SelectableCard.new()
+	card.compact = true
+	card.custom_minimum_size = Vector2(CARD_WIDTH, 0)
+	card.focus_mode = Control.FOCUS_NONE
+	card.pressed.connect(_on_card_pressed.bind(index))
+	_cards.append(card)
 
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 6)
-	panel.add_child(box)
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card.add_child(box)
 
-	var frame := PanelContainer.new()
-	frame.custom_minimum_size = Vector2(0, 112)
-	frame.add_theme_stylebox_override("panel", _photo_style())
-	box.add_child(frame)
-
-	var tex := TextureRect.new()
-	tex.custom_minimum_size = Vector2(0, 104)
-	tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	tex.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
-	if not word.icon_path.is_empty():
-		tex.texture = load(word.icon_path) as Texture2D
-	frame.add_child(tex)
+	var icon := TextureRect.new()
+	icon.texture = load(word.icon_path) as Texture2D if not word.icon_path.is_empty() else null
+	if icon.texture != null:
+		icon.custom_minimum_size = icon.texture.get_size() * ICON_SCALE
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(icon)
 
 	var name_lbl := Label.new()
 	name_lbl.text = word.get_name_for_lang(GameSettings.get_lang_code())
 	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_lbl.add_theme_font_size_override("font_size", 18)
-	name_lbl.add_theme_color_override("font_color", SanlaqDesignTokens.NAVY)
+	name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(name_lbl)
-
-	var click := Button.new()
-	click.flat = true
-	click.focus_mode = Control.FOCUS_NONE
-	click.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	click.set_anchors_preset(Control.PRESET_FULL_RECT)
-	click.pressed.connect(_on_card_pressed.bind(index))
-	card.add_child(click)
-
 	return card
 
-func _card_style(active: bool = false) -> StyleBoxFlat:
-	var s := StyleBoxFlat.new()
-	s.bg_color = SanlaqDesignTokens.GOLD_PALE if active else SanlaqDesignTokens.CREAM_LIGHT
-	s.border_color = SanlaqDesignTokens.GOLD_DARK if active else SanlaqDesignTokens.GOLD
-	s.set_border_width_all(5 if active else 2)
-	s.set_corner_radius_all(14)
-	s.set_content_margin_all(8)
-	s.shadow_color = Color(0.04, 0.16, 0.23, 0.18)
-	s.shadow_size = 9 if active else 5
-	s.shadow_offset = Vector2(0, 3)
-	return s
-
-func _photo_style() -> StyleBoxFlat:
-	var s := StyleBoxFlat.new()
-	s.bg_color = Color("ead8b0")
-	s.border_color = Color("a26a2e")
-	s.set_border_width_all(1)
-	s.set_corner_radius_all(8)
-	s.set_content_margin_all(3)
-	return s
-
 func _set_card_active(index: int, active: bool) -> void:
-	if index < 0 or index >= _card_panels.size():
+	if index < 0 or index >= _cards.size():
 		return
-	_card_panels[index].add_theme_stylebox_override("panel", _card_style(active))
+	_cards[index].selected = active
+
+## Полоса игроков в порядке хода: ходящий — золотой карточкой, ошибившийся в
+## этом раунде — с крестиком, выбывший — приглушённым именем.
+func _update_players() -> void:
+	for chip in _players_row.get_children():
+		_players_row.remove_child(chip)
+		chip.queue_free()
+	var current := -1
+	if _state == State.HANDOFF or _state == State.INPUT:
+		current = _order[_turn_pos]
+	for i in _order:
+		var p: Dictionary = _players[i]
+		var chip := PanelContainer.new()
+		chip.theme_type_variation = "CardCompactSelected" if i == current else "CardCompact"
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", UiTokens.SPACE_XS)
+		chip.add_child(row)
+		var name_lbl := Label.new()
+		name_lbl.text = p["name"]
+		name_lbl.theme_type_variation = "HudLabel" if p["active"] else "CaptionLabel"
+		if i == current:
+			name_lbl.add_theme_color_override("font_color", UiTokens.GOLD_LIGHT)
+		row.add_child(name_lbl)
+		if p["active"] and p["failed"]:
+			var cross := TextureRect.new()
+			cross.texture = CROSS
+			cross.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+			row.add_child(cross)
+		_players_row.add_child(chip)
+
+func _set_status(text: String, color: Color = UiTokens.CREAM) -> void:
+	_status_label.text = text
+	_status_label.add_theme_color_override("font_color", color)
 
 func _next_round() -> void:
 	_round += 1
@@ -192,9 +189,9 @@ func _show_sequence() -> void:
 	_busy = true
 	_show_only(_play_panel)
 	_round_label.text = tr("%d-РАУНД") % _round
-	_status_label.text = tr("Абай көрсетіп жатыр — есте сақтаңыз")
-	_status_label.add_theme_color_override("font_color", SanlaqDesignTokens.NAVY)
+	_set_status(tr("Абай көрсетіп жатыр — есте сақтаңыз"))
 	_progress_label.text = ""
+	_update_players()
 
 	await get_tree().create_timer(0.6).timeout
 	if not is_inside_tree():
@@ -223,6 +220,7 @@ func _begin_turn(pos: int) -> void:
 	_state = State.HANDOFF
 	_input_pos = 0
 	_handoff_name.text = _players[_order[_turn_pos]]["name"]
+	_update_players()
 	_show_only(_handoff_panel)
 
 func _on_ready_pressed() -> void:
@@ -230,8 +228,8 @@ func _on_ready_pressed() -> void:
 		return
 	_state = State.INPUT
 	_show_only(_play_panel)
-	_status_label.text = tr("%s — қайталаңыз") % _players[_order[_turn_pos]]["name"]
-	_status_label.add_theme_color_override("font_color", SanlaqDesignTokens.NAVY)
+	_set_status(tr("%s — қайталаңыз") % _players[_order[_turn_pos]]["name"])
+	_update_players()
 	_update_progress()
 
 func _on_card_pressed(index: int) -> void:
@@ -258,11 +256,11 @@ func _finish_turn(correct: bool) -> void:
 	_busy = true
 	if not correct:
 		_players[_order[_turn_pos]]["failed"] = true
-	_status_label.text = tr("Дұрыс!") if correct else tr("Қате!")
-	_status_label.add_theme_color_override(
-		"font_color",
-		SanlaqDesignTokens.GREEN_ACCENT if correct else SanlaqDesignTokens.RED_ACCENT
-	)
+	if correct:
+		_set_status(tr("Дұрыс!"), UiTokens.SUCCESS)
+	else:
+		_set_status(tr("Қате!"), UiTokens.DANGER)
+		_update_players()
 	await get_tree().create_timer(FEEDBACK_TIME).timeout
 	if not is_inside_tree():
 		return

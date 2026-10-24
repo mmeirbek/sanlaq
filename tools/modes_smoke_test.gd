@@ -189,15 +189,19 @@ func _test_abai() -> void:
 	var n := await mount("res://scenes/ui/abai_says.tscn")
 	if n == null:
 		return
-	_check_backdrop(n, SanlaqSceneBackdrop.Variant.ABAI, "абай")
+	check(n.get_node_or_null("Background") is PixelBackdrop, "абай: пиксельный фон на месте")
 	check((n.get_node("%SetupPanel") as Control).visible, "абай: экран выбора числа игроков виден")
-	check(_connected(n, "%BackBtn"), "абай: кнопка «Артқа» подключена")
+	check((n.get_node("%Header") as ScreenHeader).back_pressed.get_connections().size() > 0,
+		"абай: «Артқа» подключена")
 
 	(n.get_node("%P2Btn") as Button).pressed.emit()
 	await process_frame
 	var words: Array = n.get("_words")
 	check(words.size() == 6, "абай: набрано 6 карточек, получено %d" % words.size())
 	check((n.get_node("%CardGrid") as GridContainer).get_child_count() == 6, "абай: 6 карточек в сетке")
+	for w: GameWord in words:
+		check(w.icon_path.begins_with("res://assets/sprites/food/") and ResourceLoader.exists(w.icon_path),
+			"абай: у «%s» пиксельная иконка" % w.id)
 
 	# Показ тізбек: стартовая пауза 0.6 + 2 элемента по (SHOW_ON + SHOW_GAP).
 	await create_timer(2.6).timeout
@@ -205,9 +209,12 @@ func _test_abai() -> void:
 	check(seq.size() == 2, "абай: длина тізбек в 1-м раунде = 2, получено %d" % seq.size())
 	check((n.get_node("%HandoffPanel") as Control).visible, "абай: после показа — экран передачи устройства")
 
-	# Первый по очереди повторяет верно.
+	# Первый по очереди повторяет верно. Его карточка в полосе игроков — золотая.
 	(n.get_node("%ReadyBtn") as Button).pressed.emit()
 	await process_frame
+	var chips := (n.get_node("%PlayersRow") as HBoxContainer).get_children().filter(
+		func(c: Control) -> bool: return c.theme_type_variation == &"CardCompactSelected")
+	check(chips.size() == 1, "абай: в полосе игроков выделен ровно ходящий, выделено %d" % chips.size())
 	for step in seq:
 		n.call("_on_card_pressed", step)
 		await process_frame
