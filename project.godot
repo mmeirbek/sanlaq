@@ -29,6 +29,8 @@ GameSettings="*res://autoload/game_settings.gd"
 MusicAudio="*res://autoload/music_audio.gd"
 SceneRouter="*res://autoload/scene_router.gd"
 Telemetry="*res://autoload/telemetry.gd"
+UiSounds="*res://autoload/ui_sounds.gd"
+PixelScale="*res://autoload/pixel_scale.gd"
 
 [display]
 
