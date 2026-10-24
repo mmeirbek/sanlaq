@@ -38,19 +38,9 @@ var _footprint_boost: bool = false
 
 const FOOTPRINT_BOOST_MULT := 1.1
 const RUNNER_SPRINT_MULT := 1.55
-const SAPTAMA_ETIK_MULT := 1.08
 
 ## Имена ботов по порядку — одни и те же в лобби и в игре.
 const BOT_NAMES := ["Айгүл", "Батыр", "Дәулет", "Аружан", "Нұрлан", "Жанар"]
-const OUTFIT_PROFILES := [
-	["head_tymaq_01", "torso_shapan_01", "pants_shalbar_01", "shoes_saptama_etik_01"],
-	["head_takiya_01", "torso_koylek_01", "pants_shalbar_01", "shoes_masi_01"],
-	["head_saukele_01", "torso_kamzol_01", "pants_shalbar_decorated_01", "shoes_kebis_01"],
-	["head_kimeshek_01", "torso_shapan_01", "pants_shalbar_decorated_01", "shoes_saptama_etik_01"],
-	["head_borik_01", "torso_kamzol_01", "pants_shalbar_01", "shoes_masi_01"],
-	["head_tymaq_01", "torso_koylek_01", "pants_shalbar_decorated_01", "shoes_kebis_01"],
-	["head_takiya_01", "torso_shapan_01", "pants_shalbar_01", "shoes_saptama_etik_01"],
-]
 
 func _ready() -> void:
 	_controller = $PlayerController
@@ -71,36 +61,19 @@ func _ready() -> void:
 	_setup_clothing()
 
 func _setup_clothing() -> void:
-	for slot in ClothingItem.SlotType.values():
-		var item_id := SaveManager.get_equipped(slot as ClothingItem.SlotType)
-		var item := AssetRegistry.get_clothing_by_id(item_id)
-		_set_outfit_item(slot as ClothingItem.SlotType, item)
+	_wear(OutfitApplier.player_outfit())
 
-func apply_random_outfit() -> void:
-	for slot in ClothingItem.SlotType.values():
-		var items := AssetRegistry.get_clothing(slot as ClothingItem.SlotType)
-		var item: ClothingItem = null
-		if not items.is_empty():
-			item = items[randi() % items.size()]
-		_set_outfit_item(slot as ClothingItem.SlotType, item)
-
+## Образ бота с этим номером — тот же, что у его портрета в лобби.
 func apply_outfit_profile(profile_index: int) -> void:
-	var profile := get_outfit_profile(profile_index)
-	for slot in ClothingItem.SlotType.values():
-		var item_id: String = profile[int(slot)]
-		var item := AssetRegistry.get_clothing_by_id(item_id)
-		if item:
-			_set_outfit_item(slot as ClothingItem.SlotType, item)
-		else:
-			apply_random_outfit()
-			return
+	_wear(OutfitApplier.bot_outfit(profile_index))
+
+func _wear(outfit: Dictionary) -> void:
+	for slot: ClothingItem.SlotType in outfit:
+		_set_outfit_item(slot, outfit[slot])
 
 ## Имя бота на языке игры: на английском — латиницей (Айгүл -> Aigul).
 static func bot_name_for(bot_index: int) -> String:
 	return TranslationServer.translate(BOT_NAMES[posmod(bot_index, BOT_NAMES.size())])
-
-static func get_outfit_profile(profile_index: int) -> Array:
-	return OUTFIT_PROFILES[posmod(profile_index, OUTFIT_PROFILES.size())]
 
 func _set_outfit_item(slot: ClothingItem.SlotType, item: ClothingItem) -> void:
 	_equipped_items[slot] = item
@@ -143,7 +116,7 @@ func set_frozen(f: bool) -> void:
 		velocity = Vector2.ZERO
 
 func apply_slow(duration: float) -> void:
-	var adjusted_duration := duration * (0.7 if _wears("head_tymaq_01") else 1.0)
+	var adjusted_duration := duration * _clothing_product("slow_duration_mult")
 	slow_timer = maxf(slow_timer, adjusted_duration)
 	modulate = Color(0.5, 0.6, 1.0, 1.0)
 
@@ -201,8 +174,7 @@ func _physics_process(delta: float) -> void:
 			player_speed *= FOOTPRINT_BOOST_MULT
 	elif sprint:
 		player_speed *= RUNNER_SPRINT_MULT
-	if _wears("shoes_saptama_etik_01") and not _in_water:
-		player_speed *= SAPTAMA_ETIK_MULT
+	player_speed *= get_clothing_speed_mult()
 	if is_bot:
 		player_speed *= bot_speed_mult
 
@@ -276,14 +248,19 @@ func get_random_clothing_item_for_quiz() -> ClothingItem:
 			item = all_in_slot[randi() % all_in_slot.size()]
 	return item
 
-func get_visibility_multiplier() -> float:
-	return 0.82 if _wears("torso_shapan_01") else 1.0
+func get_clothing_speed_mult() -> float:
+	return 1.0 if _in_water else _clothing_product("dry_speed_mult")
 
-func _wears(item_id: String) -> bool:
-	for item in _equipped_items.values():
-		if item and item.id == item_id:
-			return true
-	return false
+func get_visibility_multiplier() -> float:
+	return _clothing_product("visibility_mult")
+
+## Свойства одежды берутся из полей ClothingItem и перемножаются.
+func _clothing_product(property: StringName) -> float:
+	var product := 1.0
+	for item: ClothingItem in _equipped_items.values():
+		if item:
+			product *= float(item.get(property))
+	return product
 
 func set_as_sokyroteke(active: bool) -> void:
 	is_sokyroteke = active

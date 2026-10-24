@@ -83,11 +83,10 @@ func _add_portrait(player_name: String, outfit_index: int, portrait_scale: int) 
 	visual.set_direction(Vector2.DOWN)
 	stage.add_child(visual)
 	if outfit_index < 0:
-		for slot in ClothingItem.SlotType.values():
-			visual.set_clothing(slot, AssetRegistry.get_clothing_by_id(SaveManager.get_equipped(slot)))
+		OutfitApplier.dress(visual, OutfitApplier.player_outfit())
 	else:
 		visual.set_base_variant(outfit_index + 1)
-		_apply_bot_outfit(visual, outfit_index)
+		OutfitApplier.dress(visual, OutfitApplier.bot_outfit(outfit_index))
 
 	var name_label := Label.new()
 	name_label.text = player_name
@@ -100,16 +99,6 @@ func _add_portrait(player_name: String, outfit_index: int, portrait_scale: int) 
 		name_label.add_theme_color_override("font_color", UiTokens.GOLD_LIGHT)
 	box.add_child(name_label)
 	_players_row.add_child(box)
-
-func _apply_bot_outfit(visual: CharacterVisual, outfit_index: int) -> void:
-	var outfit := Player.get_outfit_profile(outfit_index)
-	for slot in ClothingItem.SlotType.values():
-		var item := AssetRegistry.get_clothing_by_id(outfit[int(slot)])
-		if item == null:
-			var alternatives := AssetRegistry.get_clothing(slot as ClothingItem.SlotType)
-			if not alternatives.is_empty():
-				item = alternatives[0]
-		visual.set_clothing(slot as ClothingItem.SlotType, item)
 
 func _on_start() -> void:
 	_game_data["bots"] = _bots_count

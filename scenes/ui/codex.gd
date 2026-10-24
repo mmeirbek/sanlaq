@@ -2,12 +2,6 @@ extends Control
 ## Энциклопедия казахской одежды: коллекция по слотам и описание выбранной вещи
 ## с иллюстрацией — крупная иконка и персонаж, на котором эта вещь надета.
 
-const SLOT_NAMES := {
-	ClothingItem.SlotType.HEAD: "Бас киім",
-	ClothingItem.SlotType.TORSO: "Сырт киім",
-	ClothingItem.SlotType.PANTS: "Шалбар",
-	ClothingItem.SlotType.SHOES: "Аяқ киім",
-}
 const RARITY_NAMES := {
 	ClothingItem.Rarity.COMMON: "Кәдімгі",
 	ClothingItem.Rarity.RARE: "Сирек",
@@ -41,7 +35,7 @@ func _build_mannequin() -> void:
 func _show_slot(slot: ClothingItem.SlotType) -> void:
 	_current_slot = slot
 	_tabs.select(slot)
-	%SlotName.text = SLOT_NAMES[slot]
+	%SlotName.text = ClothingItem.SLOT_NAMES[slot]
 	for child in _grid.get_children():
 		_grid.remove_child(child)
 		child.queue_free()
@@ -60,12 +54,10 @@ func _select(item: ClothingItem) -> void:
 	var lang := GameSettings.get_lang_code()
 	%Icon.texture = load(item.icon_path) as Texture2D
 	%NameLabel.text = item.get_name_for_lang(lang)
-	%MetaLabel.text = "%s · %s" % [tr(SLOT_NAMES[item.slot_type]), tr(RARITY_NAMES[item.rarity])]
+	%MetaLabel.text = "%s · %s" % [tr(ClothingItem.SLOT_NAMES[item.slot_type]), tr(RARITY_NAMES[item.rarity])]
 	%DescLabel.text = item.get_desc_for_lang(lang)
 	_dress_mannequin(item)
 
 ## Персонаж в стартовом образе, но с выбранной вещью — так её видно на человеке.
 func _dress_mannequin(item: ClothingItem) -> void:
-	for slot in ClothingItem.SlotType.values():
-		var worn := item if slot == item.slot_type else AssetRegistry.get_clothing_by_id(SaveManager.STARTER_OUTFIT[slot])
-		_mannequin.set_clothing(slot, worn)
+	OutfitApplier.dress(_mannequin, OutfitApplier.starter_outfit_with(item))

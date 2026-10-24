@@ -85,8 +85,7 @@ func _spawn_mascot() -> void:
 	_mascot.scale = Vector2.ONE * MASCOT_SCALE
 	_mascot.set_direction(Vector2.DOWN)
 	_mascot_slot.add_child(_mascot)
-	for slot in ClothingItem.SlotType.values():
-		_mascot.set_clothing(slot, AssetRegistry.get_clothing_by_id(SaveManager.get_equipped(slot)))
+	OutfitApplier.dress(_mascot, OutfitApplier.player_outfit())
 	_mascot_slot.resized.connect(_place_mascot)
 	_place_mascot()
 
