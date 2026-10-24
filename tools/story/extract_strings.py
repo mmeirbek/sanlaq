@@ -50,7 +50,7 @@ def main():
                 known[row["keys"]] = row["en"]
     strings = collect()
     with open(CSV_PATH, "w", encoding="utf-8", newline="") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["keys", "kk", "en"])
         for text in strings:
             writer.writerow([text, text, known.get(text, "")])
