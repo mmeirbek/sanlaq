@@ -5,7 +5,6 @@ extends Control
 ##
 ## Обращается к SaveManager — в тестах этот скрипт нельзя писать как тип.
 
-signal closed
 
 const SETTING := "onboarding_done"
 ## Картинка, заголовок, текст.
@@ -68,7 +67,6 @@ func _ready() -> void:
 
 func close() -> void:
 	SaveManager.set_setting(SETTING, true)
-	closed.emit()
 	queue_free()
 
 

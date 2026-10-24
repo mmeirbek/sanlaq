@@ -320,9 +320,6 @@ func _spawn_clear(pos: Vector2) -> bool:
 			return false
 	return true
 
-func is_in_bounds(pos: Vector2) -> bool:
-	return bounds.has_point(pos)
-
 func clamp_to_bounds(pos: Vector2, radius: float = 0.0) -> Vector2:
 	var clamped := pos
 	var r := bounds.position

@@ -2,7 +2,6 @@ class_name MapDefinition
 extends Resource
 
 @export var map_id: String = ""
-@export var display_name_kz: String = ""
 
 var scene_path: String:
 	set(v): _scene_path = v
@@ -16,7 +15,6 @@ var _scene_path: String = ""
 @export var spawn_points: Array[Vector2] = []
 @export var bounds_min: Vector2 = Vector2(-800, -500)
 @export var bounds_max: Vector2 = Vector2(800, 500)
-@export var ambient_color: Color = Color(0.15, 0.3, 0.1)
 
 func get_bounds() -> Rect2:
 	return Rect2(bounds_min, bounds_max - bounds_min)

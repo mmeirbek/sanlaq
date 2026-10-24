@@ -1,8 +1,6 @@
 class_name SoundWaveSystem
 extends Node
 
-signal noise_emitted(source: Node2D, radius: float)
-
 var _waves: Array[Dictionary] = []
 
 func emit_noise(source: Node2D, radius: float) -> void:
@@ -13,7 +11,6 @@ func emit_noise(source: Node2D, radius: float) -> void:
 		life = 0.0,
 		max_life = 0.6,
 	})
-	noise_emitted.emit(source, radius)
 
 func _process(delta: float) -> void:
 	var i: int = _waves.size() - 1
@@ -25,9 +22,6 @@ func _process(delta: float) -> void:
 		if w.life >= w.max_life:
 			_waves.remove_at(i)
 		i -= 1
-
-func is_visible_to(observer: Node2D) -> bool:
-	return true
 
 func get_waves() -> Array:
 	return _waves

@@ -287,13 +287,3 @@ func _wears(item_id: String) -> bool:
 
 func set_as_sokyroteke(active: bool) -> void:
 	is_sokyroteke = active
-
-func apply_center_text(_text: String) -> void:
-	pass
-
-func get_random_clothing_color(slot_type: ClothingItem.SlotType) -> Color:
-	var eq_id := SaveManager.get_equipped(slot_type)
-	var item := AssetRegistry.get_clothing_by_id(eq_id)
-	if item:
-		return item.color
-	return Color.WHITE

@@ -16,7 +16,6 @@ enum Rarity { COMMON, RARE, LEGENDARY }
 @export var wrong_answers_en: Array[String] = []
 @export var texture_path: String = ""
 @export var icon_path: String = ""
-@export var price: int = 0
 
 func get_name_for_lang(lang: String) -> String:
 	match lang:
@@ -32,11 +31,3 @@ func get_wrong_answers_for_lang(lang: String) -> Array[String]:
 	if lang == "en" and not wrong_answers_en.is_empty():
 		return wrong_answers_en
 	return wrong_answers_kz
-
-func get_slot_folder() -> String:
-	match slot_type:
-		SlotType.HEAD: return "head"
-		SlotType.TORSO: return "torso"
-		SlotType.PANTS: return "pants"
-		SlotType.SHOES: return "shoes"
-	return "unknown"

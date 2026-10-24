@@ -36,8 +36,6 @@ var _changing := false
 ## выполняется сразу после него — побеждает последний запрос.
 var _queued_scene := ""
 
-signal scene_changed(from: String, to: String)
-
 func _ready() -> void:
 	var layer := CanvasLayer.new()
 	layer.layer = 128
@@ -154,7 +152,6 @@ func _change_scene(to: String) -> void:
 		Telemetry.log_error("change_scene_to_file failed with error %d" % err, to)
 		if tree.current_scene:
 			tree.current_scene.process_mode = Node.PROCESS_MODE_INHERIT
-	scene_changed.emit(from, to)
 	# Новая сцена встаёт в дерево в конце кадра, её _ready может сам попросить переход.
 	await tree.process_frame
 	_changing = false

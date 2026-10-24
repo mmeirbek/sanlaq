@@ -90,9 +90,6 @@ func get_clothing(slot_type: ClothingItem.SlotType) -> Array[ClothingItem]:
 func get_clothing_by_id(item_id: String) -> ClothingItem:
 	return clothing_by_id.get(item_id, null)
 
-func get_map(map_id: String) -> MapDefinition:
-	return maps_by_id.get(map_id, null)
-
 func get_default_mode() -> GameModeDefinition:
 	if game_modes.is_empty():
 		return null
@@ -110,9 +107,6 @@ func get_words(category: String = "food") -> Array[GameWord]:
 	for it in items:
 		out.append(it)
 	return out
-
-func get_word_by_id(word_id: String) -> GameWord:
-	return game_words_by_id.get(word_id, null)
 
 func get_briefing(mode_id: String) -> ModeBriefing:
 	return briefings_by_id.get(mode_id, null)
