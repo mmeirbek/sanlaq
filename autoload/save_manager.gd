@@ -15,6 +15,8 @@ var equipped: Dictionary = {}
 var cloth_pool: Array[String] = []
 var settings: Dictionary = {}
 var career: Dictionary = {"wins": 0, "streak": 0, "best_streak": 0, "knowledge": 0}
+## Прогресс «Тарих жолы»: формат — в шапке StoryState, плюс выбранный герой "hero".
+var story: Dictionary = {}
 
 func _ready() -> void:
 	# Тесты и инструменты идут на чистом профиле и не портят сохранение игрока.
@@ -51,6 +53,7 @@ func _save_to_disk() -> void:
 		cloth_pool = cloth_pool,
 		settings = settings,
 		career = career,
+		story = story,
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
@@ -82,6 +85,7 @@ func _load_from_disk() -> void:
 	cloth_pool = _array_string(data.get("cloth_pool", []))
 	settings = data.get("settings", {})
 	career = data.get("career", career)
+	story = data.get("story", {})
 
 ## Заполняет пустые слоты и слоты с удалёнными предметами стартовым образом.
 func _ensure_equipped_outfit() -> void:
@@ -121,6 +125,10 @@ func _dict_to_string_keys(d: Dictionary) -> Dictionary:
 	for k in d:
 		out[str(k)] = d[k]
 	return out
+
+## StoryState меняет словарь story на месте; сохраняет его владелец сюжета.
+func save_story() -> void:
+	_save_to_disk()
 
 func set_nickname(value: String) -> void:
 	nickname = value
