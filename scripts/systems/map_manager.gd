@@ -124,8 +124,10 @@ func _build_ground() -> void:
 	var outer_x := bounds.position.x - post_w
 	var outer_w := bounds.size.x + post_w * 2.0
 	_add_tiled(FENCE_ALONG_X, Rect2(outer_x, bounds.position.y - rail_h, outer_w, rail_h), WorldLayers.DECALS)
-	_add_tiled(FENCE_ALONG_Y, Rect2(outer_x, bounds.position.y - rail_h * 0.5, post_w, bounds.size.y + rail_h * 0.5), WorldLayers.DECALS)
-	_add_tiled(FENCE_ALONG_Y, Rect2(bounds.end.x, bounds.position.y - rail_h * 0.5, post_w, bounds.size.y + rail_h * 0.5), WorldLayers.DECALS)
+	var side_top := bounds.position.y - rail_h * 0.5
+	var side_height := bounds.size.y + rail_h * 0.5
+	_add_tiled(FENCE_ALONG_Y, Rect2(outer_x, side_top, post_w, side_height), WorldLayers.DECALS)
+	_add_tiled(FENCE_ALONG_Y, Rect2(bounds.end.x, side_top, post_w, side_height), WorldLayers.DECALS)
 	_add_tiled(FENCE_ALONG_X, Rect2(outer_x, bounds.end.y, outer_w, rail_h), WorldLayers.DECALS)
 
 func _build_arena() -> void:

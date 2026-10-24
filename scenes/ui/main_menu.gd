@@ -47,7 +47,8 @@ func _on_license_denied(reason: String) -> void:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
 
-	var reason_text := tr("Бұл құрылғылар саны лимитінен асып кетті.") if reason == "device_limit" else tr("Лицензия жойылды.")
+	var reason_text := tr("Бұл құрылғылар саны лимитінен асып кетті.") if reason == "device_limit" \
+		else tr("Лицензия жойылды.")
 	var message := Label.new()
 	message.text = "%s\n%s" % [reason_text, tr("Ұйымдастырушыға хабарласыңыз.")]
 	message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

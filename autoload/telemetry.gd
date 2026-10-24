@@ -9,7 +9,8 @@ const QUEUE_FILE := "user://telemetry_queue.jsonl"
 const FLUSH_INTERVAL := 30.0
 const MAX_QUEUE_LOCAL := 500  # не даём файлу расти бесконечно на офлайн-станции
 
-const ENDPOINT_URL := "https://script.google.com/macros/s/AKfycbzcWNnnXMXUEXwAXGq-srpvnYQ_uYJvVQ0zHVekg1aYHtAnXltyBShvnGHhA95dlM7I/exec"
+const ENDPOINT_URL := ("https://script.google.com/macros/s/"
+	+ "AKfycbzcWNnnXMXUEXwAXGq-srpvnYQ_uYJvVQ0zHVekg1aYHtAnXltyBShvnGHhA95dlM7I/exec")
 
 signal license_denied(reason: String)
 

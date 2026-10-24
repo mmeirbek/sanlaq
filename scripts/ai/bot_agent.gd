@@ -3,7 +3,8 @@ extends Node
 
 enum BotState { WANDER, FLEE, HIDE }
 
-const MEMORY_DURATION := 2.5    # bot-as-sokyroteke keeps checking a runner's last known spot instead of instantly forgetting
+# bot-as-sokyroteke keeps checking a runner's last known spot instead of instantly forgetting
+const MEMORY_DURATION := 2.5
 const HIDE_TRIGGER_RADIUS := 260.0  # only worth ducking into a yurt that's reasonably close by
 const HIDE_DURATION := 3.5      # shorter than the game's 5s yurt-reveal delay, on purpose
 const HIDE_REACHED_DIST := 24.0

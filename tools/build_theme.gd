@@ -238,7 +238,8 @@ func _inputs(theme: Theme, fonts: Dictionary) -> void:
 	theme.set_stylebox("focus", "CheckButton", StyleBoxEmpty.new())
 	theme.set_font("font", "CheckButton", fonts.body)
 	theme.set_font_size("font_size", "CheckButton", UiTokens.BODY)
-	for color_name in ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color"]:
+	var states := ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color"]
+	for color_name in states:
 		theme.set_color(color_name, "CheckButton", UiTokens.CREAM)
 	theme.set_color("font_disabled_color", "CheckButton", UiTokens.MUTED)
 

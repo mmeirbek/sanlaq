@@ -77,7 +77,8 @@ func _check_pixel_art(path: String, palette: Dictionary) -> void:
 		var rgb := (data[i] << 16) | (data[i + 1] << 8) | data[i + 2]
 		if not palette.has(rgb):
 			off_palette["%06x" % rgb] = true
-	check(off_palette.is_empty(), "%s: только цвета палитры%s" % [name, "" if off_palette.is_empty() else " (лишние: %s)" % ", ".join(off_palette.keys().slice(0, 5))])
+	var extra := "" if off_palette.is_empty() else " (лишние: %s)" % ", ".join(off_palette.keys().slice(0, 5))
+	check(off_palette.is_empty(), "%s: только цвета палитры%s" % [name, extra])
 	check(soft_alpha == 0, "%s: без полупрозрачных пикселей (найдено %d)" % [name, soft_alpha])
 
 

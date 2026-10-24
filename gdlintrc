@@ -1,0 +1,12 @@
+# gdlint (gdtoolkit 4) — настройки проекта, остальное по умолчанию.
+# Порядок объявлений в классе — свой: константы и поля стоят рядом с местом,
+# где нужны, поэтому class-definitions-order выключен.
+disable:
+- class-definitions-order
+max-line-length: 120
+# SceneRouter — по методу go_to_* на каждый экран.
+max-public-methods: 25
+max-returns: 8
+excluded_directories: !!set
+  .git: null
+  .godot: null

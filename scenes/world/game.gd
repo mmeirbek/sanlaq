@@ -1,5 +1,7 @@
 extends Node2D
 
+const PLAYER_SCENE := preload("res://scenes/entities/player.tscn")
+
 const YURT_REVEAL_DELAY := 5.0
 const YURT_REVEAL_DURATION := 5.0
 
@@ -119,8 +121,7 @@ func _on_catch_area_entered(body: Node2D, catcher: Player) -> void:
 	match_mgr.on_player_touches_sokyroteke(target)
 
 func _spawn_human_player() -> void:
-	var player_scene := load("res://scenes/entities/player.tscn") as PackedScene
-	var p := player_scene.instantiate() as Player
+	var p := PLAYER_SCENE.instantiate() as Player
 	p.player_index = 0
 	p.is_bot = false
 	p.global_position = map.get_safe_spawn()
@@ -136,8 +137,7 @@ func _spawn_human_player() -> void:
 			game_hud.update_runner_sprint(time_left, uses_left))
 
 func _spawn_bot(idx: int, profile_id: String = "") -> void:
-	var player_scene := load("res://scenes/entities/player.tscn") as PackedScene
-	var p := player_scene.instantiate() as Player
+	var p := PLAYER_SCENE.instantiate() as Player
 	p.player_index = idx + 1
 	p.is_bot = true
 	p.bot_name = Player.bot_name_for(idx)
@@ -398,7 +398,8 @@ func _process(_delta: float) -> void:
 		var fp_radius := FootprintSystem.SIGHT_RADIUS
 		if human_is_sokyroteke and _fog_time > 0.0:
 			fp_radius = 65.0
-		match_mgr.sokyroteke.set_footprint_boost(footprint_system.has_visible_print(match_mgr.sokyroteke.global_position, fp_radius))
+		var on_print := footprint_system.has_visible_print(match_mgr.sokyroteke.global_position, fp_radius)
+		match_mgr.sokyroteke.set_footprint_boost(on_print)
 		if human_is_sokyroteke:
 			vision.set_target_position(match_mgr.sokyroteke.global_position + Player.BODY_CENTER)
 			var center := match_mgr.sokyroteke.global_position
@@ -408,7 +409,8 @@ func _process(_delta: float) -> void:
 					p.visible = true
 				else:
 					var revealed: bool = float(_yurt_reveal.get(p.player_index, 0.0)) > 0.0
-					p.visible = p.is_alive() and (revealed or (not map.is_inside_yurt(p.global_position) and center.distance_to(p.global_position) <= light * p.get_visibility_multiplier()))
+					var in_light := center.distance_to(p.global_position) <= light * p.get_visibility_multiplier()
+					p.visible = p.is_alive() and (revealed or (not map.is_inside_yurt(p.global_position) and in_light))
 				# Соқыртеке не должен читать ники — иначе бегунов можно узнать без квиза по одежде.
 				p.set_name_label_visible(false)
 		else:
