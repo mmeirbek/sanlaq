@@ -27,7 +27,7 @@ func show_message(text: String, seconds: float = -1.0) -> void:
 	var serial := _serial
 	_label.text = text
 	visible = true
-	await get_tree().create_timer(seconds if seconds > 0.0 else duration).timeout
+	await get_tree().create_timer(seconds if seconds > 0.0 else duration, false).timeout
 	if serial == _serial:
 		visible = false
 

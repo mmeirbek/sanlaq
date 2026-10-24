@@ -11,6 +11,7 @@ var footprint_system: FootprintSystem
 var game_audio: GameAudio
 var quiz_hud: QuizHUD
 var game_hud: GameHUD
+var _pause_menu: PauseMenu
 var camera: GameCamera
 
 var _players: Array[Player] = []
@@ -76,6 +77,8 @@ func _ready() -> void:
 	game_hud.spectate_cycled.connect(_cycle_spectate)
 	game_hud.spectate_requested.connect(_start_spectate)
 	game_hud.leave_requested.connect(func() -> void: SceneRouter.go_to_main_menu())
+	game_hud.pause_requested.connect(_open_pause)
+	_add_pause_menu()
 
 	match_mgr.setup_match(map, _players)
 	match_mgr.start_match()
@@ -247,7 +250,7 @@ func _on_match_ended(results: Dictionary) -> void:
 		game_audio.play_victory()
 	else:
 		game_audio.play_defeat()
-	await get_tree().create_timer(2.0).timeout
+	await get_tree().create_timer(2.0, false).timeout
 	SceneRouter.go_to_results(results)
 
 func _setup_match_features() -> void:
@@ -310,7 +313,13 @@ func _watch(target: Player) -> void:
 	camera.set_target(target)
 	game_hud.set_spectate_target(_player_display_name(target))
 
+## Esc — пауза. Окно «Ұсталдыңыз» и сама пауза ловят Esc раньше: они глубже
+## в дереве и помечают событие обработанным.
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		_open_pause()
+		return
 	if not _spectating and event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_E:
 		_activate_echo()
 		return
@@ -367,6 +376,19 @@ func _flash(col: Color, strength: float) -> void:
 	var tw := rect.create_tween()
 	tw.tween_property(rect, "color:a", 0.0, 0.35)
 	tw.tween_callback(rect.queue_free)
+
+## Пауза — на своём слое поверх HUD и квиза.
+func _add_pause_menu() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 50
+	layer.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(layer)
+	_pause_menu = PauseMenu.new()
+	_pause_menu.main_menu_requested.connect(SceneRouter.go_to_main_menu)
+	layer.add_child(_pause_menu)
+
+func _open_pause() -> void:
+	_pause_menu.open()
 
 func _process(_delta: float) -> void:
 	if match_mgr:
@@ -451,5 +473,3 @@ func _process(_delta: float) -> void:
 		elif not human.is_slowed():
 			game_hud.hide_slow()
 
-	if Input.is_action_just_pressed("ui_cancel"):
-		SceneRouter.go_to_main_menu()

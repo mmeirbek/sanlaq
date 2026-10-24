@@ -42,6 +42,7 @@ var _busy: bool = false
 ## значит, идёт обычный ход и поле берётся у доски.
 var _frozen: Dictionary = {}
 var _audio: GameAudio
+var _pause: PauseMenu
 
 @onready var _play_panel: Control = %PlayPanel
 @onready var _end_panel: PanelContainer = %EndPanel
@@ -65,7 +66,10 @@ func _ready() -> void:
 	add_child(_audio)
 	_again_btn.pressed.connect(_start_game)
 	_menu_btn.pressed.connect(func() -> void: SceneRouter.go_to_main_menu())
-	(%Header as ScreenHeader).back_pressed.connect(SceneRouter.go_to_mode_select)
+	(%Header as ScreenHeader).back_pressed.connect(_on_back)
+	_pause = PauseMenu.new()
+	_pause.main_menu_requested.connect(SceneRouter.go_to_main_menu)
+	add_child(_pause)
 	_field.cell_pressed.connect(_on_cell_pressed)
 	_bot = AqSuyekBot.new()
 	_build_legend()
@@ -247,7 +251,7 @@ func _finish_round(res: Dictionary) -> void:
 	_audio.play_catch()
 	_refresh_board()
 
-	await get_tree().create_timer(ROUND_PAUSE).timeout
+	await get_tree().create_timer(ROUND_PAUSE, false).timeout
 	if not is_inside_tree():
 		return
 	_busy = false
@@ -264,7 +268,7 @@ func _finish_round(res: Dictionary) -> void:
 func _bot_turn() -> void:
 	_busy = true
 	_refresh_board()
-	await get_tree().create_timer(BOT_THINK).timeout
+	await get_tree().create_timer(BOT_THINK, false).timeout
 	if not is_inside_tree():
 		return
 
@@ -274,7 +278,7 @@ func _bot_turn() -> void:
 	_status_label.add_theme_color_override("font_color", UiTokens.CREAM if correct else UiTokens.MUTED)
 
 	while _board.current_player == BOT and not _board.is_over() and not _board.awaiting_answer():
-		await get_tree().create_timer(BOT_STEP).timeout
+		await get_tree().create_timer(BOT_STEP, false).timeout
 		if not is_inside_tree():
 			return
 		var direction := _bot.choose_step(_board)
@@ -311,3 +315,11 @@ func _show_end() -> void:
 		"score_bot": _board.scores[BOT],
 	})
 	_end_panel.visible = true
+
+## «Артқа» и Esc посреди партии ставят паузу, а не бросают игру; вне партии —
+## назад к выбору режима.
+func _on_back() -> void:
+	if not _end_panel.visible:
+		_pause.open()
+	else:
+		SceneRouter.go_to_mode_select()

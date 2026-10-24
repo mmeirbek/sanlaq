@@ -97,7 +97,7 @@ func _on_answer(index: int) -> void:
 	answer_submitted.emit(correct)
 	_show_result(index, correct)
 	var serial := _quiz_serial
-	await get_tree().create_timer(RESULT_SHOW_TIME).timeout
+	await get_tree().create_timer(RESULT_SHOW_TIME, false).timeout
 	if serial == _quiz_serial:
 		hide_quiz()
 

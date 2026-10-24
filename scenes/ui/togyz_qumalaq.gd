@@ -25,6 +25,7 @@ var _shown_kazan: Array[int] = [0, 0]
 ## Индекс отау -> его TogyzPit.
 var _pits: Array[TogyzPit] = []
 var _audio: GameAudio
+var _pause: PauseMenu
 
 @onready var _setup_panel: PanelContainer = %SetupPanel
 @onready var _board_panel: Control = %BoardPanel
@@ -52,7 +53,10 @@ func _ready() -> void:
 	_vs_bot_btn.pressed.connect(_start_game.bind(true))
 	_again_btn.pressed.connect(_reset_to_setup)
 	_menu_btn.pressed.connect(func() -> void: SceneRouter.go_to_main_menu())
-	(%Header as ScreenHeader).back_pressed.connect(SceneRouter.go_to_mode_select)
+	(%Header as ScreenHeader).back_pressed.connect(_on_back)
+	_pause = PauseMenu.new()
+	_pause.main_menu_requested.connect(SceneRouter.go_to_main_menu)
+	add_child(_pause)
 	_show_only(_setup_panel)
 
 func _start_game(vs_bot: bool) -> void:
@@ -143,7 +147,7 @@ func _perform_move(index: int) -> void:
 	_report(res)
 
 	if not res["capture"].is_empty() or not res["tuzdyk"].is_empty():
-		await get_tree().create_timer(RESULT_PAUSE).timeout
+		await get_tree().create_timer(RESULT_PAUSE, false).timeout
 		if not is_inside_tree():
 			return
 
@@ -178,7 +182,7 @@ func _animate_sow(res: Dictionary, before_pits: Array[int], before_kazan: Array[
 		_refresh()
 		_glow(step["index"], step_time)
 		_audio.play_card_tone(i)
-		await get_tree().create_timer(step_time).timeout
+		await get_tree().create_timer(step_time, false).timeout
 		if not is_inside_tree():
 			return
 
@@ -186,7 +190,7 @@ func _animate_sow(res: Dictionary, before_pits: Array[int], before_kazan: Array[
 func _glow(index: int, duration: float) -> void:
 	var pit := _pits[index]
 	pit.glowing = true
-	await get_tree().create_timer(duration).timeout
+	await get_tree().create_timer(duration, false).timeout
 	if is_instance_valid(pit):
 		pit.glowing = false
 
@@ -206,7 +210,7 @@ func _report(res: Dictionary) -> void:
 func _bot_turn() -> void:
 	_animating = true
 	_update_turn_label()
-	await get_tree().create_timer(BOT_THINK_TIME).timeout
+	await get_tree().create_timer(BOT_THINK_TIME, false).timeout
 	if not is_inside_tree():
 		return
 	var move := TogyzBot.choose_move(_board)
@@ -248,3 +252,11 @@ func _reset_to_setup() -> void:
 func _show_only(panel: Control) -> void:
 	for p: Control in [_setup_panel, _board_panel, _end_panel]:
 		p.visible = p == panel
+
+## «Артқа» и Esc посреди партии ставят паузу, а не бросают игру; вне партии —
+## назад к выбору режима.
+func _on_back() -> void:
+	if _board_panel.visible and _board != null and not _board.is_over():
+		_pause.open()
+	else:
+		SceneRouter.go_to_mode_select()

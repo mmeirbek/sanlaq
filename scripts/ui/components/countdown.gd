@@ -33,10 +33,10 @@ func start(from: int = 3) -> void:
 	visible = true
 	for number in range(from, 0, -1):
 		_show(str(number), UiTokens.DISPLAY_HERO)
-		await get_tree().create_timer(step_time).timeout
+		await get_tree().create_timer(step_time, false).timeout
 	# Слово шире цифры — шрифт меньше, чтобы уместиться на диске.
 	_show(tr("БАСТА!"), UiTokens.DISPLAY_MEDIUM)
-	await get_tree().create_timer(step_time * 0.6).timeout
+	await get_tree().create_timer(step_time * 0.6, false).timeout
 	visible = false
 	finished.emit()
 

@@ -30,3 +30,9 @@ func _ready() -> void:
 	%ReplayBtn.pressed.connect(func() -> void: SceneRouter.go_to_lobby({}))
 	%WardrobeBtn.pressed.connect(SceneRouter.go_to_wardrobe)
 	%MenuBtn.pressed.connect(SceneRouter.go_to_main_menu)
+
+## Esc — в главное меню, как кнопка «Бас мәзір».
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
+		SceneRouter.go_to_main_menu()
