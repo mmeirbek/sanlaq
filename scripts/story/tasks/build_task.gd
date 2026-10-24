@@ -17,6 +17,10 @@ var _glow: Sprite2D
 var _time := 0.0
 
 
+func picture_name() -> String:
+	return "icon_yurt"
+
+
 func setup() -> void:
 	_site = spawn("yurt_stage_0", task.goal + Vector2(0, StoryLayout.YURT_FRONT))
 	_site_sprite = _site.get_child(0)

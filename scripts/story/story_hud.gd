@@ -11,6 +11,7 @@ var _objective: Label
 var _progress: Label
 var _xp: Label
 var _task_panel: PanelContainer
+var _task_picture: TextureRect
 var _task_title: Label
 var _task_hint: Label
 var _task_status: Label
@@ -61,9 +62,15 @@ func _ready() -> void:
 	add_child(_task_panel)
 	_task_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
 	_task_panel.position.y = 104
+	var task_row := HBoxContainer.new()
+	task_row.add_theme_constant_override("separation", UiTokens.SPACE_S)
+	_task_panel.add_child(task_row)
+	_task_picture = TextureRect.new()
+	_task_picture.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	task_row.add_child(_task_picture)
 	var task_box := VBoxContainer.new()
 	task_box.add_theme_constant_override("separation", 0)
-	_task_panel.add_child(task_box)
+	task_row.add_child(task_box)
 	_task_title = _label(task_box, "HeadingLabel")
 	_task_hint = _label(task_box, "CaptionLabel")
 	_task_status = _label(task_box, "HudLabel")
@@ -73,7 +80,7 @@ func _ready() -> void:
 	_toast = Toast.new()
 	add_child(_toast)
 	_toast.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
-	_toast.position.y = 220
+	_toast.position.y = 272
 
 
 func set_chapter(title: String) -> void:
@@ -90,7 +97,10 @@ func set_xp(xp: int) -> void:
 	_xp.text = "XP %d" % xp
 
 
-func show_task(title: String, hint: String) -> void:
+## picture — что искать или нести, в своём размере (не больше иконки 64×64).
+func show_task(title: String, hint: String, picture: Texture2D = null) -> void:
+	_task_picture.texture = picture
+	_task_picture.visible = picture != null
 	_task_title.text = tr(title)
 	_task_hint.text = tr(hint)
 	_task_status.text = ""

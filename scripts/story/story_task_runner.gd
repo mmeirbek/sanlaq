@@ -38,9 +38,16 @@ func begin(story_world: Node, walker: Node2D, container: Node2D) -> void:
 	story = story_world
 	player = walker
 	world = container
-	story.get_node("%Hud").show_task(task.title, task.hint)
+	var picture := picture_name()
+	story.get_node("%Hud").show_task(task.title, task.hint,
+		StoryLayout.texture(picture) if not picture.is_empty() else null)
 	setup()
 	report()
+
+
+## Картинка-подсказка на баннере задания: что искать или нести.
+func picture_name() -> String:
+	return task.props[0] if not task.props.is_empty() else ""
 
 
 ## Куда показывать маркер и шевроны; null — никуда.

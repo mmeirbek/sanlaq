@@ -10,6 +10,10 @@ var _target: Node2D
 var _distance := 99.0
 
 
+func picture_name() -> String:
+	return "tracks"
+
+
 func setup() -> void:
 	_target = spawn("tracks", task.points[0])
 	_target.visible = false

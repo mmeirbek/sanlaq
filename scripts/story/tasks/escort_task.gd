@@ -13,6 +13,10 @@ var _frames: Array[Texture2D] = []
 var _time := 0.0
 
 
+func picture_name() -> String:
+	return "icon_horse"
+
+
 func setup() -> void:
 	spawn("post", task.goal)
 	_frames = [StoryLayout.texture("horse_bay_0"), StoryLayout.texture("horse_bay_1")]

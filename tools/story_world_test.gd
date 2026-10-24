@@ -13,6 +13,7 @@ func _init() -> void:
 	await process_frame
 	for hero in ["ROLE_KEREY", "ROLE_ABYLAI", "ROLE_KABANBAY"]:
 		await _walk_chapter(hero)
+	await _build_in_order()
 	await _race_baige()
 	finish("STORY WORLD")
 
@@ -92,6 +93,34 @@ func _walk_chapter(hero: String) -> void:
 	await create_timer(1.6).timeout
 	var finale: Control = world.get_node("%Overlay").get_child(world.get_node("%Overlay").get_child_count() - 1)
 	check(finale.get("state") != null, "%s: показан финал главы" % hero)
+	await unmount(world)
+
+
+## Киіз үй Керея (шаг 4): части берутся только по порядку, войлок — последним.
+func _build_in_order() -> void:
+	autoload("SaveManager").story = {"hero": "ROLE_KEREY", "heroes": {"ROLE_KEREY": {"beat": 3}}}
+	var world := await mount(WORLD)
+	if world == null:
+		return
+	for card in world.get_node("%Overlay").get_children():
+		card.queue_free()
+	var state: StoryState = world.state
+	var beat := state.current_beat()
+	check(beat.action == StoryBeat.Action.BUILD, "Керей: шаг 4 — киіз үй")
+	world._run_action(beat)
+	var build = world.task
+	check(world.get_node("%Hud")._task_picture.visible, "у баннера задания есть картинка-подсказка")
+	world._player.position = build._parts[3].position
+	await process_frame
+	check(build._carried == null, "войлок первым не взять")
+	for i in 4:
+		check(build._site_sprite.texture.resource_path.get_file() != "yurt.png", "юрта не готова до %d-й части" % (i + 1))
+		world._player.position = build._parts[i].position
+		await process_frame
+		check(build._carried == build._parts[i], "взята часть %d по порядку" % (i + 1))
+		world._player.position = StoryLayout.to_world(build.task.goal)
+		await process_frame
+	check(world.task == null and state.current_beat() != beat, "четыре части — киіз үй стоит, шаг засчитан")
 	await unmount(world)
 
 

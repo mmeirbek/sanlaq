@@ -46,6 +46,10 @@ var _path := PackedVector2Array()
 var _waypoint := 0
 
 
+func picture_name() -> String:
+	return "flag_gold"
+
+
 func setup() -> void:
 	_bay = [StoryLayout.texture("horse_bay_0"), StoryLayout.texture("horse_bay_1")]
 	_grey = [StoryLayout.texture("horse_grey_0"), StoryLayout.texture("horse_grey_1")]
