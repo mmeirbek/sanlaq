@@ -40,7 +40,7 @@ offset_right = -32.0
 offset_bottom = 120.0
 grow_horizontal = 2
 script = ExtResource("4_header")
-title = "МҰРА · КИІМ ЭНЦИКЛОПЕДИЯСЫ"
+title = "МҰРА · ЭНЦИКЛОПЕДИЯ"
 subtitle = "ҰЛТТЫҚ КИІМ · ТАРИХЫН ТАНЫ"
 
 [node name="Columns" type="HBoxContainer" parent="."]
@@ -76,9 +76,15 @@ theme_type_variation = &"HeadingLabel"
 text = "Бас киім"
 horizontal_alignment = 1
 
-[node name="Grid" type="GridContainer" parent="Columns/Collection/VBox"]
+[node name="Scroll" type="ScrollContainer" parent="Columns/Collection/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Grid" type="GridContainer" parent="Columns/Collection/VBox/Scroll"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 columns = 3
 
@@ -140,6 +146,7 @@ theme_type_variation = &"InkHeadingLabel"
 text = "БІЛІМ БҰРЫШЫ"
 
 [node name="LoreText" type="Label" parent="Columns/Detail/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"InkLabel"
 text = "Әр заттың тарихын оқып, өз образыңды жина."

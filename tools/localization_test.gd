@@ -15,6 +15,7 @@ const SCREENS := [
 	"res://scenes/ui/abai_says.tscn",
 	"res://scenes/ui/togyz_qumalaq.tscn",
 	"res://scenes/ui/aq_suyek.tscn",
+	"res://scenes/story/hero_select.tscn",
 ]
 ## Подписи, которые нарочно на двух языках.
 const BILINGUAL := ["ENG / АҒЫЛ", "ҚАЗ / KAZ"]
@@ -49,6 +50,7 @@ func _init() -> void:
 	await process_frame
 	_check_texts(welcome, "обучение")
 	host.queue_free()
+	await _check_story()
 
 	settings.set_language(was_language)
 	finish("LOCALIZATION")
@@ -73,3 +75,46 @@ func _check_texts(node: Node, where: String) -> void:
 	for text in untranslated:
 		print("[test]    .. без перевода (%s): %s" % [where, text])
 	check(untranslated.is_empty(), "%s: на английском нет казахского текста (%d)" % [where, untranslated.size()])
+
+
+## «Тарих жолы»: заставка главы, HUD и разговор, мини-игры, костёр, финал,
+## раздел «Тарих» энциклопедии (тексты сюжета — в story_strings.csv).
+func _check_story() -> void:
+	var save_manager := autoload("SaveManager")
+	var codex := await mount("res://scenes/ui/codex.tscn")
+	codex.call("show_section", 1)
+	_check_texts(codex, "энциклопедия · тарих")
+	await unmount(codex)
+
+	save_manager.story = {"hero": "ROLE_ABYLAI"}
+	var world := await mount("res://scenes/story/story_world.tscn")
+	var overlay: Control = world.get_node("%Overlay")
+	_check_texts(overlay, "заставка главы")
+	for card in overlay.get_children():
+		card.call("_close")
+	await process_frame
+	var state: StoryState = world.state
+	world.speak(state.dialogue(state.current_beat().dialogue), Callable())
+	var dialogue = world.get_node("%Dialogue")
+	dialogue._typed = 9999.0
+	await process_frame
+	_check_texts(world, "мир · HUD и разговор")
+	for game in [StoryOverlays.asyk(), StoryOverlays.duel(world.hero, true)]:
+		overlay.add_child(game)
+		await process_frame
+		_check_texts(game, game.get_script().resource_path.get_file())
+		game.queue_free()
+	var fire := StoryOverlays.campfire(world, state.chapter.beats[state.chapter.beats.size() - 2])
+	overlay.add_child(fire)
+	await process_frame
+	_check_texts(fire, "костёр")
+	fire.queue_free()
+	var finale := StoryOverlays.finale(state, _story_cast())
+	overlay.add_child(finale)
+	await process_frame
+	_check_texts(finale, "финал")
+	await unmount(world)
+
+
+func _story_cast() -> StoryCast:
+	return autoload("AssetRegistry").call("get_story_cast")

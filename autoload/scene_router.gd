@@ -26,6 +26,8 @@ var _pending_results: Dictionary = {}
 var _pending_briefing: String = ""
 ## Итог мини-игры, сыгранной в другой сцене (соқыр теке), для мира сюжета.
 var _pending_story_result: Dictionary = {}
+## Какой раздел энциклопедии открыть.
+var codex_section := 0
 
 ## Переходы со шторкой. В автотестах и CI (headless) выключены — переход
 ## мгновенный; тест шторки включает их сам.
@@ -73,7 +75,9 @@ func go_to_results(results: Dictionary = {}) -> void:
 func set_pending_results(results: Dictionary) -> void:
 	_pending_results = results
 
-func go_to_codex() -> void:
+## section: 0 — «Киім», 1 — «Тарих» (из финала главы).
+func go_to_codex(section := 0) -> void:
+	codex_section = section
 	_change_scene(SCENE_CODEX)
 
 func go_to_about() -> void:

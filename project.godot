@@ -138,7 +138,7 @@ pointing/emulate_touch_from_mouse=true
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://assets/i18n/ui_strings.en.translation", "res://assets/i18n/ui_strings.kk.translation")
+locale/translations=PackedStringArray("res://assets/i18n/ui_strings.en.translation", "res://assets/i18n/ui_strings.kk.translation", "res://assets/i18n/story_strings.en.translation", "res://assets/i18n/story_strings.kk.translation")
 locale/fallback="kk"
 
 [rendering]

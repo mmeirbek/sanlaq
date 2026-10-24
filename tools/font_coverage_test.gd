@@ -8,9 +8,12 @@ extends "res://tools/test_case.gd"
 ##   рисуются им, вместе с их переводами из CSV.
 ##
 ## Строки, которые код собирает на лету, проверяются через CSV: всё видимое
-## идёт через tr() и потому лежит там.
+## идёт через tr() и потому лежит там. Тексты «Тарих жолы» (story_strings.csv)
+## бывают и в заголовках — имена, цели, темы костра, — поэтому их обязаны
+## покрыть оба шрифта.
 
 const CSV_PATH := "res://assets/i18n/ui_strings.csv"
+const STORY_CSV_PATH := "res://assets/i18n/story_strings.csv"
 const CODE_DIRS := ["res://scenes", "res://scripts"]
 const BODY := preload("res://assets/fonts/Handjet-Variable.ttf")
 const DISPLAY := preload("res://assets/fonts/PressStart2P-Regular.ttf")
@@ -32,6 +35,10 @@ func _init() -> void:
 		body_text[key] = CSV_PATH
 		for value: String in _translations[key]:
 			body_text[value] = CSV_PATH
+	for row: Array in _read_csv(STORY_CSV_PATH):
+		for value: String in row:
+			body_text[value] = STORY_CSV_PATH
+			display_text[value] = STORY_CSV_PATH
 	for dir_path in CODE_DIRS:
 		for path in _files(dir_path, "tscn"):
 			_scan_scene(path, body_text, display_text)
@@ -46,12 +53,20 @@ func _init() -> void:
 
 
 func _load_csv() -> void:
-	var file := FileAccess.open(CSV_PATH, FileAccess.READ)
+	for row: Array in _read_csv(CSV_PATH):
+		_translations[row[0]] = [row[1], row[2]]
+
+
+## Строки CSV без заголовка: [ключ, kk, en].
+func _read_csv(path: String) -> Array:
+	var rows := []
+	var file := FileAccess.open(path, FileAccess.READ)
 	file.get_csv_line()
 	while not file.eof_reached():
 		var row := file.get_csv_line()
 		if row.size() >= 3 and not row[0].is_empty():
-			_translations[row[0]] = [row[1], row[2]]
+			rows.append([row[0], row[1], row[2]])
+	return rows
 
 
 ## Тексты узлов сцены. Узел, который рисуется PressStart2P (по варианту темы или

@@ -31,7 +31,7 @@ func _ready() -> void:
 	buttons.add_theme_constant_override("separation", UiTokens.SPACE_S)
 	box.add_child(buttons)
 	StoryOverlays.button(buttons, tr("БАСҚА БАТЫР"), "ButtonSecondary", SceneRouter.go_to_hero_select)
-	StoryOverlays.button(buttons, tr("ЭНЦИКЛОПЕДИЯ"), "ButtonSecondary", SceneRouter.go_to_codex)
+	StoryOverlays.button(buttons, tr("ЭНЦИКЛОПЕДИЯ"), "ButtonSecondary", SceneRouter.go_to_codex.bind(1))
 	StoryOverlays.button(buttons, tr("БАС МӘЗІР"), "Button", SceneRouter.go_to_main_menu).grab_focus.call_deferred()
 
 

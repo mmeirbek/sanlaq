@@ -131,6 +131,11 @@ func is_unlocked(entry_id: String) -> bool:
 	return entry_id in _save["unlocked"]
 
 
+## Видна ли статья в энциклопедии: открыта с начала или по ходу любой главы.
+static func entry_open(save: Dictionary, entry: EncyclopediaEntry) -> bool:
+	return entry.open_from_start or entry.id in save.get("unlocked", [])
+
+
 # --- Диалоги и финал ------------------------------------------------------------
 
 func dialogue(dialogue_id: String) -> StoryDialogue:
