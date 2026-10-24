@@ -41,6 +41,8 @@ var _equipped_items: Dictionary = {}
 var runner_sprint_time := 0.0
 var runner_sprint_uses := RUNNER_SPRINT_USES
 var bot_speed_mult: float = 1.0
+## Множитель извне: в «Тарих жолы» игрок на коне в бәйге.
+var speed_mult: float = 1.0
 var _footprint_boost: bool = false
 
 const FOOTPRINT_BOOST_MULT := 1.1
@@ -186,7 +188,7 @@ func _physics_process(delta: float) -> void:
 			player_speed *= FOOTPRINT_BOOST_MULT
 	elif sprint:
 		player_speed *= RUNNER_SPRINT_MULT
-	player_speed *= get_clothing_speed_mult()
+	player_speed *= get_clothing_speed_mult() * speed_mult
 	if is_bot:
 		player_speed *= bot_speed_mult
 

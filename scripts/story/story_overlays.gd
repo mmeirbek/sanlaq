@@ -1,7 +1,8 @@
 class_name StoryOverlays
 extends RefCounted
 ## Экраны поверх мира «Тарих жолы»: заставка главы, костёр, карта маршрута,
-## финал. Каждый — Control с сигналом done (финал уводит с экрана сам).
+## финал и мини-игры. Каждый — Control с сигналом done или парой won/lost
+## (финал уводит с экрана сам).
 
 const OVERLAYS := "res://scripts/story/overlays/%s.gd"
 
@@ -37,6 +38,18 @@ static func finale(state: StoryState, cast: StoryCast) -> Control:
 	screen.set("state", state)
 	screen.set("cast", cast)
 	return screen
+
+
+static func asyk() -> Control:
+	return load(OVERLAYS % "asyk").new()
+
+
+static func duel(hero: StoryHero, with_ally: bool) -> Control:
+	var fight: Control = load(OVERLAYS % "duel").new()
+	fight.set("hero_name", hero.name)
+	fight.set("hero_look", hero.look)
+	fight.set("with_ally", with_ally)
+	return fight
 
 
 ## Общая основа: затемнение на весь экран и панель по центру.

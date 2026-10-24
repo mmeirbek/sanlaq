@@ -1,8 +1,9 @@
 extends "res://tools/test_case.gd"
 ## Автопилот «Тарих жолы»: проходит главу целиком через настоящий мир, как
 ## игрок, — подходит к цели маркера, говорит, выбирает второй вариант (бірлік),
-## делает задания, слушает костёр, едет на арбе. Мини-игры автопилот засчитывает
-## сразу (их правила проверяют свои тесты).
+## делает задания и скачет в бәйге, слушает костёр, едет на арбе. Асық, жекпе-жек
+## и соқыр теке автопилот засчитывает сразу (их правила — в story_games_test).
+## Отдельно — бәйге: проигрыш по времени, соперник сам доезжает до мәре, победа.
 
 const WORLD := "res://scenes/story/story_world.tscn"
 const MAX_STEPS := 3000
@@ -10,8 +11,9 @@ const MAX_STEPS := 3000
 
 func _init() -> void:
 	await process_frame
-	for hero in ["ROLE_KEREY"]:
+	for hero in ["ROLE_KEREY", "ROLE_KABANBAY"]:
 		await _walk_chapter(hero)
+	await _race_baige()
 	finish("STORY WORLD")
 
 
@@ -59,8 +61,12 @@ func _walk_chapter(hero: String) -> void:
 			continue
 		var target = world.target_point()
 		if world.task != null:
-			if world.task.get_script().resource_path.ends_with("build_task.gd"):
+			var kind: String = world.task.get_script().resource_path.get_file()
+			if kind == "build_task.gd":
 				built_yurt = true
+			# Поиск следа идёт без стрелок — автопилот знает, где след.
+			if kind == "find_task.gd":
+				target = StoryLayout.to_world(world.task.task.points[0])
 			if target != null:
 				world._player.position = target + Vector2(4, 4)
 			continue
@@ -80,4 +86,64 @@ func _walk_chapter(hero: String) -> void:
 	await create_timer(1.6).timeout
 	var finale: Control = world.get_node("%Overlay").get_child(world.get_node("%Overlay").get_child_count() - 1)
 	check(finale.get("state") != null, "%s: показан финал главы" % hero)
+	await unmount(world)
+
+
+## Бәйге Абылая (шаг 5 главы, в ауле) на настоящем мире.
+func _race_baige() -> void:
+	var save_manager := autoload("SaveManager")
+	save_manager.story = {"hero": "ROLE_ABYLAI", "heroes": {"ROLE_ABYLAI": {"beat": 4}}}
+	var world := await mount(WORLD)
+	if world == null:
+		return
+	world.autopilot = true
+	for card in world.get_node("%Overlay").get_children():
+		card.queue_free()
+	var state: StoryState = world.state
+	var beat := state.current_beat()
+	check(beat.action == StoryBeat.Action.BAIGE, "Абылай: шаг 5 — бәйге")
+	var spot: Vector2 = world._player.position
+
+	# Время вышло — проигрыш, конь и скорость снимаются, мир предлагает повтор.
+	world._run_action(beat)
+	var race = world.task
+	check(race != null and race.racing, "бәйге началась (автопилот — без отсчёта)")
+	check(world._player.speed_mult > 1.0, "игрок верхом быстрее")
+	race._left = 0.0
+	await physics_frame
+	await process_frame
+	check(world.task == null and state.current_beat() == beat, "время вышло — шаг не засчитан")
+	check(is_equal_approx(world._player.speed_mult, 1.0) and world._player.position == spot,
+		"после бәйге игрок пеший и там, где был")
+	var retry := world.get_node("%Overlay").get_child(world.get_node("%Overlay").get_child_count() - 1)
+	check(retry is ConfirmDialog, "после проигрыша — предложение повторить")
+	retry.queue_free()
+
+	# Игрок стоит — соперник сам объезжает аул и берёт мәре до конца времени.
+	world._run_action(beat)
+	race = world.task
+	await physics_frame
+	var lost := [false]
+	race.failed.connect(func() -> void: lost[0] = true)
+	var seconds := 0.0
+	while not lost[0] and seconds < race.TIME_LIMIT:
+		race._move_rival(1.0 / 60.0)
+		seconds += 1.0 / 60.0
+	check(lost[0], "соперник доехал до мәре сам (%.0f с), не застрял у юрт" % seconds)
+	check(seconds > 12.0, "соперник не мгновенный: %.0f с" % seconds)
+	await process_frame
+	for node in world.get_node("%Overlay").get_children():
+		node.queue_free()
+
+	# Победа: пять флажков по порядку — шаг засчитан.
+	world._run_action(beat)
+	race = world.task
+	var taken := 0
+	while world.task != null and taken < 10:
+		world._player.position = world.target_point()
+		await physics_frame
+		await process_frame
+		taken += 1
+	check(state.current_beat() != beat and taken == beat.task.points.size(),
+		"пять флажков по порядку — бәйге выиграна за %d" % taken)
 	await unmount(world)

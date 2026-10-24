@@ -282,6 +282,63 @@ def tracks():
     return canvas
 
 
+# --- Мини-игры ----------------------------------------------------------------
+
+def asyk(red=False):
+    """Асық 18×14 — бараний альчик; сақа (red) крашена в красный и чуть крупнее."""
+    canvas = Canvas(20, 16) if red else Canvas(18, 14)
+    cx, cy = (10, 8) if red else (9, 7)
+    body = ellipse(cx, cy, 7.5 if red else 6.5, 5 if red else 4.5) | ellipse(cx - 5, cy - 2, 2.6, 2.6) \
+        | ellipse(cx + 5, cy + 2, 2.6, 2.6)
+    colors = ("red_light", "burgundy_light", "burgundy") if red else ("parchment", "cream", "cloth_shadow")
+    paint(canvas, body, r(colors))
+    fill(canvas, box(cx - 3, cy, cx + 3, cy), c("burgundy" if red else "cloth_shadow"))
+    outline(canvas)
+    return canvas
+
+
+def asyk_field():
+    """Площадка 200×100: утоптанная земля, мелом очерченный круг и линия асыков."""
+    w, h = 200, 100
+    canvas = Canvas(w, h, c("path"))
+    for y in range(h):
+        for x in range(w):
+            if (x * 11 + y * 7) % 23 == 0:
+                canvas.put(x, y, c("path_dark"))
+            elif (x * 5 + y * 13) % 31 == 0:
+                canvas.put(x, y, c("path_light"))
+    ring = ellipse(100, 44, 74, 28) - ellipse(100, 44, 72, 26.5)
+    fill(canvas, ring, c("parchment"))
+    fill(canvas, rows({44: (40, 160)}), c("parchment"))
+    fill(canvas, rows({y: (0, w - 1) for y in range(h - 6, h)}), c("grass_dark"))
+    canvas.ring(0, c("gold_dark"), c("gold_dark"), c("outline"), c("outline"))
+    return canvas
+
+
+def duel_arena():
+    """Арена поединка 320×110: вечерняя степь, два войска вдали, вытоптанный круг."""
+    w, h = 320, 110
+    canvas = Canvas(w, h, c("dusk"))
+    bands = [("night_violet", 0, 14), ("plum", 14, 28), ("mauve", 28, 40), ("rose_dark", 40, 48)]
+    for name, y0, y1 in bands:
+        fill(canvas, rows({y: (0, w - 1) for y in range(y0, y1)}), c(name))
+    for x in range(0, w, 4):
+        top = 44 + (x * 7) % 5
+        fill(canvas, {(x, y) for y in range(top, 50)} | {(x + 1, y) for y in range(top + 1, 50)}, c("ink_soft"))
+        if x % 12 == 0:
+            fill(canvas, {(x + 1, y) for y in range(top - 6, top)}, c("steel"))
+    fill(canvas, rows({y: (0, w - 1) for y in range(50, h)}), c("grass_dark"))
+    for y in range(50, h):
+        for x in range(w):
+            if (x * 3 + y * 7) % 13 == 0:
+                canvas.put(x, y, c("grass_deep"))
+    trampled = ellipse(160, 84, 140, 20)
+    fill(canvas, trampled, c("path_dark"))
+    fill(canvas, {(x, y) for x, y in trampled if (x + y) % 5 == 0}, c("path"))
+    canvas.ring(0, c("gold_dark"), c("gold_dark"), c("outline"), c("outline"))
+    return canvas
+
+
 # --- Карта маршрутов ------------------------------------------------------------
 
 MAP_W, MAP_H = 320, 180
@@ -461,6 +518,7 @@ def drawings():
         "flag_red": flag(("red_light", "burgundy_light", "burgundy")), "flag_gold": flag(("sun", "gold", "gold_dark")),
         "route_map": route_map(), "route_dot": route_dot(("sun", "gold_light", "gold")),
         "route_end": route_dot(("red_light", "burgundy_light", "burgundy")),
+        "asyk": asyk(), "saka": asyk(red=True), "asyk_field": asyk_field(), "duel_arena": duel_arena(),
     }
     for stage in range(4):
         art[f"yurt_stage_{stage}"] = yurt_stage(stage)

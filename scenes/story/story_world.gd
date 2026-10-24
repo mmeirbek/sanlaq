@@ -24,8 +24,8 @@ var hero: StoryHero
 var busy := false
 ## Задание в мире (сбор, стройка...) идёт: ходить можно, говорить — нет.
 var task: StoryTaskRunner
-## Автопилот (tools/story_world_test.gd): мини-игры засчитываются сразу, как
-## клавиша ведущего в atilla.
+## Автопилот (tools/story_world_test.gd): асық, жекпе-жек и соқыр теке
+## засчитываются сразу, как клавиша ведущего в atilla; бәйге — без отсчёта.
 var autopilot := false
 
 var _cast: StoryCast
@@ -300,19 +300,24 @@ func _on_dialogue_finished() -> void:
 
 
 func _run_action(beat: StoryBeat) -> void:
-	if autopilot and beat.action in [StoryBeat.Action.SOKYR_TEKE, StoryBeat.Action.ASYK,
-			StoryBeat.Action.BAIGE, StoryBeat.Action.DUEL]:
+	if autopilot and beat.action in [StoryBeat.Action.SOKYR_TEKE, StoryBeat.Action.ASYK, StoryBeat.Action.DUEL]:
 		complete_beat()
 		return
 	match beat.action:
-		StoryBeat.Action.COLLECT, StoryBeat.Action.BUILD, StoryBeat.Action.ESCORT, StoryBeat.Action.FIND:
+		StoryBeat.Action.COLLECT, StoryBeat.Action.BUILD, StoryBeat.Action.ESCORT, StoryBeat.Action.FIND, \
+		StoryBeat.Action.BAIGE:
 			task = StoryTaskRunner.create(beat.action, beat.task)
 			task.finished.connect(_on_task_finished.bind(beat))
+			task.failed.connect(_on_task_failed.bind(beat))
 			_world.get_parent().add_child(task)
 			task.begin(self, _player, _world)
 		StoryBeat.Action.SOKYR_TEKE:
 			SaveManager.save_story()
 			SceneRouter.go_to_game({"role": Roles.Role.SOKYROTEKE, "bots": 3, "story": true})
+		StoryBeat.Action.ASYK:
+			_open_overlay(StoryOverlays.asyk(), beat)
+		StoryBeat.Action.DUEL:
+			_open_overlay(StoryOverlays.duel(hero, state.duel_has_ally()), beat)
 		StoryBeat.Action.CAMPFIRE:
 			_open_overlay(StoryOverlays.campfire(self, beat), beat)
 		StoryBeat.Action.MAP:
@@ -326,6 +331,12 @@ func _on_task_finished(_beat: StoryBeat) -> void:
 	task = null
 	_hud.hide_task()
 	complete_beat()
+
+
+func _on_task_failed(beat: StoryBeat) -> void:
+	task = null
+	_hud.hide_task()
+	_offer_retry(beat)
 
 
 ## Оверлей на весь экран (костёр, карта, мини-игра): мир стоит, пока он открыт.

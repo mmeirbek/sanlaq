@@ -5,12 +5,15 @@ extends Node2D
 ## Подклассы — в scripts/story/tasks/.
 
 signal finished
+## Задание провалено (бәйге: соперник первый или время вышло) — мир предложит повтор.
+signal failed
 
 const SCRIPTS := {
 	StoryBeat.Action.COLLECT: "res://scripts/story/tasks/collect_task.gd",
 	StoryBeat.Action.BUILD: "res://scripts/story/tasks/build_task.gd",
 	StoryBeat.Action.ESCORT: "res://scripts/story/tasks/escort_task.gd",
 	StoryBeat.Action.FIND: "res://scripts/story/tasks/find_task.gd",
+	StoryBeat.Action.BAIGE: "res://scripts/story/tasks/baige_task.gd",
 }
 const GLOW := preload("res://assets/sprites/story/glow.png")
 const BURST_COLORS: Array[Color] = [UiTokens.GOLD_LIGHT, UiTokens.GOLD, UiTokens.CREAM]
@@ -68,14 +71,31 @@ func tick(_delta: float) -> void:
 
 
 func finish() -> void:
+	if _close():
+		finished.emit()
+
+
+func fail() -> void:
+	if _close():
+		failed.emit()
+
+
+## Убрать всё своё из мира; false — уже убрано.
+func _close() -> bool:
 	if _done:
-		return
+		return false
 	_done = true
+	cleanup()
 	for node in _spawned:
 		if is_instance_valid(node):
 			node.queue_free()
-	finished.emit()
 	queue_free()
+	return true
+
+
+## Вернуть игрока и мир как было (подклассы).
+func cleanup() -> void:
+	pass
 
 
 ## Предмет задания в мире: картинка нижним краем на точке, метры -> пиксели.
