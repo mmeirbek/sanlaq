@@ -21,8 +21,8 @@ def r(names):
     return ramp(*names)
 
 
-def shadow(canvas, cx, cy, rx, ry=2):
-    world_art.ground_shadow(canvas, ellipse(cx, cy, rx, ry))
+def shadow(canvas, cx, cy, rx, ry=2, on="grass_dark"):
+    world_art.ground_shadow(canvas, ellipse(cx, cy, rx, ry), on)
 
 
 # --- Аул ------------------------------------------------------------------------
@@ -219,6 +219,222 @@ def yurt_stage(stage):
         paint(canvas, crown, r(WOOD))
         fill(canvas, ellipse(cx, 10, 4, 1.5), c("ink"))
     outline(canvas)
+    return canvas
+
+
+# --- Түркістан ----------------------------------------------------------------
+# Город из atilla: глиняные стены с зубцами, башни, дома с плоской крышей,
+# мавзолей с бирюзовым куполом, торговые ряды. Масштаб мира: метр — 20 px арта;
+# вид 3/4 — глубина сжата вдвое, высота стен — около 0,7.
+
+CLAY = ("path_light", "path", "path_dark")
+TILE = ("blue_light", "teal", "teal_dark")
+
+
+def _bricks(canvas, mask, course=4, brick=8):
+    """Кладка: тёмные швы через ряд со сдвигом — глина читается кирпичом."""
+    for x, y in mask:
+        if y % course == 0 or (x + (y // course) % 2 * (brick // 2)) % brick == 0:
+            canvas.put(x, y, c("path_dark"))
+
+
+def city_ground():
+    """Утоптанная глина города, плитка 64×64 (стыкуется по краям)."""
+    canvas = Canvas(64, 64, c("path"))
+    for y in range(64):
+        for x in range(64):
+            if (x * 7 + y * 13) % 29 == 0:
+                canvas.put(x, y, c("path_dark"))
+            elif (x * 11 + y * 5) % 37 == 0:
+                canvas.put(x, y, c("path_light"))
+    for x, y in ((9, 12), (40, 22), (24, 47), (54, 54)):
+        paint(canvas, ellipse(x, y, 2, 1.5), r(("stone_light", "stone", "stone_dark")))
+    return canvas
+
+
+def paving():
+    """Мостовая улицы — каменные плиты со сдвигом рядов, плитка 32×32."""
+    canvas = Canvas(32, 32, c("stone"))
+    for y in range(32):
+        for x in range(32):
+            shift = 8 if (y // 8) % 2 else 0
+            if y % 8 == 7 or (x + shift) % 16 == 15:
+                canvas.put(x, y, c("stone_dark"))
+            elif y % 8 == 0 or (x + shift) % 16 == 0:
+                canvas.put(x, y, c("stone_light"))
+    return canvas
+
+
+def wall_h():
+    """Звено стены вдоль верхнего/нижнего края 40×64 (2 м): зубцы, дорожка
+    поверху, кирпичная стена. Плитка повторяется по горизонтали."""
+    canvas = Canvas(40, 64)
+    fill(canvas, box(0, 10, 39, 17), c("path_dark"))
+    for x in range(0, 40, 10):
+        paint(canvas, box(x + 1, 2, x + 6, 10), r(CLAY))
+    face = box(0, 18, 39, 61)
+    fill(canvas, face, c("path"))
+    fill(canvas, box(0, 18, 39, 19), c("path_light"))
+    _bricks(canvas, box(0, 22, 39, 59))
+    fill(canvas, box(0, 60, 39, 61), c("path_dark"))
+    fill(canvas, box(0, 62, 39, 63), c("cloth_shadow"))
+    fill(canvas, {(x, y) for x, y in box(0, 2, 39, 10) if canvas.image.getpixel((x, y))[3] and y == 2}, c("outline"))
+    return canvas
+
+
+def wall_v():
+    """Звено стены вдоль боковых краёв 28×40, вид сверху: дорожка между
+    зубцами. Плитка повторяется по вертикали."""
+    canvas = Canvas(28, 40)
+    fill(canvas, box(3, 0, 24, 39), c("path_dark"))
+    fill(canvas, {(x, y) for x, y in box(3, 0, 24, 39) if (x * 3 + y * 5) % 17 == 0}, c("leather_dark"))
+    for y in range(0, 40, 10):
+        paint(canvas, box(0, y + 1, 3, y + 7), r(CLAY))
+        paint(canvas, box(24, y + 1, 27, y + 7), r(CLAY))
+    fill(canvas, box(0, 0, 0, 39), c("outline"))
+    fill(canvas, box(27, 0, 27, 39), c("outline"))
+    return canvas
+
+
+def tower():
+    """Круглая башня 60×104: зубчатый верх, кладка, тень справа."""
+    canvas = Canvas(60, 104)
+    body = {(x, y) for x, y in box(5, 22, 54, 96)} | ellipse(30, 96, 25, 5)
+    for x, y in body:
+        t = (x - 5) / 50
+        canvas.put(x, y, c("path_light") if t < 0.25 else c("path") if t < 0.7 else c("path_dark"))
+    _bricks(canvas, {(x, y) for x, y in body if 26 <= y <= 94 and 7 < x < 52}, course=5, brick=10)
+    top = ellipse(30, 20, 28, 8)
+    fill(canvas, top, c("path_dark"))
+    fill(canvas, ellipse(30, 20, 22, 5), c("leather_dark"))
+    for k in range(7):
+        x = 4 + k * 8
+        paint(canvas, box(x, 8 + abs(3 - k), x + 4, 16 + abs(3 - k)), r(CLAY))
+    fill(canvas, box(27, 50, 32, 62), c("ink"))
+    outline(canvas)
+    shadow(canvas, 32, 101, 26, on="path_dark")
+    return canvas
+
+
+def house(width_m, depth_m, door_x=0.5):
+    """Глиняный дом с плоской крышей. Ширина width_m, крыша в 3/4 —
+    depth_m/2 м, стена — 2,5 м. Низ картинки — передняя стена."""
+    w = int(width_m * 20) + 4
+    roof_h = int(depth_m * 10)
+    face_h = 50
+    h = roof_h + face_h + 10
+    canvas = Canvas(w, h)
+    roof = box(2, 4, w - 3, 4 + roof_h)
+    fill(canvas, roof, c("path_light"))
+    fill(canvas, {(x, y) for x, y in roof if (x * 5 + y * 3) % 23 == 0}, c("path"))
+    paint(canvas, box(0, 2, w - 1, 5), r(CLAY))
+    face = box(2, 5 + roof_h, w - 3, 4 + roof_h + face_h)
+    fill(canvas, face, c("path"))
+    fill(canvas, box(2, 5 + roof_h, w - 3, 7 + roof_h), c("path_dark"))
+    for x0 in range(2, w - 3, 28):
+        fill(canvas, box(x0, 8 + roof_h, x0 + 1, 4 + roof_h + face_h), c("path_light"))
+    base = 4 + roof_h + face_h
+    dx = int(w * door_x)
+    paint(canvas, box(dx - 7, base - 30, dx + 6, base), r(WOOD))
+    fill(canvas, box(dx - 7, base - 32, dx + 6, base - 31), c("wood_dark"))
+    fill(canvas, {(dx - 1, y) for y in range(base - 29, base)}, c("wood_dark"))
+    for wx in (dx - 30, dx + 22):
+        if 6 < wx < w - 14:
+            fill(canvas, box(wx, base - 34, wx + 8, base - 24), c("ink"))
+            fill(canvas, {(wx + 4, y) for y in range(base - 34, base - 23)}
+                 | {(x, base - 29) for x in range(wx, wx + 9)}, c("wood"))
+    outline(canvas)
+    shadow(canvas, w // 2 + 2, h - 3, w // 2, on="path_dark")
+    return canvas
+
+
+def mausoleum():
+    """Мавзолей 232×200: портал-пештак с аркой и изразцовой лентой, большой
+    бирюзовый купол на барабане и малый слева. Низ — передняя кромка портала."""
+    w, h = 232, 200
+    canvas = Canvas(w, h)
+    cx = w // 2
+    # Корпус: плоская крыша и стена.
+    fill(canvas, box(6, 92, w - 7, 108), c("path_light"))
+    face = box(6, 108, w - 7, 186)
+    fill(canvas, face, c("path"))
+    _bricks(canvas, face, course=5, brick=10)
+    fill(canvas, box(6, 108, w - 7, 110), c("path_dark"))
+    # Малый купол слева и большой на барабане.
+    paint(canvas, box(30, 78, 78, 94), r(TILE))
+    paint(canvas, {(x, y) for x, y in ellipse(54, 78, 24, 22) if y <= 80}, r(TILE))
+    drum = box(cx - 50 + 20, 60, cx + 50 + 20, 92)
+    paint(canvas, drum, r(TILE))
+    fill(canvas, {(x, y) for x, y in drum if y in (66, 86)}, c("gold"))
+    fill(canvas, {(x, 76) for x in range(cx - 28, cx + 70) if x % 6 < 3}, c("parchment"))
+    dome = {(x, y) for x, y in ellipse(cx + 22, 64, 56, 54) if y <= 66}
+    for x, y in dome:
+        t = (x - (cx - 34)) / 112
+        canvas.put(x, y, c("blue_light") if t < 0.3 else c("teal") if t < 0.75 else c("teal_dark"))
+    for k in range(-3, 4):
+        for y in range(14, 66, 2):
+            x = int(cx + 22 + k * (66 - y) * 0.12 + k * 10 * (y / 66))
+            if (x, y) in dome:
+                canvas.put(x, y, c("teal_dark"))
+    paint(canvas, box(cx + 20, 1, cx + 23, 11), r(("sun", "gold", "gold_dark")))
+    # Портал перед куполом: высокая стена, лента изразца, стрельчатая арка.
+    portal = box(cx - 66, 30, cx + 65, 186)
+    fill(canvas, portal, c("parchment"))
+    fill(canvas, {(x, y) for x, y in portal if x > cx + 50}, c("parchment_dark"))
+    _bricks(canvas, {(x, y) for x, y in portal if y > 64}, course=5, brick=10)
+    band = box(cx - 66, 36, cx + 65, 56)
+    paint(canvas, band, r(TILE))
+    for x in range(cx - 60, cx + 60, 12):
+        fill(canvas, {(x + 6 - abs(dy), 46 + dy) for dy in range(-5, 6)}
+             | {(x + 6 + abs(dy), 46 + dy) for dy in range(-5, 6)}, c("gold"))
+    for side in (cx - 66, cx + 56):
+        paint(canvas, box(side, 22, side + 9, 186), r(("cream", "parchment", "parchment_dark")))
+        paint(canvas, box(side - 1, 16, side + 10, 22), r(TILE))
+    arch = {(x, y) for y in range(88, 187) for x in range(cx - 26, cx + 26)
+            if y >= 122 or abs(x + 0.5 - cx) <= (y - 88) * 26 / 34}
+    fill(canvas, arch, c("ink"))
+    frame = {(x, y) for y in range(84, 187) for x in range(cx - 31, cx + 31)
+             if (x, y) not in arch and (y >= 120 or abs(x + 0.5 - cx) <= (y - 84) * 31 / 36)}
+    paint(canvas, frame, r(TILE))
+    door = box(cx - 12, 150, cx + 11, 186)
+    paint(canvas, door, r(WOOD))
+    fill(canvas, {(cx, y) for y in range(150, 187)}, c("wood_dark"))
+    fill(canvas, {(x, y) for x, y in door if (x + y) % 6 == 0}, c("wood_light"))
+    outline(canvas)
+    shadow(canvas, cx + 4, 194, 112, 3, on="path_dark")
+    return canvas
+
+
+def stall():
+    """Базарный ряд 64×60: полосатый навес на столбах, прилавок с товаром."""
+    canvas = Canvas(64, 60)
+    for x in (6, 55):
+        paint(canvas, box(x, 14, x + 2, 54), r(WOOD))
+    awning = taper(6, 20, 26, 31, cx=32)
+    for x, y in awning:
+        canvas.put(x, y, c("burgundy") if (x // 6) % 2 else c("parchment"))
+    fill(canvas, {(x, y) for x, y in awning if y == 20 and x % 6 < 3}, c("burgundy_dark"))
+    paint(canvas, box(4, 38, 59, 54), r(WOOD))
+    fill(canvas, box(4, 38, 59, 39), c("wood_light"))
+    goods = [("rust", 12), ("sun", 20), ("green", 28), ("burgundy_light", 36), ("sun", 44), ("rust_light", 52)]
+    for name, x in goods:
+        paint(canvas, ellipse(x, 35, 3.5, 3), r((name, name, "outline")))
+    paint(canvas, box(14, 26, 22, 34), r(("cream", "parchment", "parchment_dark")))
+    outline(canvas)
+    shadow(canvas, 32, 57, 30, on="path_dark")
+    return canvas
+
+
+def city_tree():
+    """Карагач 48×72 — круглая крона на стволе."""
+    canvas = Canvas(48, 72)
+    paint(canvas, box(21, 40, 26, 66), r(WOOD))
+    crown = ellipse(24, 26, 21, 20) | ellipse(13, 36, 10, 8) | ellipse(35, 36, 10, 8)
+    paint(canvas, crown, r(("grass_light", "grass_mid", "grass_deep")))
+    fill(canvas, {(x, y) for x, y in crown if (x * 3 + y * 7) % 11 == 0 and x < 30}, c("grass_light"))
+    fill(canvas, {(x, y) for x, y in crown if (x * 5 + y * 3) % 13 == 0 and x > 24}, c("grass_dark"))
+    outline(canvas)
+    shadow(canvas, 25, 68, 14, on="path_dark")
     return canvas
 
 
@@ -519,6 +735,9 @@ def drawings():
         "route_map": route_map(), "route_dot": route_dot(("sun", "gold_light", "gold")),
         "route_end": route_dot(("red_light", "burgundy_light", "burgundy")),
         "asyk": asyk(), "saka": asyk(red=True), "asyk_field": asyk_field(), "duel_arena": duel_arena(),
+        "city_ground": city_ground(), "paving": paving(), "wall_h": wall_h(), "wall_v": wall_v(),
+        "tower": tower(), "house_wide": house(8, 5.5, 0.4), "house_deep": house(6.5, 7, 0.6),
+        "mausoleum": mausoleum(), "stall": stall(), "city_tree": city_tree(),
     }
     for stage in range(4):
         art[f"yurt_stage_{stage}"] = yurt_stage(stage)

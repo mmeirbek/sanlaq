@@ -21,12 +21,12 @@ OUT_DIR = os.path.join(ROOT, "assets", "sprites", "world")
 ARENA_RADIUS = 180  # 360 px мира
 
 
-def ground_shadow(canvas, mask):
-    """Тень на траве: только там, где ещё пусто, и без контура — рисуется
-    после outline()."""
+def ground_shadow(canvas, mask, color_name="grass_dark"):
+    """Тень на земле (по умолчанию — на траве): только там, где ещё пусто, и без
+    контура — рисуется после outline()."""
     for x, y in mask:
         if 0 <= x < canvas.width and 0 <= y < canvas.height and not canvas.image.getpixel((x, y))[3]:
-            canvas.put(x, y, c("grass_dark"))
+            canvas.put(x, y, c(color_name))
 
 
 # --- Трава -------------------------------------------------------------------

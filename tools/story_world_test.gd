@@ -11,7 +11,7 @@ const MAX_STEPS := 3000
 
 func _init() -> void:
 	await process_frame
-	for hero in ["ROLE_KEREY", "ROLE_KABANBAY"]:
+	for hero in ["ROLE_KEREY", "ROLE_ABYLAI", "ROLE_KABANBAY"]:
 		await _walk_chapter(hero)
 	await _race_baige()
 	finish("STORY WORLD")
@@ -67,6 +67,10 @@ func _walk_chapter(hero: String) -> void:
 			# Поиск следа идёт без стрелок — автопилот знает, где след.
 			if kind == "find_task.gd":
 				target = StoryLayout.to_world(world.task.task.points[0])
+			# Конь идёт за игроком шагом — автопилот переводит их к коновязи вместе.
+			if kind == "escort_task.gd":
+				target = StoryLayout.to_world(world.task.task.goal) + Vector2(0, 60)
+				world.task._horse.position = target + Vector2(0, 40)
 			if target != null:
 				world._player.position = target + Vector2(4, 4)
 			continue
@@ -75,7 +79,9 @@ func _walk_chapter(hero: String) -> void:
 		world._player.position = target + Vector2(0, 40)
 		await process_frame
 		world.interact()
-	check(state.is_complete(), "%s: глава пройдена автопилотом за %d шагов" % [hero, steps])
+	var stuck := "" if state.is_complete() else " (стоит на %s, задание %s, занят %s)" % [
+		state.current_beat().checkpoint, world.task, world.busy]
+	check(state.is_complete(), "%s: глава пройдена автопилотом за %d шагов%s" % [hero, steps, stuck])
 	check(state.chapter_xp() > 0 and state.unity() > 0,
 		"%s: XP %d и бірлік %d набраны" % [hero, state.chapter_xp(), state.unity()])
 	check(travelled, "%s: был переезд на арбе" % hero)
