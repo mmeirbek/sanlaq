@@ -14,6 +14,7 @@ func _init() -> void:
 	await _test_briefings()
 	await _test_abai()
 	await _test_togyz()
+	await _test_aq_suyek()
 	finish("MODES")
 
 ## Каждый режим должен стоять на своём фоне, а не на дефолтном фоне лобби.
@@ -282,4 +283,41 @@ func _test_togyz() -> void:
 	if board3 != null and not board3.is_over() and board3.current_player == 0 and not bool(n.get("_animating")):
 		check(rings.size() == board3.legal_moves().size(),
 			"тоғыз: кольцом отмечены ровно доступные ходы, %d из %d" % [rings.size(), board3.legal_moves().size()])
+	await unmount(n)
+
+# --- Ақ сүйек ----------------------------------------------------------------
+
+func _test_aq_suyek() -> void:
+	var n := await mount("res://scenes/ui/aq_suyek.tscn")
+	if n == null:
+		return
+	check(n.get_node_or_null("Background") is PixelBackdrop, "ақ сүйек: пиксельный фон на месте")
+	check(n.get_node_or_null("WipBadge") == null, "ақ сүйек: наклейки «ӘЗІРЛЕНУДЕ» нет")
+	check((n.get_node("%Header") as ScreenHeader).back_pressed.get_connections().size() > 0,
+		"ақ сүйек: «Артқа» подключена")
+	var field := n.get_node("%Field") as AqSuyekField
+	check(field.cell_pressed.get_connections().size() > 0, "ақ сүйек: нажатия по полю подключены")
+
+	var options := n.get_node("%Options") as VBoxContainer
+	check(options.get_child_count() >= 2, "ақ сүйек: первый ход начинается с вопроса")
+	var board: AqSuyekBoard = n.get("_board")
+	# Верный ответ даёт шаги, после него поле принимает шаг в соседнюю клетку.
+	var answered := false
+	for btn: Button in options.get_children():
+		btn.pressed.emit()
+		answered = true
+		break
+	check(answered and not board.awaiting_answer(), "ақ сүйек: после ответа есть шаги")
+	var start: Vector2i = board.positions[AqSuyekBoard.HUMAN]
+	var target := start + Vector2i.RIGHT
+	# Клик по полю: центр клетки target в координатах поля.
+	await process_frame
+	var cell_px := float(AqSuyekField.CELL.get_width() + AqSuyekField.GAP)
+	var origin := (field.size - field.custom_minimum_size) / 2.0
+	check(field.cell_at(origin + (Vector2(target) + Vector2(0.5, 0.5)) * cell_px) == target,
+		"ақ сүйек: клик по центру клетки попадает в неё")
+	field.cell_pressed.emit(target)
+	await process_frame
+	check(board.positions[AqSuyekBoard.HUMAN] == target or board.round_index > 0,
+		"ақ сүйек: игрок шагнул в соседнюю клетку")
 	await unmount(n)
