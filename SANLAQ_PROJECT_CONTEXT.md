@@ -203,12 +203,11 @@ screen serves all modes; the content is a `ModeBriefing` resource in
 `data/briefings/<mode>.tres`, so adding a mode's briefing takes no new code.
 
 Each step of "how it is played" carries its own **diagram** of that step —
-which pit is chosen and how many balls are in it, which card is lit, what the
-catcher can and cannot see. These are drawn in code (`StepDiagram`), not stored
-as images: they show exact game state, contain no words at all so localization
-cannot break them, and they change together with the rules. `STEPS_DRAWN` in
-that script records how many steps each mode's diagram covers, and the mode
-tests fail the build if a briefing gains a step the diagram cannot draw.
+which pit is chosen, which card is lit, what the catcher can and cannot see.
+They are pixel images made by `tools/artgen/briefing_art.py`
+(`assets/sprites/briefing/<mode>_<step>.png`) and contain no words, so
+localization cannot break them. The mode tests fail the build if a step has no
+diagram of its own.
 
 Narration is **off by default** — the briefing is meant to be readable in
 silence. A toggle on the screen turns it on and the choice is remembered

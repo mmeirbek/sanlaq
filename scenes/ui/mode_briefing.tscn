@@ -1,28 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3]
 
-[ext_resource type="Script" path="res://scenes/ui/mode_briefing.gd" id="1"]
-[ext_resource type="FontFile" path="res://assets/fonts/NotoSans-Bold.ttf" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="4"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_header.tscn" id="2"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-content_margin_left = 24.0
-content_margin_top = 20.0
-content_margin_right = 24.0
-content_margin_bottom = 20.0
-bg_color = Color(0.984, 0.969, 0.933, 0.949)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.918, 0.761, 0.357, 1)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
-shadow_color = Color(0.039, 0.169, 0.239, 0.2)
-shadow_size = 10
-shadow_offset = Vector2(0, 5)
+[ext_resource type="Script" path="res://scenes/ui/mode_briefing.gd" id="1_script"]
+[ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://scripts/ui/components/pixel_backdrop.gd" id="3_backdrop"]
+[ext_resource type="Script" path="res://scripts/ui/components/screen_header.gd" id="4_header"]
+[ext_resource type="Script" path="res://scripts/ui/components/pixel_button.gd" id="5_button"]
 
 [node name="ModeBriefing" type="Control"]
 layout_mode = 3
@@ -31,118 +13,116 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1")
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
 
-[node name="Background" parent="." instance=ExtResource("4")]
+[node name="Background" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-variant = 0
+mouse_filter = 2
+script = ExtResource("3_backdrop")
+variant = 1
+veil = 0.6
 
-[node name="Header" parent="." instance=ExtResource("2")]
+[node name="Header" type="VBoxContainer" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 0
-offset_left = 44.0
-offset_top = 40.0
-offset_right = 44.0
-offset_bottom = 40.0
-grow_horizontal = 1
-grow_vertical = 1
-
-[node name="BackBtn" type="Button" parent="."]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 1
+anchors_preset = 10
 anchor_right = 1.0
-offset_left = -188.0
-offset_top = 52.0
-offset_right = -28.0
-offset_bottom = 100.0
-grow_horizontal = 0
-theme_override_font_sizes/font_size = 18
-text = "← Артқа"
+offset_left = 32.0
+offset_top = 24.0
+offset_right = -32.0
+offset_bottom = 120.0
+grow_horizontal = 2
+script = ExtResource("4_header")
 
-[node name="PlayCard" type="PanelContainer" parent="."]
-layout_mode = 0
-offset_left = 44.0
-offset_top = 162.0
-offset_right = 900.0
-offset_bottom = 616.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
-
-[node name="VBox" type="VBoxContainer" parent="PlayCard"]
-layout_mode = 2
+[node name="Body" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = 132.0
+offset_right = -32.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_constants/separation = 12
 
-[node name="SectionTitle" type="Label" parent="PlayCard/VBox"]
+[node name="Cards" type="HBoxContainer" parent="Body"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 18
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="PlayCard" type="PanelContainer" parent="Body/Cards"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="VBox" type="VBoxContainer" parent="Body/Cards/PlayCard"]
+layout_mode = 2
+
+[node name="SectionTitle" type="Label" parent="Body/Cards/PlayCard/VBox"]
+layout_mode = 2
+theme_type_variation = &"HeadingLabel"
 text = "ҚАЛАЙ ОЙНАЛАДЫ"
 
-[node name="Scroll" type="ScrollContainer" parent="PlayCard/VBox"]
+[node name="Scroll" type="ScrollContainer" parent="Body/Cards/PlayCard/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="StepsBox" type="VBoxContainer" parent="PlayCard/VBox/Scroll"]
+[node name="StepsBox" type="VBoxContainer" parent="Body/Cards/PlayCard/VBox/Scroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="SkillsCard" type="PanelContainer" parent="."]
-layout_mode = 0
-offset_left = 920.0
-offset_top = 162.0
-offset_right = 1236.0
-offset_bottom = 616.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
-
-[node name="VBox" type="VBoxContainer" parent="SkillsCard"]
+[node name="SkillsCard" type="PanelContainer" parent="Body/Cards"]
 layout_mode = 2
-theme_override_constants/separation = 12
+size_flags_horizontal = 3
 
-[node name="SectionTitle" type="Label" parent="SkillsCard/VBox"]
+[node name="VBox" type="VBoxContainer" parent="Body/Cards/SkillsCard"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 18
+
+[node name="SectionTitle" type="Label" parent="Body/Cards/SkillsCard/VBox"]
+layout_mode = 2
+theme_type_variation = &"HeadingLabel"
 text = "НЕНІ ҮЙРЕТЕДІ"
 
-[node name="Scroll" type="ScrollContainer" parent="SkillsCard/VBox"]
+[node name="Scroll" type="ScrollContainer" parent="Body/Cards/SkillsCard/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="SkillsBox" type="VBoxContainer" parent="SkillsCard/VBox/Scroll"]
+[node name="SkillsBox" type="VBoxContainer" parent="Body/Cards/SkillsCard/VBox/Scroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
+theme_override_constants/separation = 12
 
-[node name="VoiceBtn" type="CheckButton" parent="."]
+[node name="Footer" type="HBoxContainer" parent="Body"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="VoiceBtn" type="CheckButton" parent="Body/Footer"]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 44.0
-offset_top = 630.0
-offset_right = 344.0
-offset_bottom = 686.0
-theme_override_font_sizes/font_size = 18
+layout_mode = 2
 text = "Дыбыстық сүйемелдеу"
 
-[node name="StartBtn" type="Button" parent="."]
+[node name="Spacer" type="Control" parent="Body/Footer"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="StartBtn" type="Button" parent="Body/Footer"]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 936.0
-offset_top = 626.0
-offset_right = 1236.0
-offset_bottom = 690.0
-theme_type_variation = &"PrimaryButton"
-theme_override_font_sizes/font_size = 22
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+theme_type_variation = &"ButtonLarge"
 text = "ОЙНАУ"
+script = ExtResource("5_button")
