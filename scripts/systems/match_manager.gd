@@ -9,7 +9,7 @@ signal player_caught(catcher: Player, caught: Player)
 signal player_eliminated(player: Player)
 signal quiz_triggered(catcher: Player, target: Player, item: ClothingItem)
 signal quiz_resolved(catcher: Player, target: Player, correct: bool)
-signal round_ended(winner: String)
+signal round_ended(winner: Roles.Winner)
 signal match_ended(results: Dictionary)
 
 var current_state: MatchState = MatchState.SETUP
@@ -31,7 +31,7 @@ var runners_total: int = 0
 var eliminated_count: int = 0
 var catch_cooldown: float = 0.0
 var _last_target: Player
-var _last_winner: String = "players"
+var _last_winner := Roles.Winner.RUNNERS
 
 func _ready() -> void:
 	mode = AssetRegistry.get_default_mode()
@@ -194,7 +194,7 @@ func _end_round(sokyroteke_won: bool) -> void:
 		return
 	current_state = MatchState.ROUND_END
 
-	var winner := "sokyroteke" if sokyroteke_won else "players"
+	var winner := Roles.Winner.SOKYROTEKE if sokyroteke_won else Roles.Winner.RUNNERS
 	_last_winner = winner
 	round_ended.emit(winner)
 	await get_tree().create_timer(3.0, false).timeout

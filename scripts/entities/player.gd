@@ -85,8 +85,8 @@ func revive() -> void:
 	_controller.enabled = not is_bot
 	visible = true
 	modulate = Color.WHITE
-	set_deferred("collision_layer", 5)
-	set_deferred("collision_mask", 5)
+	set_deferred("collision_layer", WorldLayers.PHYSICS_WORLD)
+	set_deferred("collision_mask", WorldLayers.PHYSICS_WORLD)
 	slow_timer = 0.0
 	_shield_timer = 0.0
 	set_water_override(false)

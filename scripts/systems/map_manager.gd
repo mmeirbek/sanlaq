@@ -34,7 +34,7 @@ const GROUND_DECOR: Array[Texture2D] = [
 ]
 
 ## Маска слоёв коллизий препятствий (слои 1 и 3) — та же, что у игроков.
-const OBSTACLE_LAYER := 5
+const OBSTACLE_LAYER := WorldLayers.PHYSICS_WORLD
 const ROCK_RADIUS := 18.0
 ## Бревно вдоль x; бревно вдоль y — тот же прямоугольник, повёрнутый на 90°.
 const LOG_SIZE := Vector2(56, 28)

@@ -50,7 +50,7 @@ func _physics_process(delta: float) -> void:
 	if _match_mgr == null or _map == null:
 		return
 	if _player.eliminated:
-		_player._controller.set_remote_input(Vector2.ZERO, false)
+		_player.get_controller().set_remote_input(Vector2.ZERO, false)
 		return
 
 	var sokyroteke := _match_mgr.sokyroteke
@@ -90,7 +90,7 @@ func _physics_process(delta: float) -> void:
 	if dir.length() > 1.0:
 		dir = dir.normalized()
 
-	_player._controller.set_remote_input(dir, sprint)
+	_player.get_controller().set_remote_input(dir, sprint)
 
 	_noise_timer -= delta
 	if _noise_timer <= 0:
@@ -205,7 +205,7 @@ func _process_sokyroteke(delta: float) -> void:
 			_last_seen_timer = MEMORY_DURATION
 			dir = to_p.normalized()
 			sprint = true
-			_player._controller.set_remote_input(_avoid_obstacles(dir), sprint)
+			_player.get_controller().set_remote_input(_avoid_obstacles(dir), sprint)
 			return
 
 	if _last_seen_timer > 0.0:
@@ -214,7 +214,7 @@ func _process_sokyroteke(delta: float) -> void:
 		var to_last := _last_seen_pos - _player.global_position
 		if to_last.length() > 16.0:
 			dir = to_last.normalized()
-			_player._controller.set_remote_input(_avoid_obstacles(dir), true)
+			_player.get_controller().set_remote_input(_avoid_obstacles(dir), true)
 			return
 
 	# Keep one patrol point until it's reached: picking a fresh random point every
@@ -226,7 +226,7 @@ func _process_sokyroteke(delta: float) -> void:
 	dir = (_patrol_target - _player.global_position).normalized()
 	# A blind beeline toward the target can wedge the seeker against a rock/yurt with
 	# nothing to route around it — this is what made it look "stuck in one place".
-	_player._controller.set_remote_input(_avoid_obstacles(dir), false)
+	_player.get_controller().set_remote_input(_avoid_obstacles(dir), false)
 
 func _avoid_obstacles(dir: Vector2) -> Vector2:
 	if dir.length() < 0.1:

@@ -18,3 +18,7 @@ const SOUND_WAVES := -23
 const SORTED := 0
 ## Вспышки поимки, брызги, пыль.
 const EFFECTS := 20
+
+## Слой физики «мир» (project.godot, layer_1): на нём игроки, стены юрт и
+## препятствия, и все они сталкиваются друг с другом. Битовая маска.
+const PHYSICS_WORLD := 1

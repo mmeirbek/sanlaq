@@ -40,8 +40,8 @@ const BRIEFINGS := ["sokyroteke", "abai_says", "togyz_qumalaq", "aq_suyek"]
 ## тумана ловца виден весь аул. Числа — секунды от старта.
 const GAME_SCENE := "res://scenes/world/game.tscn"
 const GAME_RUNS := {
-	"sokyroteke": {"game_countdown": 1.0, "game_playing": 6.0, "game_quiz": 6.5},
-	"runner": {"game_runner": 6.0},
+	Roles.Role.SOKYROTEKE: {"game_countdown": 1.0, "game_playing": 6.0, "game_quiz": 6.5},
+	Roles.Role.RUNNER: {"game_runner": 6.0},
 }
 
 var _out_dir := ""
@@ -89,7 +89,7 @@ func _shoot(name: String, scene_path: String) -> void:
 	await _unmount(instance)
 
 
-func _shoot_game(role: String, shots: Dictionary) -> void:
+func _shoot_game(role: Roles.Role, shots: Dictionary) -> void:
 	if not shots.keys().any(_wanted):
 		return
 	root.get_node("/root/SceneRouter").set_pending_game_data({"role": role})

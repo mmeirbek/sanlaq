@@ -13,7 +13,7 @@ const FRAME_SIZE := 64
 
 var _game_data: Dictionary = {}
 var _bots_count: int = 3
-var _selected_role := "sokyroteke"
+var _selected_role := Roles.Role.SOKYROTEKE
 
 @onready var _mode_label: Label = %ModeLabel
 @onready var _bots_label: Label = %BotsLabel
@@ -25,15 +25,15 @@ func _ready() -> void:
 	_game_data = SceneRouter.peek_pending_game_data()
 	var mode: String = _game_data.get("mode", "classic")
 	_bots_count = clampi(int(_game_data.get("bots", 3)), MIN_BOTS, MAX_BOTS)
-	_selected_role = "runner" if _game_data.get("role", "sokyroteke") == "runner" else "sokyroteke"
+	_selected_role = _game_data.get("role", Roles.Role.SOKYROTEKE)
 	_mode_label.text = tr("Ойын түрі: %s") % _mode_name(mode)
 	_refresh_bots_label()
 	_refresh_role_cards()
 	_build_players()
 	%MinusBtn.pressed.connect(_change_bots.bind(-1))
 	%PlusBtn.pressed.connect(_change_bots.bind(1))
-	_sokyroteke_card.pressed.connect(_set_role.bind("sokyroteke"))
-	_runner_card.pressed.connect(_set_role.bind("runner"))
+	_sokyroteke_card.pressed.connect(_set_role.bind(Roles.Role.SOKYROTEKE))
+	_runner_card.pressed.connect(_set_role.bind(Roles.Role.RUNNER))
 	%StartBtn.pressed.connect(_on_start)
 	(%Header as ScreenHeader).back_pressed.connect(SceneRouter.go_to_main_menu)
 
@@ -45,13 +45,13 @@ func _mode_name(mode: String) -> String:
 func _refresh_bots_label() -> void:
 	_bots_label.text = tr("Боттар: %d") % _bots_count
 
-func _set_role(role: String) -> void:
+func _set_role(role: Roles.Role) -> void:
 	_selected_role = role
 	_refresh_role_cards()
 
 func _refresh_role_cards() -> void:
-	_sokyroteke_card.selected = _selected_role == "sokyroteke"
-	_runner_card.selected = _selected_role == "runner"
+	_sokyroteke_card.selected = _selected_role == Roles.Role.SOKYROTEKE
+	_runner_card.selected = _selected_role == Roles.Role.RUNNER
 
 func _change_bots(delta: int) -> void:
 	_bots_count = clampi(_bots_count + delta, MIN_BOTS, MAX_BOTS)

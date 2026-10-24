@@ -32,6 +32,10 @@ Telemetry="*res://autoload/telemetry.gd"
 UiSounds="*res://autoload/ui_sounds.gd"
 PixelScale="*res://autoload/pixel_scale.gd"
 
+[layer_names]
+
+2d_physics/layer_1="world"
+
 [display]
 
 window/size/viewport_width=1280
