@@ -107,6 +107,27 @@ def aq_suyek():
     return canvas
 
 
+def tarikh_zholy():
+    """Три героя «Тарих жолы» на закатной степи под знаменем: Керей, Абылай, Қабанбай."""
+    canvas = Canvas(WIDTH, HEIGHT, c("sunset"))
+    for y in range(0, 20):
+        fill(canvas, rows({y: (0, WIDTH - 1)}), c("sunset_pink") if y < 8 else c("peach"))
+    sun = ellipse(70, 22, 9, 9)
+    fill(canvas, {(x, y) for x, y in sun if y < 26}, c("sun"))
+    _ground(canvas, 26, ("grass_light", "grass", "grass_dark"))
+    fill(canvas, rows({y: (14, 15) for y in range(4, 46)}), c("wood_dark"))
+    fill(canvas, rows({y: (16, 28 - abs(y - 11) // 2) for y in range(5, 18)}), c("burgundy_light"))
+    fill(canvas, {(21, 10), (22, 11), (21, 12), (20, 11), (21, 11)}, c("gold_light"))
+    heroes = [
+        ("base", ["shoes_saptama_etik_01", "pants_shalbar_01", "torso_shapan_01", "head_borik_01"]),
+        ("base_03", ["shoes_saptama_etik_01", "pants_shalbar_decorated_01", "torso_kamzol_01", "head_borik_01"]),
+        ("base", ["shoes_saptama_etik_01", "pants_shalbar_decorated_01", "torso_sauyt_01", "head_dulyga_01"]),
+    ]
+    for i, (body, items) in enumerate(heroes):
+        canvas.image.alpha_composite(_character(body, items, "down", 0), (26 + i * 20, 22))
+    return canvas
+
+
 def _blindfold(canvas, x, y):
     """Красная повязка на глазах персонажа, нарисованного в клетке с углом (x, y)."""
     fill(canvas, rows({y + 10: (x + 11, x + 20), y + 11: (x + 11, x + 20)}), c("red_light"))
@@ -135,6 +156,7 @@ ART = {
     "abai_says": abai_says,
     "togyz_qumalaq": togyz_qumalaq,
     "aq_suyek": aq_suyek,
+    "tarikh_zholy": tarikh_zholy,
 }
 
 

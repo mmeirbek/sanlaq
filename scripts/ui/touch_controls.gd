@@ -4,8 +4,8 @@ extends CanvasLayer
 ## рывок у бегуна (держать), «үн тыңдау» у ловца (нажать). Есть только на
 ## сенсорных экранах. Раскладка не заходит в вырезы и скругления экрана.
 
-## Ловец нажал кнопку способности.
-signal echo_pressed
+## Кнопку действия нажали (не в режиме рывка): «үн тыңдау» ловца, «сөйлесу» в сюжете.
+signal action_tapped
 
 const THEME := preload("res://resources/ui/ui_theme.tres")
 const BASE := preload("res://assets/ui/hud/joystick_base.png")
@@ -76,6 +76,12 @@ func set_sprint_mode(sprint: bool) -> void:
 	if _action_icon:
 		_action_icon.texture = SPRINT_ICON if sprint else ECHO_ICON
 
+## Кнопка-нажатие со своей иконкой (сюжет: «сөйлесу»).
+func set_tap_action(icon: Texture2D) -> void:
+	_sprint_mode = false
+	if _action_icon:
+		_action_icon.texture = icon
+
 func _layout_controls() -> void:
 	var safe := _safe_rect()
 	_joy_base.size = BASE.get_size()
@@ -101,7 +107,7 @@ func _on_action_input(event: InputEvent) -> void:
 	_show_action_pressed(event.pressed)
 	_sprint_held = event.pressed and _sprint_mode
 	if event.pressed and not _sprint_mode:
-		echo_pressed.emit()
+		action_tapped.emit()
 
 ## Рамка кнопки из темы: нажатая или обычная.
 func _show_action_pressed(pressed: bool) -> void:

@@ -20,6 +20,7 @@ import food_icons  # noqa: E402
 import hud_icons  # noqa: E402
 import item_icons  # noqa: E402
 import mode_art  # noqa: E402
+import story_art  # noqa: E402
 import togyz_art  # noqa: E402
 import ui_frames  # noqa: E402
 import world_art  # noqa: E402
@@ -31,7 +32,8 @@ def main():
     for path in (ui_frames.build() + characters.build() + item_icons.build() + mode_art.build()
                  + world_art.build() + hud_icons.build()
                  + food_icons.build() + togyz_art.build() + aq_suyek_art.build()
-                 + briefing_art.build() + app_icon.build()):
+                 + briefing_art.build() + app_icon.build()
+                 + story_art.build()):
         print("записан", os.path.relpath(path, ROOT))
 
 

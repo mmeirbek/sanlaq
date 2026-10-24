@@ -11,6 +11,7 @@ func _init() -> void:
 	_check_keys("move_left", [KEY_A, KEY_LEFT], [])
 	_check_keys("move_right", [KEY_D, KEY_RIGHT], [])
 	_check_keys("sprint", [KEY_SHIFT], [])
+	_check_keys("interact", [KEY_E], [])
 	finish("INPUT MAP")
 
 

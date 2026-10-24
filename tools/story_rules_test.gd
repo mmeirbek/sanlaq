@@ -3,6 +3,7 @@ extends "res://tools/test_case.gd"
 ## шаги по очереди, бірлік и выборы, финал и союзники, XP и статьи, сохранение.
 
 const CHAPTERS := ["kerey", "abylai", "kabanbay"]
+const KEREY := preload("res://data/story/chapter_kerey.tres")
 
 
 func _init() -> void:
@@ -77,7 +78,7 @@ func _check_walkthrough(chapter: StoryChapter) -> void:
 
 ## Выбор в диалоге: бірлік меняет финал и союзников; не выше 100 и не ниже 0.
 func _check_choices() -> void:
-	var kerey := load("res://data/story/chapter_kerey.tres") as StoryChapter
+	var kerey := KEREY
 	var bold := StoryState.new(kerey, {})
 	var listen := StoryState.new(kerey, {})
 	var council := bold.dialogue("DIA_K_BI")
@@ -103,7 +104,7 @@ func _check_choices() -> void:
 
 ## Сохранение переживает JSON (числа становятся float), статьи не открываются дважды.
 func _check_save_round_trip() -> void:
-	var kerey := load("res://data/story/chapter_kerey.tres") as StoryChapter
+	var kerey := KEREY
 	var save := {}
 	var state := StoryState.new(kerey, save)
 	state.complete_beat()

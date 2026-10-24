@@ -13,6 +13,8 @@ const SCENE_MODE_BRIEFING := "res://scenes/ui/mode_briefing.tscn"
 const SCENE_ABAI_SAYS := "res://scenes/ui/abai_says.tscn"
 const SCENE_TOGYZ_QUMALAQ := "res://scenes/ui/togyz_qumalaq.tscn"
 const SCENE_AQ_SUYEK := "res://scenes/ui/aq_suyek.tscn"
+const SCENE_HERO_SELECT := "res://scenes/story/hero_select.tscn"
+const SCENE_STORY_WORLD := "res://scenes/story/story_world.tscn"
 
 ## Затемнение между экранами, как в atilla: уход и проявление, секунды.
 const FADE_OUT := 0.35
@@ -22,6 +24,8 @@ var _pending_game_data: Dictionary = {}
 var _pending_results: Dictionary = {}
 ## Какой режим объясняет экран брифинга — id ресурса ModeBriefing.
 var _pending_briefing: String = ""
+## Итог мини-игры, сыгранной в другой сцене (соқыр теке), для мира сюжета.
+var _pending_story_result: Dictionary = {}
 
 ## Переходы со шторкой. В автотестах и CI (headless) выключены — переход
 ## мгновенный; тест шторки включает их сам.
@@ -102,6 +106,19 @@ func go_to_togyz_qumalaq() -> void:
 
 func go_to_aq_suyek() -> void:
 	_change_scene(SCENE_AQ_SUYEK)
+
+func go_to_hero_select() -> void:
+	_change_scene(SCENE_HERO_SELECT)
+
+## Мир «Тарих жолы»; result — итог мини-игры, из которой вернулись.
+func go_to_story_world(result: Dictionary = {}) -> void:
+	_pending_story_result = result
+	_change_scene(SCENE_STORY_WORLD)
+
+func take_story_result() -> Dictionary:
+	var result := _pending_story_result
+	_pending_story_result = {}
+	return result
 
 ## Как set_pending_briefing: для тестов и скриншотов, которые поднимают сцену
 ## игры сами.
