@@ -203,8 +203,8 @@ func _test_shield_wears_off_fully() -> void:
 	runner.apply_shield(0.2)
 	await create_timer(0.5).timeout
 	check(not runner.has_shield(), "щит закончился")
-	check(is_equal_approx(runner.modulate.a, 1.0),
-		"после щита бегун снова непрозрачный, альфа %.2f" % runner.modulate.a)
+	check(is_equal_approx(runner.modulate.a, 1.0) and runner.get_node("CharacterVisual").visible,
+		"после щита бегун снова виден целиком")
 	await _stop(game)
 
 

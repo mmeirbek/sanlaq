@@ -11,6 +11,12 @@ signal runner_sprint_changed(time_left: float, uses_left: int)
 ## Позиция игрока — точка на земле под ногами: по ней работают коллизии и
 ## сортировка по глубине. Фигура нарисована выше, её центр — здесь.
 const BODY_CENTER := Vector2(0, -24)
+## Улитка над головой замедленного — та же иконка, что в HUD.
+const SLOW_ICON := preload("res://assets/ui/hud/slow.png")
+const SLOW_MARK_POSITION := Vector2(0, -72)
+## Мигание целыми кадрами вместо полупрозрачности: пиксель-арт не бывает
+## прозрачным наполовину. Раз в столько секунд фигура пропадает и появляется.
+const BLINK_STEP := 0.1
 const RUNNER_SPRINT_DURATION := 3.0
 const RUNNER_SPRINT_USES := 1
 
@@ -24,6 +30,7 @@ var _in_water: bool = false
 var _mode: GameModeDefinition
 var _controller: PlayerController
 var _visual: CharacterVisual
+var _slow_mark: Sprite2D
 var _name_label: Label
 var _shield_timer: float = 0.0
 var _shadow: Sprite2D
@@ -48,6 +55,11 @@ func _ready() -> void:
 	_visual.set_rest_position(BODY_CENTER)
 	_name_label = $NameLabel
 	_shadow = $Shadow
+	_slow_mark = Sprite2D.new()
+	_slow_mark.texture = SLOW_ICON
+	_slow_mark.position = SLOW_MARK_POSITION
+	_slow_mark.visible = false
+	add_child(_slow_mark)
 	_wade = $Wade
 	# Тень лежит на земле под всеми стоящими объектами (см. WorldLayers).
 	_shadow.z_as_relative = false
@@ -84,7 +96,8 @@ func revive() -> void:
 	frozen = false
 	_controller.enabled = not is_bot
 	visible = true
-	modulate = Color.WHITE
+	_visual.visible = true
+	_slow_mark.visible = false
 	set_deferred("collision_layer", WorldLayers.PHYSICS_WORLD)
 	set_deferred("collision_mask", WorldLayers.PHYSICS_WORLD)
 	slow_timer = 0.0
@@ -104,11 +117,13 @@ func eliminate() -> void:
 	velocity = Vector2.ZERO
 	set_deferred("collision_layer", 0)
 	set_deferred("collision_mask", 0)
+	_slow_mark.visible = false
+	# Пойманный мигает и исчезает; вспышку поимки рисует игра (PixelBurst).
 	var tw := create_tween()
-	tw.tween_property(self, "modulate", Color(1, 0.2, 0.2, 1), 0.25)
-	tw.parallel().tween_property(self, "scale", Vector2(1.25, 1.25), 0.25)
-	tw.tween_property(self, "modulate:a", 0.0, 0.4)
-	tw.tween_callback(func(): visible = false)
+	for i in 6:
+		tw.tween_callback(func() -> void: _visual.visible = i % 2 == 1)
+		tw.tween_interval(BLINK_STEP)
+	tw.tween_callback(func() -> void: visible = false)
 
 func set_frozen(f: bool) -> void:
 	frozen = f
@@ -118,7 +133,7 @@ func set_frozen(f: bool) -> void:
 func apply_slow(duration: float) -> void:
 	var adjusted_duration := duration * _clothing_product("slow_duration_mult")
 	slow_timer = maxf(slow_timer, adjusted_duration)
-	modulate = Color(0.5, 0.6, 1.0, 1.0)
+	_slow_mark.visible = slow_timer > 0
 
 func is_slowed() -> bool:
 	return slow_timer > 0
@@ -145,14 +160,11 @@ func _physics_process(delta: float) -> void:
 	if slow_timer > 0:
 		slow_timer -= delta
 		if slow_timer <= 0:
-			modulate = Color.WHITE
+			_slow_mark.visible = false
 
 	if _shield_timer > 0:
 		_shield_timer -= delta
-		if _shield_timer > 0:
-			modulate.a = 0.4 + sin(_shield_timer * 10.0) * 0.2
-		else:
-			modulate.a = 1.0
+		_visual.visible = _shield_timer <= 0 or int(_shield_timer / BLINK_STEP) % 2 == 0
 
 	var direction := _controller.get_direction()
 	var sprint_requested := _controller.is_sprinting()
