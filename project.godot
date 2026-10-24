@@ -15,7 +15,7 @@ config/description="САҢЛАҚ — казахская игра в ловца �
 config/version="0.2.0"
 run/main_scene="res://scenes/ui/main_menu.tscn"
 config/features=PackedStringArray("4.7")
-config/icon="res://assets/ui/sanlaq_logo.png"
+config/icon="res://assets/sprites/ui/app_icon.png"
 
 [audio]
 
@@ -45,7 +45,7 @@ enabled=PackedStringArray()
 
 [gui]
 
-theme/custom="res://resources/ui/sanlaq_theme.tres"
+theme/custom="res://resources/ui/ui_theme.tres"
 
 [importer_defaults]
 

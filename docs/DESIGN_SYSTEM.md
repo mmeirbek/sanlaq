@@ -21,9 +21,7 @@
 
 ## Как подключить на экране
 
-Пока идёт этап 3, новая тема ставится на корневой узел экрана:
-`theme = res://resources/ui/ui_theme.tres`. Когда все экраны переедут, она станет темой
-проекта, а старая `sanlaq_theme.tres` будет удалена.
+`resources/ui/ui_theme.tres` — тема проекта (`gui/theme/custom`), её получают все экраны.
 
 Вид задаётся через `theme_type_variation`, без ручных `theme_override_*`:
 
