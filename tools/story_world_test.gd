@@ -13,6 +13,7 @@ func _init() -> void:
 	await process_frame
 	for hero in ["ROLE_KEREY", "ROLE_ABYLAI", "ROLE_KABANBAY"]:
 		await _walk_chapter(hero)
+	await _choices_on_screen()
 	await _build_in_order()
 	await _race_baige()
 	finish("STORY WORLD")
@@ -93,6 +94,32 @@ func _walk_chapter(hero: String) -> void:
 	await create_timer(1.6).timeout
 	var finale: Control = world.get_node("%Overlay").get_child(world.get_node("%Overlay").get_child_count() - 1)
 	check(finale.get("state") != null, "%s: показан финал главы" % hero)
+	await unmount(world)
+
+
+## Выбор в разговоре виден целиком: окно растёт вверх, кнопки не уходят за экран.
+func _choices_on_screen() -> void:
+	autoload("SaveManager").story = {"hero": "ROLE_KEREY"}
+	var world := await mount(WORLD)
+	if world == null:
+		return
+	for card in world.get_node("%Overlay").get_children():
+		card.queue_free()
+	var dialogue = world.get_node("%Dialogue")
+	world.speak(world.state.dialogue("DIA_K_BI"), Callable())
+	for i in 10:
+		dialogue._typed = 9999.0
+		await process_frame
+		if dialogue._choices_box.get_child_count() > 0:
+			break
+		dialogue.advance()
+	await process_frame
+	await process_frame
+	var screen: Rect2 = dialogue.get_viewport_rect()
+	var buttons: Array = dialogue._choices_box.get_children()
+	check(buttons.size() == 2, "в совете с би два варианта ответа")
+	for button: Control in buttons:
+		check(screen.encloses(button.get_global_rect()), "вариант «%s» целиком на экране" % button.text)
 	await unmount(world)
 
 

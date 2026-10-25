@@ -3,7 +3,8 @@ extends Control
 ## Окно разговора внизу экрана: портрет говорящего с язычком имени, текст
 ## печатается по буквам с «блипом». E, пробел, Enter или клик — дальше (или
 ## допечатать строку сразу). После последней строки — выбор из двух вариантов,
-## клавиши 1 и 2.
+## клавиши 1 и 2. Окно растёт вверх по содержимому: длинная реплика и оба
+## варианта всегда на экране.
 
 signal finished
 signal chose(choice: StoryChoice)
@@ -12,6 +13,8 @@ const CHARS_PER_SECOND := 45.0
 const PORTRAIT_SCALE := 3
 const PORTRAIT_SIZE := Vector2(144, 144)
 const BLIP_EVERY := 3
+## Высота окна без выбора — чтобы оно не прыгало от строки к строке.
+const MIN_HEIGHT := 200.0
 
 var _dialogue: StoryDialogue
 var _line := 0
@@ -22,6 +25,8 @@ var _name_label: Label
 var _text: Label
 var _hint: Label
 var _choices_box: VBoxContainer
+var _choices_prompt: Label
+var _panel: PanelContainer
 var _blip: AudioStreamPlayer
 
 
@@ -29,18 +34,22 @@ func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	visible = false
-	var panel := PanelContainer.new()
-	panel.mouse_filter = Control.MOUSE_FILTER_STOP
-	panel.gui_input.connect(_on_panel_input)
-	add_child(panel)
-	panel.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-	panel.offset_left = UiTokens.SPACE_L
-	panel.offset_right = -UiTokens.SPACE_L
-	panel.offset_top = -232
-	panel.offset_bottom = -UiTokens.SPACE_S
+	_panel = PanelContainer.new()
+	_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	_panel.gui_input.connect(_on_panel_input)
+	add_child(_panel)
+	# Низ окна прибит к низу экрана, верх уходит вверх, сколько нужно тексту и
+	# вариантам ответа (раньше высота была постоянной и выбор уезжал за экран).
+	_panel.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	_panel.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_panel.custom_minimum_size.y = MIN_HEIGHT
+	_panel.offset_left = UiTokens.SPACE_L
+	_panel.offset_right = -UiTokens.SPACE_L
+	_panel.offset_top = -UiTokens.SPACE_S
+	_panel.offset_bottom = -UiTokens.SPACE_S
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", UiTokens.SPACE_M)
-	panel.add_child(row)
+	_panel.add_child(row)
 
 	var frame := PanelContainer.new()
 	frame.theme_type_variation = "InsetPanel"
@@ -61,10 +70,16 @@ func _ready() -> void:
 	_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_text.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(_text)
+	_choices_prompt = Label.new()
+	_choices_prompt.theme_type_variation = "WarningLabel"
+	_choices_prompt.text = tr("ТАҢДА · 1 НЕМЕСЕ 2")
+	_choices_prompt.visible = false
+	column.add_child(_choices_prompt)
 	_choices_box = VBoxContainer.new()
+	_choices_box.add_theme_constant_override("separation", UiTokens.SPACE_S)
 	column.add_child(_choices_box)
 	_hint = Label.new()
-	_hint.theme_type_variation = "CaptionLabel"
+	_hint.theme_type_variation = "WarningLabel"
 	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_hint.text = tr("E · ӘРІ ҚАРАЙ")
 	column.add_child(_hint)
@@ -94,8 +109,7 @@ func is_open() -> bool:
 
 
 func _show_line() -> void:
-	for child in _choices_box.get_children():
-		child.queue_free()
+	_clear_choices()
 	_text.text = tr(_dialogue.lines[_line]) if _line < _dialogue.lines.size() else ""
 	_text.visible_characters = 0
 	_typed = 0.0
@@ -125,6 +139,7 @@ func _line_done() -> void:
 			button.text = "%d · %s" % [i + 1, tr(_dialogue.choices[i].label)]
 			button.pressed.connect(_choose.bind(i))
 			_choices_box.add_child(button)
+		_choices_prompt.visible = true
 		return
 	_hint.visible = true
 
@@ -148,8 +163,17 @@ func advance() -> void:
 func _choose(index: int) -> void:
 	if index >= _dialogue.choices.size():
 		return
+	_clear_choices()
 	visible = false
 	chose.emit(_dialogue.choices[index])
+
+
+## Убрать кнопки сразу (а не в конце кадра), чтобы окно тут же стало ниже.
+func _clear_choices() -> void:
+	for child in _choices_box.get_children():
+		_choices_box.remove_child(child)
+		child.queue_free()
+	_choices_prompt.visible = false
 
 
 func _unhandled_input(event: InputEvent) -> void:
