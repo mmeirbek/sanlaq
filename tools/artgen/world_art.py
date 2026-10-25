@@ -308,10 +308,54 @@ def arena():
     return canvas
 
 
+def yurt_top():
+    """Юрта сверху для Соқыртеке, 104×108 (208×216 мира): круглая войлочная крыша
+    с уықами от шаңырақа, орнаментальный край, дверь снизу. Круг крыши — по
+    стенам yurt.tscn (радиус 90 + 11 px мира); низ картинки — край двери."""
+    w, h = 104, 108
+    canvas = Canvas(w, h)
+    cx, cy, r = 52, 51, 51
+    roof = ellipse(cx, cy, r, r)
+    # Войлок купола: блик сверху слева, тень снизу справа.
+    for x, y in roof:
+        d = math.hypot(x - (cx - 16), y - (cy - 16))
+        canvas.put(x, y, c("parchment") if d < 22 else c("felt") if d < 52 else c("felt_dark"))
+    # Уықи — жерди купола от шаңырақа к краю.
+    for k in range(16):
+        a = math.tau * k / 16
+        for t in range(13, 45):
+            x, y = int(round(cx + math.cos(a) * t)), int(round(cy + math.sin(a) * t))
+            if (x, y) in roof and t % 2 == 0:
+                canvas.put(x, y, c("cloth_shadow"))
+    # Басқұр по краю: бордовая лента с золотыми ромбами.
+    band = roof - ellipse(cx, cy, r - 5, r - 5)
+    fill(canvas, band, c("burgundy"))
+    for k in range(24):
+        a = math.tau * k / 24
+        x, y = int(round(cx + math.cos(a) * (r - 2.5))), int(round(cy + math.sin(a) * (r - 2.5)))
+        fill(canvas, {(x, y), (x + 1, y), (x, y + 1), (x - 1, y), (x, y - 1)}, c("gold"))
+    # Шаңырақ: деревянный венец, дымовое отверстие и перекрестье.
+    paint(canvas, ellipse(cx, cy, 11, 11), ramp("wood_light", "wood", "wood_dark"))
+    fill(canvas, ellipse(cx, cy, 8, 8), c("ink"))
+    for d in range(-8, 8):
+        fill(canvas, {(cx + d, cy - 1), (cx + d, cy), (cx - 1, cy + d), (cx, cy + d)}, c("wood"))
+    # Дверь снизу: красная, в деревянной раме, с золотым ромбом.
+    # Проём в стенах yurt.tscn широкий — дверь с навесом по его ширине.
+    door = rows({y: (cx - 14, cx + 13) for y in range(h - 12, h - 4)})
+    paint(canvas, door, ramp("rust_light", "rust", "rust_dark"))
+    fill(canvas, {(x, y) for x, y in door if x in (cx - 14, cx - 1, cx, cx + 13)}, c("wood_dark"))
+    for dx in (-8, 7):
+        fill(canvas, {(cx + dx, h - 9), (cx + dx + 1, h - 9), (cx + dx, h - 8), (cx + dx + 1, h - 8)}, c("gold"))
+    outline(canvas)
+    ground_shadow(canvas, ellipse(cx + 3, cy + 4, r + 1, r))
+    return canvas
+
+
 def drawings():
     art = {"grass": grass_tile(), "grass_wild": wild_grass_tile(), "fence_h": fence_horizontal(),
            "fence_v": fence_vertical(), "rock_0": rock(0), "rock_1": rock(1), "log_h": log(False),
-           "log_v": log(True), "bush": bush(), "tuft": tuft(), "rug": rug(), "yurt": yurt(), "arena": arena(),
+           "log_v": log(True), "bush": bush(), "tuft": tuft(), "rug": rug(), "yurt": yurt(), "yurt_top": yurt_top(),
+           "arena": arena(),
            "shadow": shadow(), "wade": wade()}
     for kind in range(3):
         art[f"flowers_{kind}"] = flowers(kind)

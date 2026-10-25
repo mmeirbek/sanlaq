@@ -68,6 +68,9 @@ game.tscn
   Стоящее сортируется по y, плоское и эффекты — на слоях `WorldLayers`.
   Физика — один слой «world» (`WorldLayers.PHYSICS_WORLD`).
 - Обзор ловца — `vision.gdshader`; кого видно, решает `game.gd` по тому же кругу.
+- Юрта (`yurt.tscn`) — вид сверху: крыша сортируется по своему нижнему краю и
+  закрывает всех внутри. Крыша, под которой стоит сам игрок, становится сквозной
+  шахматкой (`see_through.gdshader`, `MapManager.update_roofs`).
 - Свойства одежды — поля `ClothingItem` (`slow_duration_mult`, `visibility_mult`,
   `dry_speed_mult`), игрок их перемножает.
 

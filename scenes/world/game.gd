@@ -459,6 +459,7 @@ func _process(_delta: float) -> void:
 
 	if match_mgr and match_mgr.human_player:
 		var human := match_mgr.human_player
+		map.update_roofs(human.global_position if human.is_alive() else null)
 		if human.is_alive():
 			var in_water := map.is_water(human.global_position)
 			var in_yurt := map.is_inside_yurt(human.global_position)

@@ -41,8 +41,10 @@ const LOG_SIZE := Vector2(56, 28)
 ## Куст рисуется так, чтобы он стоял на своей точке, а не висел над ней.
 const BUSH_OFFSET := Vector2(0, -16)
 const YURT_BLOCK_RADIUS := 105.0
-## Ближе этого к центру юрты игрок под крышей и спрятан.
+## Ближе этого к центру юрты ловец не видит бегуна даже в своём круге обзора.
 const YURT_HIDE_RADIUS := 60.0
+## Под крышей — всё внутри кольца стен yurt.tscn (90 − 11 px).
+const YURT_ROOF_RADIUS := 79.0
 ## Ближе этого к камню или бревну никто не появляется.
 const ROCK_CLEAR := 34.0
 const ARENA_CENTER := Vector2.ZERO
@@ -99,6 +101,8 @@ var bounds: Rect2:
 		return Rect2(Vector2(-900, -550), Vector2(1800, 1100))
 
 var yurt_positions: Array[Vector2] = []
+## Крыши юрт (их ShaderMaterial — см. see_through.gdshader), по порядку yurt_positions.
+var _roofs: Array[ShaderMaterial] = []
 var obstacle_positions: Array[Vector2] = []
 var water_zones: Array[Dictionary] = []
 var _spawn_cursor := 0
@@ -142,6 +146,7 @@ func _build_arena() -> void:
 
 func _build_yurts() -> void:
 	yurt_positions.clear()
+	_roofs.clear()
 	for spot in YURT_SPOTS:
 		var yurt := YURT_SCENE.instantiate() as Node2D
 		yurt.position = spot
@@ -149,6 +154,7 @@ func _build_yurts() -> void:
 		(yurt.get_node("Body") as Node2D).position += _snap(spot) - spot
 		add_child(yurt)
 		yurt_positions.append(spot)
+		_roofs.append((yurt.get_node("Body") as CanvasItem).material as ShaderMaterial)
 		_register_occupied(spot, YURT_BLOCK_RADIUS)
 
 func _build_water() -> void:
@@ -335,6 +341,19 @@ func is_water(pos: Vector2) -> bool:
 		if pos.distance_to(z["pos"]) < z["radius"]:
 			return true
 	return false
+
+## Юрта сверху закрывает тех, кто внутри. Крыша, под которой стоит сам игрок,
+## становится сквозной (как куст в Brawl Stars) — остальные остаются целыми.
+## viewer — позиция игрока на земле или null, если смотреть не за кем.
+func update_roofs(viewer: Variant) -> void:
+	for i in _roofs.size():
+		var open: bool = viewer != null and (viewer as Vector2).distance_to(yurt_positions[i]) < YURT_ROOF_RADIUS
+		if is_roof_open(i) != open:
+			_roofs[i].set_shader_parameter("open", open)
+
+func is_roof_open(index: int) -> bool:
+	# Пока параметр не задан, шейдер отдаёт null — это «закрыто».
+	return _roofs[index].get_shader_parameter("open") == true
 
 func is_inside_yurt(pos: Vector2) -> bool:
 	for yurt in yurt_positions:

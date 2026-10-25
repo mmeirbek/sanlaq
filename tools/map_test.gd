@@ -3,7 +3,8 @@ extends "res://tools/test_case.gd"
 ## - механика как до редизайна: 7 юрт, 9 прудов радиусом 90–130, 12 камней и
 ##   5 брёвен с коллизиями ровно заданных размеров, без поворота;
 ## - украшения (ковры, цветы) не ложатся на воду, юрты и препятствия;
-## - пиксель-арт мира стоит на сетке пикселя арта.
+## - пиксель-арт мира стоит на сетке пикселя арта;
+## - юрта сверху: крыша сквозная только над тем, кто стоит внутри.
 ## На каждую раскладку — по одной проверке на правило; в сообщении — что нарушено.
 
 const MAP_SCENE := "res://scenes/world/map_steppe_village.tscn"
@@ -19,7 +20,25 @@ func _init() -> void:
 		_check_decor(map, layout)
 		_check_pixel_grid(map, layout)
 		await unmount(map)
+	await _check_roofs()
 	finish("MAP")
+
+
+## Как куст в Brawl Stars: под своей крышей игрок виден, остальные крыши целые.
+func _check_roofs() -> void:
+	var map: MapManager = await mount(MAP_SCENE)
+	var count := map.yurt_positions.size()
+	var opened := func() -> Array:
+		return range(count).filter(func(i: int) -> bool: return map.is_roof_open(i))
+	check(opened.call().is_empty(), "крыши юрт целые, пока внутри никого")
+	map.update_roofs(map.yurt_positions[2] + Vector2(20, 30))
+	check(opened.call() == [2], "игрок в юрте 3 — сквозная только её крыша (%s)" % [opened.call()])
+	map.update_roofs(map.yurt_positions[2] + Vector2(0, MapManager.YURT_ROOF_RADIUS + 20))
+	check(opened.call().is_empty(), "вышел из юрты — крыша снова целая")
+	map.update_roofs(map.yurt_positions[2])
+	map.update_roofs(null)
+	check(opened.call().is_empty(), "игрок выбыл — все крыши целые")
+	await unmount(map)
 
 
 func _check_mechanics(map: MapManager, layout: int) -> void:

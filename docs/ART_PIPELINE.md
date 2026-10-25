@@ -28,7 +28,7 @@ tools/run_tests.sh                                              # style_test п�
 | `item_icons.py` | иконки 13 вещей 32×32 | `assets/sprites/items/` |
 | `food_icons.py` | 8 блюд для «Абай айтады» | `assets/sprites/food/` |
 | `mode_art.py` | картинки режимов и ролей для меню и лобби | `assets/sprites/modes/` |
-| `world_art.py` | мир Соқыртеке: трава, юрта, камни, брёвна, арена, забор | `assets/sprites/world/` |
+| `world_art.py` | мир Соқыртеке: трава, юрта сверху (`yurt_top`; `yurt` сбоку — для «Тарих жолы»), камни, брёвна, арена, забор | `assets/sprites/world/` |
 | `story_art.py` | Тарих жолы: реквизит аула и степи, стадии юрты, Түркістан (стены, башни, дома, мавзолей, ряды), конь и түйе, маркеры, площадка асыка, арена поединка, карта маршрутов, иконки статей | `assets/sprites/story/` |
 | `togyz_art.py` | лунка, кольца, тұздық, камешек, қазан | `assets/sprites/togyz/` |
 | `aq_suyek_art.py` | ночная клетка, следы, кольцо шага, сүйек, отау, фигурки | `assets/sprites/aq_suyek/` |
