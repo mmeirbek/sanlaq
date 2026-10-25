@@ -27,8 +27,14 @@ func _ready() -> void:
 	# отстаёт от ловца. В _process узел мог бы обогнать камеру.
 	RenderingServer.frame_pre_draw.connect(_update_circle)
 
+## Сигнал отрисовки глобальный: при смене сцены он приходит и тогда, когда узел
+## уже вынут из дерева, но ещё не удалён, — у него нет вьюпорта. Отписываемся.
+func _exit_tree() -> void:
+	if RenderingServer.frame_pre_draw.is_connected(_update_circle):
+		RenderingServer.frame_pre_draw.disconnect(_update_circle)
+
 func _update_circle() -> void:
-	if not _active:
+	if not _active or not is_inside_tree():
 		return
 	# Мир -> координаты, в которых лежит _rect: камера, её зум и тряска.
 	var world_to_screen := _rect.get_viewport().get_canvas_transform()

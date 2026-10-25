@@ -22,6 +22,7 @@ func _init() -> void:
 	await _test_quiz_answer_keys()
 	await _test_bot_seeker_keeps_its_course()
 	await _test_shield_wears_off_fully()
+	await _test_vision_survives_scene_change()
 	finish("MECHANICS")
 
 
@@ -240,3 +241,19 @@ func _stop(game: Node) -> void:
 	if current_scene:
 		current_scene.queue_free()
 		await process_frame
+
+
+## Конец матча уводит на экран итогов: игра вынута из дерева, но ещё не удалена,
+## а сигнал отрисовки ещё приходит. Туман ловца не должен падать без вьюпорта
+## (в headless кадры не рисуются, поэтому сигнал имитируем вызовом).
+func _test_vision_survives_scene_change() -> void:
+	var game := await _start_round()
+	var vision = game.vision
+	vision.set_active(true)
+	var parent: Node = game.get_parent()
+	parent.remove_child(game)
+	check(not RenderingServer.frame_pre_draw.is_connected(vision._update_circle),
+		"туман отписан от отрисовки, когда игра ушла из дерева")
+	vision._update_circle()
+	parent.add_child(game)
+	await unmount(game)
