@@ -1,4 +1,10 @@
 extends Control
+## Настройки: звук (музыка и эффекты отдельно), путь игрока (ранг и статистика)
+## и игровые опции с языком.
+
+## Выключенный канал звука: ползунок затемняется, но остаётся непрозрачным —
+## пиксель-арт полупрозрачным не бывает.
+const DIMMED := Color(0.55, 0.55, 0.55)
 
 @onready var _music_toggle: CheckButton = %MusicToggle
 @onready var _music_slider: HSlider = %MusicSlider
@@ -10,10 +16,10 @@ extends Control
 @onready var _names_toggle: CheckButton = %NamesToggle
 @onready var _rank: Label = %Rank
 @onready var _stats: Label = %Stats
-@onready var _back_btn: Button = %BackBtn
 @onready var _lang_btn: Button = %LanguageBtn
 
 func _ready() -> void:
+	%Version.text = "v%s" % ProjectSettings.get_setting("application/config/version")
 	_music_toggle.button_pressed = GameSettings.audio_music_enabled
 	_music_slider.value = GameSettings.audio_music_volume * 100.0
 	_sfx_toggle.button_pressed = GameSettings.audio_sfx_enabled
@@ -26,7 +32,7 @@ func _ready() -> void:
 	_sfx_slider.value_changed.connect(_on_sfx_volume_changed)
 	_shake_toggle.toggled.connect(GameSettings.set_screen_shake_enabled)
 	_names_toggle.toggled.connect(GameSettings.set_show_player_names)
-	_back_btn.pressed.connect(func() -> void: SceneRouter.go_to_main_menu())
+	(%Header as ScreenHeader).back_pressed.connect(SceneRouter.go_to_main_menu)
 	_lang_btn.pressed.connect(_on_language_pressed)
 	_refresh()
 
@@ -53,8 +59,8 @@ func _on_sfx_volume_changed(value: float) -> void:
 func _refresh() -> void:
 	# Ползунок выключенного канала гасим: полная золотая заливка под выключенным
 	# тумблером читается как «звук есть».
-	_set_slider_dimmed(_music_slider, _music_value, not GameSettings.audio_music_enabled)
-	_set_slider_dimmed(_sfx_slider, _sfx_value, not GameSettings.audio_sfx_enabled)
+	_set_dimmed(_music_slider, _music_value, not GameSettings.audio_music_enabled)
+	_set_dimmed(_sfx_slider, _sfx_value, not GameSettings.audio_sfx_enabled)
 	_lang_btn.text = "ENG / АҒЫЛ" if GameSettings.current_language == GameSettings.Language.KZ else "ҚАЗ / KAZ"
 	_music_value.text = "%d%%" % roundi(GameSettings.audio_music_volume * 100.0)
 	_sfx_value.text = "%d%%" % roundi(GameSettings.audio_sfx_volume * 100.0)
@@ -66,7 +72,7 @@ func _refresh() -> void:
 		RankSystem.progress_text(wins),
 	]
 
-func _set_slider_dimmed(slider: HSlider, value_label: Label, dimmed: bool) -> void:
-	var alpha := 0.4 if dimmed else 1.0
-	slider.modulate = Color(1, 1, 1, alpha)
-	value_label.modulate = Color(1, 1, 1, alpha)
+func _set_dimmed(slider: HSlider, value_label: Label, dimmed: bool) -> void:
+	var tint := DIMMED if dimmed else Color.WHITE
+	slider.modulate = tint
+	value_label.modulate = tint

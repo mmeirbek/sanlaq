@@ -15,7 +15,38 @@ func _init() -> void:
 	await _test_countdown()
 	await _test_banner()
 	await _test_confirm_dialog()
+	await _test_slot_tabs()
+	await _test_clothing_card()
+	_test_backdrop_scaling()
 	finish("COMPONENTS")
+
+
+func _test_slot_tabs() -> void:
+	var tabs := SlotTabs.new()
+	await _add(tabs)
+	var chosen: Array = []
+	tabs.slot_selected.connect(func(slot: ClothingItem.SlotType) -> void: chosen.append(slot))
+	check(tabs.get_child_count() == ClothingItem.SlotType.size(), "вкладка на каждый слот одежды")
+	(tabs.get_child(ClothingItem.SlotType.SHOES) as SelectableCard).pressed.emit()
+	check(chosen == [ClothingItem.SlotType.SHOES], "нажатие вкладки сообщает её слот")
+	var selected := tabs.get_children().filter(func(card: Node) -> bool: return (card as SelectableCard).selected)
+	check(selected.size() == 1 and selected[0] == tabs.get_child(ClothingItem.SlotType.SHOES),
+		"выбрана ровно одна вкладка — нажатая")
+	tabs.hint = "подсказка"
+	check((tabs.get_child(0) as Control).tooltip_text == "подсказка", "подсказка доходит до готовых вкладок")
+	await unmount(tabs)
+
+
+func _test_clothing_card() -> void:
+	var item := load("res://data/clothing/head_borik_01.tres") as ClothingItem
+	var card := ClothingCard.create(item, "Бөрік")
+	await _add(card)
+	var icon := card.find_children("*", "TextureRect", true, false)
+	var label := card.find_children("*", "Label", true, false)
+	check(icon.size() == 1 and (icon[0] as TextureRect).texture != null, "у карточки предмета есть иконка")
+	check(label.size() == 1 and (label[0] as Label).text == "Бөрік", "у карточки предмета есть название")
+	check(card.theme_type_variation == "CardCompact", "карточка предмета компактная")
+	await unmount(card)
 
 
 func _test_pixel_button() -> void:
@@ -26,7 +57,8 @@ func _test_pixel_button() -> void:
 	check(caps.size() == 2, "у кнопки ornate два навершия, получено %d" % caps.size())
 	button.ornate = false
 	await process_frame
-	caps = button.get_children(true).filter(func(n: Node) -> bool: return n is TextureRect and not n.is_queued_for_deletion())
+	caps = button.get_children(true).filter(
+		func(n: Node) -> bool: return n is TextureRect and not n.is_queued_for_deletion())
 	check(caps.is_empty(), "навершия убираются вместе с ornate")
 	await unmount(button)
 
@@ -120,6 +152,20 @@ func _test_confirm_dialog() -> void:
 	_press_action("ui_accept")
 	check(outcome[0] == "cancelled", "Enter по умолчанию жмёт безопасное «Жоқ», а не «Иә»")
 	await unmount(dialog)
+
+
+## Фон встаёт в целом масштабе по центру на любом экране.
+func _test_backdrop_scaling() -> void:
+	var picture := Vector2(1280, 720)
+	var cases := {
+		"16:9": [Vector2(1280, 720), Rect2(0, 0, 1280, 720)],
+		"телефон 19.5:9": [Vector2(1560, 720), Rect2(140, 0, 1280, 720)],
+		"планшет 4:3": [Vector2(1280, 960), Rect2(0, 120, 1280, 720)],
+		"2K": [Vector2(2560, 1440), Rect2(0, 0, 2560, 1440)],
+	}
+	for screen: String in cases:
+		var got := PixelBackdrop.picture_rect(picture, cases[screen][0])
+		check(got == cases[screen][1], "фон на экране %s: %s" % [screen, got])
 
 
 func _add(node: Control) -> Control:

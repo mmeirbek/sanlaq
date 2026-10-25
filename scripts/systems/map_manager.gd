@@ -1,23 +1,96 @@
 class_name MapManager
 extends Node2D
+## Аул для Соқыртеке: поле за забором, арена в центре, юрты, пруды, камни,
+## брёвна и кусты. Картинки — пиксельные спрайты из tools/artgen/world_art.py,
+## без поворота и дробного масштаба; воду рисует PondLayer. Коллизии заданы
+## числами ниже и совпадают с нарисованным.
+##
+## Расстановка — как до редизайна: каждый следующий объект отодвигается от всех,
+## поставленных раньше (_occupied), и возвращается в границы карты. Поэтому
+## порядок важен: юрты, вода, камни, брёвна, кусты. Ковры и цветы — только
+## украшение: они встают в конце и только на свободное место, механику не трогают.
 
 @export var map_data: MapDefinition
-@export var ground_color: Color = Color(0.18, 0.30, 0.13)
 
-const YURT_SCENE := "res://scenes/world/yurt.tscn"
-const GRASS_TEX := "res://assets/tiles/ground.png"
-const WATER_TEX := "res://assets/tiles/water_blob.png"
-const ROCK_TEX := "res://assets/tiles/rock.png"
-const ROCK_TEX_02 := "res://assets/tiles/rock_02.png"
-const LOG_TEX := "res://assets/tiles/log.png"
-const BUSH_TEX := "res://assets/tiles/bush.png"
+const YURT_SCENE := preload("res://scenes/world/yurt.tscn")
+const GRASS := preload("res://assets/sprites/world/grass.png")
+const WILD_GRASS := preload("res://assets/sprites/world/grass_wild.png")
+const FENCE_ALONG_X := preload("res://assets/sprites/world/fence_h.png")
+const FENCE_ALONG_Y := preload("res://assets/sprites/world/fence_v.png")
+const ARENA := preload("res://assets/sprites/world/arena.png")
+const RUG := preload("res://assets/sprites/world/rug.png")
+const ROCKS: Array[Texture2D] = [
+	preload("res://assets/sprites/world/rock_0.png"),
+	preload("res://assets/sprites/world/rock_1.png"),
+]
+const LOG_ALONG_X := preload("res://assets/sprites/world/log_h.png")
+const LOG_ALONG_Y := preload("res://assets/sprites/world/log_v.png")
+const BUSH := preload("res://assets/sprites/world/bush.png")
+const GROUND_DECOR: Array[Texture2D] = [
+	preload("res://assets/sprites/world/flowers_0.png"),
+	preload("res://assets/sprites/world/flowers_1.png"),
+	preload("res://assets/sprites/world/flowers_2.png"),
+	preload("res://assets/sprites/world/tuft.png"),
+]
+
+## Маска слоёв коллизий препятствий (слои 1 и 3) — та же, что у игроков.
+const OBSTACLE_LAYER := WorldLayers.PHYSICS_WORLD
+const ROCK_RADIUS := 18.0
+## Бревно вдоль x; бревно вдоль y — тот же прямоугольник, повёрнутый на 90°.
+const LOG_SIZE := Vector2(56, 28)
+## Куст рисуется так, чтобы он стоял на своей точке, а не висел над ней.
+const BUSH_OFFSET := Vector2(0, -16)
 const YURT_BLOCK_RADIUS := 105.0
-const ROCK_CLEAR := 34.0
-# yurt.png's roof (256px canvas, ~226-229px content, drawn at 0.75 scale) reads ~85px wide,
-# so the old fixed 48px hide-trigger left a big gap between "visually under the roof" and "hidden".
+## Ближе этого к центру юрты игрок под крышей и спрятан.
 const YURT_HIDE_RADIUS := 60.0
+## Ближе этого к камню или бревну никто не появляется.
+const ROCK_CLEAR := 34.0
 const ARENA_CENTER := Vector2.ZERO
 const ARENA_RADIUS := 360.0
+## Сколько степи видно за забором — с запасом на широкий экран.
+const WILD_MARGIN := 1280.0
+const DECOR_COUNT := 70
+
+const YURT_SPOTS: Array[Vector2] = [
+	Vector2(-590, -300), Vector2(-570, 305), Vector2(525, -280),
+	Vector2(555, 280), Vector2(-155, -425), Vector2(165, 425),
+	Vector2(740, -30),
+]
+## Пруды встают в пределах ±POND_JITTER от этих точек; радиус зоны — от
+## POND_RADIUS_MIN до POND_RADIUS_MAX.
+const POND_SPOTS: Array[Vector2] = [
+	Vector2(-720, -390), Vector2(710, 410), Vector2(80, 475),
+	Vector2(-580, 380), Vector2(-60, 465), Vector2(620, 80),
+	Vector2(790, -390), Vector2(-790, 110), Vector2(100, -480),
+]
+const POND_JITTER := 60.0
+const POND_RADIUS_MIN := 90.0
+const POND_RADIUS_MAX := 130.0
+const ROCK_SPOTS: Array[Vector2] = [
+	Vector2(-730, -90), Vector2(-490, 110), Vector2(-45, -470),
+	Vector2(430, 305), Vector2(690, 355), Vector2(-650, 340),
+	Vector2(720, -305), Vector2(120, 430), Vector2(-440, -400),
+	Vector2(390, -390), Vector2(-320, -290), Vector2(540, -70),
+]
+const LOG_SPOTS: Array[Vector2] = [
+	Vector2(-260, -460), Vector2(280, 460), Vector2(-680, 440),
+	Vector2(650, -420), Vector2(30, -480),
+]
+const BUSH_SPOTS: Array[Vector2] = [
+	Vector2(-540, -260), Vector2(-520, 340), Vector2(480, -240),
+	Vector2(500, 320), Vector2(-200, -330), Vector2(220, 340),
+	Vector2(680, 20), Vector2(-680, -60),
+]
+const RUG_SPOTS: Array[Vector2] = [
+	Vector2(-740, -467), Vector2(735, -467), Vector2(-740, 468), Vector2(735, 468),
+]
+## Радиус места, которое объект занимает при расстановке. Не путать с
+## ROCK_CLEAR — это зазор для спавна игроков.
+const ROCK_SPACING := 30.0
+const LOG_SPACING := 40.0
+const BUSH_SPACING := 30.0
+const RUG_SPACING := 90.0
+const DECOR_SPACING := 16.0
 
 var bounds: Rect2:
 	get:
@@ -29,67 +102,170 @@ var yurt_positions: Array[Vector2] = []
 var obstacle_positions: Array[Vector2] = []
 var water_zones: Array[Dictionary] = []
 var _spawn_cursor := 0
-
-# Every placed map object (yurt/water/rock/log/bush) registers itself here as it's built,
-# so later objects are nudged away from it — prevents props spawning on top of each other.
-# Build order matters: _build_map() places yurts first, then water, then solid props, then
-# decorative bushes last, so each category avoids everything placed before it.
+## Занятые места: {pos, radius}. Новые объекты отодвигаются от них.
 var _occupied: Array[Dictionary] = []
 
 func _ready() -> void:
-	_build_map()
-
-func _build_map() -> void:
 	_build_ground()
 	_build_yurts()
 	_build_water()
 	_build_rocks()
 	_build_logs()
 	_build_bushes()
-	queue_redraw()
+	_build_arena()
+	_build_decor()
 
 func _build_ground() -> void:
-	var ground := Sprite2D.new()
-	ground.texture = load(GRASS_TEX)
-	ground.centered = false
-	ground.position = bounds.position
-	ground.region_enabled = true
-	ground.region_rect = Rect2(Vector2.ZERO, bounds.size)
-	ground.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
-	ground.z_index = -10
-	add_child(ground)
+	_add_tiled(WILD_GRASS, bounds.grow(WILD_MARGIN), WorldLayers.WILD_GRASS)
+	_add_tiled(GRASS, bounds, WorldLayers.GROUND)
+	# Забор стоит снаружи поля: игрок к нему не подходит, поэтому он плоский.
+	var rail_h := float(FENCE_ALONG_X.get_height())
+	var post_w := float(FENCE_ALONG_Y.get_width())
+	var outer_x := bounds.position.x - post_w
+	var outer_w := bounds.size.x + post_w * 2.0
+	_add_tiled(FENCE_ALONG_X, Rect2(outer_x, bounds.position.y - rail_h, outer_w, rail_h), WorldLayers.DECALS)
+	var side_top := bounds.position.y - rail_h * 0.5
+	var side_height := bounds.size.y + rail_h * 0.5
+	_add_tiled(FENCE_ALONG_Y, Rect2(outer_x, side_top, post_w, side_height), WorldLayers.DECALS)
+	_add_tiled(FENCE_ALONG_Y, Rect2(bounds.end.x, side_top, post_w, side_height), WorldLayers.DECALS)
+	_add_tiled(FENCE_ALONG_X, Rect2(outer_x, bounds.end.y, outer_w, rail_h), WorldLayers.DECALS)
+
+func _build_arena() -> void:
+	# Пруд у края может заходить на кольцо арены — так было и до редизайна.
+	_add_sprite(ARENA, ARENA_CENTER, WorldLayers.ARENA)
+	# Ковёр, которому не нашлось места, просто не кладём.
+	for spot in RUG_SPOTS:
+		var pos := clamp_to_bounds(_avoid_occupied(spot, RUG_SPACING), RUG_SPACING)
+		if not _is_occupied(pos, RUG_SPACING):
+			_add_sprite(RUG, pos, WorldLayers.DECALS)
+			_register_occupied(pos, RUG_SPACING)
+
+func _build_yurts() -> void:
+	yurt_positions.clear()
+	for spot in YURT_SPOTS:
+		var yurt := YURT_SCENE.instantiate() as Node2D
+		yurt.position = spot
+		# Стены — точно на месте юрты, картинка — на ближайшей сетке пикселя арта.
+		(yurt.get_node("Body") as Node2D).position += _snap(spot) - spot
+		add_child(yurt)
+		yurt_positions.append(spot)
+		_register_occupied(spot, YURT_BLOCK_RADIUS)
 
 func _build_water() -> void:
-	var tex := load(WATER_TEX) as Texture2D
-	var bases := [
-		Vector2(-720, -390), Vector2(710, 410), Vector2(80, 475),
-		Vector2(-580, 380), Vector2(-60, 465), Vector2(620, 80),
-		Vector2(790, -390), Vector2(-790, 110), Vector2(100, -480),
-	]
 	water_zones.clear()
-	for b in bases:
-		var radius := randf_range(90.0, 130.0)
-		var pos: Vector2 = b + Vector2(randf_range(-60, 60), randf_range(-60, 60))
-		pos = _avoid_occupied(pos, radius)
-		pos = clamp_to_bounds(pos, radius)
-		water_zones.append({"pos": pos, "radius": radius})
-		_register_occupied(pos, radius)
-		var spr := Sprite2D.new()
-		spr.texture = tex
-		spr.position = pos
-		spr.scale = Vector2(radius / 64.0, radius / 64.0) * randf_range(0.9, 1.2)
-		spr.rotation = randf_range(0, TAU)
-		spr.z_index = 1
-		spr.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
-		add_child(spr)
+	for spot in POND_SPOTS:
+		var radius := randf_range(POND_RADIUS_MIN, POND_RADIUS_MAX)
+		var jitter := Vector2(randf_range(-POND_JITTER, POND_JITTER), randf_range(-POND_JITTER, POND_JITTER))
+		water_zones.append({"pos": _claim_spot(spot + jitter, radius), "radius": radius})
+	var ponds := PondLayer.new()
+	add_child(ponds)
+	ponds.set_zones(water_zones)
+
+func _build_rocks() -> void:
+	obstacle_positions.clear()
+	for spot in ROCK_SPOTS:
+		var shape := CircleShape2D.new()
+		shape.radius = ROCK_RADIUS
+		obstacle_positions.append(_add_obstacle(spot, ROCK_SPACING, ROCKS.pick_random(), shape))
+
+func _build_logs() -> void:
+	for spot in LOG_SPOTS:
+		var along_x := randf() < 0.5
+		var shape := RectangleShape2D.new()
+		shape.size = LOG_SIZE if along_x else Vector2(LOG_SIZE.y, LOG_SIZE.x)
+		var texture := LOG_ALONG_X if along_x else LOG_ALONG_Y
+		obstacle_positions.append(_add_obstacle(spot, LOG_SPACING, texture, shape))
+
+func _build_bushes() -> void:
+	# Кусты — декор без коллизий, но стоят в сортировке: за кустом прячутся ноги.
+	for spot in BUSH_SPOTS:
+		var bush := _add_sprite(BUSH, _claim_spot(spot, BUSH_SPACING), WorldLayers.SORTED)
+		bush.offset += BUSH_OFFSET
+
+func _build_decor() -> void:
+	# Цветы и пучки травы: плоские, только на свободной траве вне арены.
+	var placed := 0
+	for _attempt in DECOR_COUNT * 4:
+		if placed == DECOR_COUNT:
+			return
+		var pos := Vector2(
+			randf_range(bounds.position.x + DECOR_SPACING, bounds.end.x - DECOR_SPACING),
+			randf_range(bounds.position.y + DECOR_SPACING, bounds.end.y - DECOR_SPACING))
+		if pos.distance_to(ARENA_CENTER) < ARENA_RADIUS + DECOR_SPACING or _is_occupied(pos, DECOR_SPACING):
+			continue
+		_add_sprite(GROUND_DECOR.pick_random(), pos, WorldLayers.DECALS)
+		placed += 1
+
+## Твёрдое препятствие: StaticBody2D с явной формой и спрайтом по её центру.
+## Возвращает итоговую позицию — после того как её отодвинули от соседей.
+func _add_obstacle(spot: Vector2, spacing: float, texture: Texture2D, shape: Shape2D) -> Vector2:
+	var pos := _claim_spot(spot, spacing)
+	var body := StaticBody2D.new()
+	body.position = pos
+	body.collision_layer = OBSTACLE_LAYER
+	body.collision_mask = 0
+	var collision := CollisionShape2D.new()
+	collision.shape = shape
+	body.add_child(collision)
+	# Тело стоит точно на своём месте, картинка — на ближайшей сетке пикселя арта.
+	var sprite := _pixel_sprite(texture)
+	sprite.position = _snap(pos) - pos
+	body.add_child(sprite)
+	add_child(body)
+	return pos
+
+func _add_sprite(texture: Texture2D, pos: Vector2, layer: int) -> Sprite2D:
+	var sprite := _pixel_sprite(texture)
+	sprite.position = _snap(pos)
+	sprite.z_index = layer
+	add_child(sprite)
+	return sprite
+
+## Спрайт с центром в своей точке и левым верхним углом на сетке пикселя арта —
+## даже если сторона картинки не делится на 4 и центр выпадает на полпикселя.
+func _pixel_sprite(texture: Texture2D) -> Sprite2D:
+	var sprite := Sprite2D.new()
+	sprite.texture = texture
+	sprite.centered = false
+	sprite.offset = -_snap(texture.get_size() / 2.0)
+	return sprite
+
+func _snap(pos: Vector2) -> Vector2:
+	return (pos / UiTokens.PIXEL).floor() * UiTokens.PIXEL
+
+## Плитка, повторяющаяся на весь rect. Узор привязан к миру, а не к краю rect.
+func _add_tiled(texture: Texture2D, rect: Rect2, layer: int) -> void:
+	var sprite := Sprite2D.new()
+	sprite.texture = texture
+	sprite.centered = false
+	sprite.position = rect.position
+	sprite.region_enabled = true
+	sprite.region_rect = rect
+	sprite.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+	sprite.z_index = layer
+	add_child(sprite)
+
+## Отодвигает точку от занятых мест, возвращает в границы карты и занимает её.
+## Край карты может вдавить точку обратно в соседа — тогда объекты
+## накладываются (пруды сливаются в озеро). Так было и до редизайна.
+func _claim_spot(spot: Vector2, radius: float) -> Vector2:
+	var pos := clamp_to_bounds(_avoid_occupied(spot, radius), radius)
+	_register_occupied(pos, radius)
+	return pos
 
 func _register_occupied(pos: Vector2, radius: float) -> void:
 	_occupied.append({"pos": pos, "radius": radius})
 
+func _is_occupied(pos: Vector2, radius: float) -> bool:
+	for entry in _occupied:
+		if pos.distance_to(entry["pos"]) < radius + float(entry["radius"]):
+			return true
+	return false
+
 func _avoid_occupied(pos: Vector2, radius: float) -> Vector2:
-	# Один проход по _occupied может вытолкнуть pos из одного пересечения прямо в
-	# соседнее (особенно ближе к концу построения карты, когда занято уже много мест) —
-	# повторяем, пока не перестанет двигаться, чтобы гарантированно не осталось наложений.
+	# Один проход может вытолкнуть точку из одного пересечения прямо в соседнее
+	# (ближе к концу постройки занято уже много мест) — повторяем, пока точка
+	# не перестанет двигаться.
 	for _pass in 8:
 		var moved := false
 		for entry in _occupied:
@@ -103,94 +279,6 @@ func _avoid_occupied(pos: Vector2, radius: float) -> Vector2:
 		if not moved:
 			break
 	return pos
-
-## Places a decorative or solid prop, keeping it clear of yurts, other props, and map bounds.
-## collision_base is measured at sprite scale 1.0 and is scaled together with the sprite's
-## randomized scale, so the collision shape always tracks what's actually drawn:
-## a float gives a CircleShape2D radius, a Vector2 gives a RectangleShape2D size (rotates
-## together with the body, which suits elongated props like logs far better than a circle).
-## Returns the final (possibly nudged) position so callers can track it for spawn-clearance.
-func _spawn_prop(pos: Vector2, textures: Array, clear_margin: float, scale_range: Vector2, solid: bool, collision_base = 0.0, z_index: int = 0) -> Vector2:
-	pos = _avoid_occupied(pos, clear_margin)
-	pos = clamp_to_bounds(pos, clear_margin)
-	_register_occupied(pos, clear_margin)
-
-	var s := randf_range(scale_range.x, scale_range.y)
-	var spr := Sprite2D.new()
-	spr.texture = textures[randi() % textures.size()]
-	spr.scale = Vector2.ONE * s
-	spr.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
-
-	if solid:
-		var body := StaticBody2D.new()
-		body.position = pos
-		body.rotation = randf_range(0, TAU)
-		body.collision_layer = 5
-		body.collision_mask = 0
-		var col := CollisionShape2D.new()
-		if collision_base is Vector2:
-			var rect_shape := RectangleShape2D.new()
-			rect_shape.size = collision_base * s
-			col.shape = rect_shape
-		else:
-			var circle_shape := CircleShape2D.new()
-			circle_shape.radius = float(collision_base) * s
-			col.shape = circle_shape
-		body.add_child(col)
-		body.add_child(spr)
-		add_child(body)
-	else:
-		spr.position = pos
-		spr.z_index = z_index
-		add_child(spr)
-	return pos
-
-func _build_rocks() -> void:
-	var rock_textures := [load(ROCK_TEX), load(ROCK_TEX_02)]
-	var rock_positions := [
-		Vector2(-730, -90), Vector2(-490, 110), Vector2(-45, -470),
-		Vector2(430, 305), Vector2(690, 355), Vector2(-650, 340),
-		Vector2(720, -305), Vector2(120, 430), Vector2(-440, -400),
-		Vector2(390, -390), Vector2(-320, -290), Vector2(540, -70),
-	]
-	obstacle_positions = []
-	# rock.png/rock_02.png content fills ~53-55px of the 64px canvas (~25px radius at scale 1.0).
-	for pos in rock_positions:
-		obstacle_positions.append(_spawn_prop(pos, rock_textures, 30.0, Vector2(0.6, 0.8), true, 25.0))
-
-func _build_logs() -> void:
-	var log_textures := [load(LOG_TEX)]
-	var log_positions: Array[Vector2] = [
-		Vector2(-260, -460), Vector2(280, 460), Vector2(-680, 440),
-		Vector2(650, -420), Vector2(30, -480),
-	]
-	# log.png content is an elongated ~56x39 shape (wide, not round) at scale 1.0 — a rotated
-	# rectangle tracks that silhouette far better than a circle, and rotates with the sprite.
-	for pos in log_positions:
-		obstacle_positions.append(_spawn_prop(pos, log_textures, 40.0, Vector2(0.9, 1.15), true, Vector2(50.0, 30.0)))
-
-func _build_bushes() -> void:
-	var bush_textures := [load(BUSH_TEX)]
-	var bush_positions := [
-		Vector2(-540, -260), Vector2(-520, 340), Vector2(480, -240),
-		Vector2(500, 320), Vector2(-200, -330), Vector2(220, 340),
-		Vector2(680, 20), Vector2(-680, -60),
-	]
-	for pos in bush_positions:
-		_spawn_prop(pos, bush_textures, 30.0, Vector2(0.9, 1.2), false, 0.0, 2)
-
-func _build_yurts() -> void:
-	yurt_positions = [
-		Vector2(-590, -300), Vector2(-570, 305), Vector2(525, -280),
-		Vector2(555, 280), Vector2(-155, -425), Vector2(165, 425),
-		Vector2(740, -30),
-	]
-	var pack := load(YURT_SCENE) as PackedScene
-	for pos in yurt_positions:
-		var yurt := pack.instantiate()
-		yurt.position = pos
-		add_child(yurt)
-		_register_occupied(pos, YURT_BLOCK_RADIUS)
 
 func get_random_spawn() -> Vector2:
 	if map_data and not map_data.spawn_points.is_empty():
@@ -234,9 +322,6 @@ func _spawn_clear(pos: Vector2) -> bool:
 			return false
 	return true
 
-func is_in_bounds(pos: Vector2) -> bool:
-	return bounds.has_point(pos)
-
 func clamp_to_bounds(pos: Vector2, radius: float = 0.0) -> Vector2:
 	var clamped := pos
 	var r := bounds.position
@@ -256,60 +341,3 @@ func is_inside_yurt(pos: Vector2) -> bool:
 		if pos.distance_to(yurt) < YURT_HIDE_RADIUS:
 			return true
 	return false
-
-func _draw() -> void:
-	# Пиксельная арена в центре: круглый той-алаң с национальным орнаментом.
-	draw_rect(bounds, Color("4c6c38"), false, 10.0, false)
-	draw_circle(ARENA_CENTER + Vector2(12, 16), ARENA_RADIUS + 24, Color(0.10, 0.18, 0.10, 0.24), false)
-	draw_circle(ARENA_CENTER, ARENA_RADIUS + 16, Color("77502e"), false)
-	draw_circle(ARENA_CENTER, ARENA_RADIUS + 8, Color("d8ae61"), false)
-	draw_circle(ARENA_CENTER, ARENA_RADIUS, Color("a97342"), false)
-	draw_circle(ARENA_CENTER, ARENA_RADIUS - 16, Color("e2bd78"), false)
-	draw_circle(ARENA_CENTER, ARENA_RADIUS - 34, Color("cf9e5d"), false)
-	draw_circle(ARENA_CENTER, ARENA_RADIUS - 44, Color("e8c984"), false)
-
-	_draw_arena_motifs()
-	_draw_corner_props()
-
-func _draw_arena_motifs() -> void:
-	# Восьмиугольники намеренно рисуются без сглаживания — это держит 2D pixel-art характер.
-	for radius in [ARENA_RADIUS - 24.0, ARENA_RADIUS - 52.0]:
-		_draw_pixel_ring(radius, Color("896039"), 3.0)
-
-	for i in range(16):
-		var a := TAU * float(i) / 16.0
-		var pos := ARENA_CENTER + Vector2(cos(a), sin(a)) * (ARENA_RADIUS - 38.0)
-		_draw_diamond(pos, 12.0, Color("805430"), Color("f2d58c"))
-
-	_draw_diamond(ARENA_CENTER, 112.0, Color("a46b39"), Color("edcf85"))
-	_draw_diamond(ARENA_CENTER, 76.0, Color("edcf85"), Color("8b5b34"))
-	_draw_diamond(ARENA_CENTER, 37.0, Color("81502f"), Color("f4d78e"))
-	for i in range(4):
-		var pos := ARENA_CENTER + Vector2(0, -150).rotated(TAU * i / 4.0)
-		_draw_diamond(pos, 24.0, Color("9b6336"), Color("e7c479"))
-
-func _draw_pixel_ring(radius: float, color: Color, width: float) -> void:
-	var points := PackedVector2Array()
-	for i in range(33):
-		var a := TAU * float(i) / 32.0
-		points.append(ARENA_CENTER + Vector2(round(cos(a) * radius / 4.0) * 4.0, round(sin(a) * radius / 4.0) * 4.0))
-	draw_polyline(points, color, width, false)
-
-func _draw_diamond(center: Vector2, radius: float, fill: Color, outline: Color) -> void:
-	var points := PackedVector2Array([
-		center + Vector2(0, -radius), center + Vector2(radius, 0),
-		center + Vector2(0, radius), center + Vector2(-radius, 0),
-	])
-	draw_colored_polygon(points, fill)
-	draw_polyline(PackedVector2Array([points[0], points[1], points[2], points[3], points[0]]), outline, 3.0, false)
-
-func _draw_corner_props() -> void:
-	# Коврики и флажки по краям создают ощущение аула и хорошо читаются сверху.
-	var rugs := [
-		Rect2(-825, -505, 170, 76), Rect2(650, -505, 170, 76),
-		Rect2(-825, 430, 170, 76), Rect2(650, 430, 170, 76),
-	]
-	for rug in rugs:
-		draw_rect(rug, Color("8c3e32"), true)
-		draw_rect(rug.grow(-7), Color("d19d4b"), false, 4.0, false)
-		_draw_diamond(rug.get_center(), 16.0, Color("e1bd70"), Color("67352d"))

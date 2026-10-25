@@ -46,7 +46,7 @@ func _ready() -> void:
 	_title_label.theme_type_variation = "TitleLabel"
 	titles.add_child(_title_label)
 	_subtitle_label = Label.new()
-	_subtitle_label.theme_type_variation = "CaptionLabel"
+	_subtitle_label.theme_type_variation = "SubtitleLabel"
 	titles.add_child(_subtitle_label)
 
 	add_child(GemDivider.new())

@@ -2,9 +2,9 @@ class_name CharacterVisual
 extends Node2D
 
 const BASE_SHEETS := [
-	"res://assets/character/base/base.png",
-	"res://assets/character/base/base_02.png",
-	"res://assets/character/base/base_03.png",
+	"res://assets/sprites/character/base/base.png",
+	"res://assets/sprites/character/base/base_02.png",
+	"res://assets/sprites/character/base/base_03.png",
 ]
 const SHEET_W := 6
 const FRAME_PX := 64
@@ -121,9 +121,11 @@ func _process(delta: float) -> void:
 	for l in _layers:
 		if l.sprite_frames:
 			l.frame = f
-	# Общий пиксельный ритм оживляет все слои одновременно: одежда не «съезжает» с тела.
-	var bounce := sin(_pose_time * (11.0 if _moving else 3.0))
-	position = _rest_position + Vector2(0, round(bounce * (1.0 if _moving else 0.5)))
+	# Подпрыгивание на шаге — целым пикселем арта, иначе пиксельная сетка дрожит.
+	# В покое не подпрыгиваем: дыхание уже нарисовано в кадрах покоя. Сдвигается
+	# весь узел, поэтому одежда не «съезжает» с тела.
+	var hop := roundi(sin(_pose_time * 11.0)) if _moving else 0
+	position = _rest_position + Vector2(0, hop * UiTokens.PIXEL)
 
 func _build_frames(sheet: Texture2D) -> SpriteFrames:
 	var sf := SpriteFrames.new()

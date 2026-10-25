@@ -1,39 +1,16 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene format=3]
 
-[ext_resource type="Script" path="res://scenes/ui/mode_select.gd" id="1"]
-[ext_resource type="FontFile" path="res://assets/fonts/NotoSans-Bold.ttf" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="4"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_header.tscn" id="2"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mode_card"]
-content_margin_left = 24.0
-content_margin_top = 22.0
-content_margin_right = 24.0
-content_margin_bottom = 22.0
-bg_color = Color(0.984, 0.969, 0.933, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.918, 0.761, 0.357, 1)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
-shadow_color = Color(0.039, 0.169, 0.239, 0.2)
-shadow_size = 10
-shadow_offset = Vector2(0, 5)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wip"]
-content_margin_left = 10.0
-content_margin_top = 4.0
-content_margin_right = 10.0
-content_margin_bottom = 4.0
-bg_color = Color(0.71, 0.44, 0.13, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[ext_resource type="Script" path="res://scenes/ui/mode_select.gd" id="1_script"]
+[ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://scripts/ui/components/pixel_backdrop.gd" id="3_backdrop"]
+[ext_resource type="Script" path="res://scripts/ui/components/screen_header.gd" id="4_header"]
+[ext_resource type="Script" path="res://scripts/ui/components/selectable_card.gd" id="5_card"]
+[ext_resource type="Script" path="res://scripts/ui/components/pixel_button.gd" id="6_button"]
+[ext_resource type="Texture2D" path="res://assets/sprites/modes/sokyroteke.png" id="7_art"]
+[ext_resource type="Texture2D" path="res://assets/sprites/modes/abai_says.png" id="8_art"]
+[ext_resource type="Texture2D" path="res://assets/sprites/modes/togyz_qumalaq.png" id="9_art"]
+[ext_resource type="Texture2D" path="res://assets/sprites/modes/aq_suyek.png" id="10_art"]
+[ext_resource type="Texture2D" path="res://assets/sprites/modes/tarikh_zholy.png" id="11_art"]
 
 [node name="ModeSelect" type="Control"]
 layout_mode = 3
@@ -42,220 +19,238 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1")
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
 
-[node name="Background" parent="." instance=ExtResource("4")]
+[node name="Background" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-variant = 0
+mouse_filter = 2
+script = ExtResource("3_backdrop")
+variant = 1
+veil = 0.35
 
-[node name="Header" parent="." instance=ExtResource("2")]
-layout_mode = 1
-anchors_preset = 0
-offset_left = 44.0
-offset_top = 48.0
-offset_right = 44.0
-offset_bottom = 48.0
-grow_horizontal = 1
-grow_vertical = 1
-title = "ОЙЫН РЕЖІМДЕРІ"
-subtitle = "РЕЖИМДІ ТАҢДА · ОЙЫНДЫ БАСТА"
-
-[node name="BackBtn" type="Button" parent="."]
+[node name="Header" type="VBoxContainer" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 1
+anchors_preset = 10
 anchor_right = 1.0
-offset_left = -188.0
-offset_top = 60.0
-offset_right = -28.0
-offset_bottom = 112.0
-grow_horizontal = 0
-theme_override_font_sizes/font_size = 18
-text = "← Артқа"
+offset_left = 32.0
+offset_top = 24.0
+offset_right = -32.0
+offset_bottom = 120.0
+grow_horizontal = 2
+script = ExtResource("4_header")
+title = "ОЙЫН РЕЖІМДЕРІ"
+subtitle = "РЕЖИМДІ ТАҢДА · ОЙЫНДЫ БАСТА"
 
 [node name="Cards" type="HBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 44.0
-offset_top = 178.0
-offset_right = -44.0
-offset_bottom = -40.0
+offset_left = 32.0
+offset_top = 136.0
+offset_right = -32.0
+offset_bottom = -24.0
 grow_horizontal = 2
-grow_vertical = 1
-theme_override_constants/separation = 18
+grow_vertical = 2
 
 [node name="ChaseCard" type="PanelContainer" parent="Cards"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_mode_card")
+script = ExtResource("5_card")
+compact = true
 
 [node name="VBox" type="VBoxContainer" parent="Cards/ChaseCard"]
 layout_mode = 2
-theme_override_constants/separation = 14
+mouse_filter = 2
+
+[node name="Art" type="TextureRect" parent="Cards/ChaseCard/VBox"]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("7_art")
+stretch_mode = 3
 
 [node name="Kicker" type="Label" parent="Cards/ChaseCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 15
+theme_type_variation = &"CaptionLabel"
 text = "ҚУУ ОЙЫНЫ"
 
 [node name="Name" type="Label" parent="Cards/ChaseCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 26
+theme_type_variation = &"HeadingLabel"
 text = "Соқыртеке"
 
 [node name="Desc" type="Label" parent="Cards/ChaseCard/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
-autowrap_mode = 2
-theme_override_colors/font_color = Color(0.28, 0.25, 0.22, 1)
-theme_override_font_sizes/font_size = 17
 text = "Соқыртеке қашушыларды қуып ұстайды, ұсталған ойыншының киімін тану керек. Боттарға қарсы ойналады."
+autowrap_mode = 3
 
 [node name="ChasePlayBtn" type="Button" parent="Cards/ChaseCard/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
-theme_type_variation = &"PrimaryButton"
-theme_override_font_sizes/font_size = 21
 text = "ОЙНАУ"
+script = ExtResource("6_button")
 
 [node name="AbaiCard" type="PanelContainer" parent="Cards"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_mode_card")
+script = ExtResource("5_card")
+compact = true
 
 [node name="VBox" type="VBoxContainer" parent="Cards/AbaiCard"]
 layout_mode = 2
-theme_override_constants/separation = 14
+mouse_filter = 2
+
+[node name="Art" type="TextureRect" parent="Cards/AbaiCard/VBox"]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("8_art")
+stretch_mode = 3
 
 [node name="Kicker" type="Label" parent="Cards/AbaiCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 15
+theme_type_variation = &"CaptionLabel"
 text = "ЖАДЫ ОЙЫНЫ"
 
 [node name="Name" type="Label" parent="Cards/AbaiCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 26
+theme_type_variation = &"HeadingLabel"
 text = "Абай айтады"
 
 [node name="Desc" type="Label" parent="Cards/AbaiCard/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
-autowrap_mode = 2
-theme_override_colors/font_color = Color(0.28, 0.25, 0.22, 1)
-theme_override_font_sizes/font_size = 17
 text = "Абай ұлттық тағамдардың тізбегін көрсетеді, оны дәл сол ретпен қайталау керек. 2-4 ойыншы, бір құрылғыны кезекпен беріп ойнайды."
+autowrap_mode = 3
 
 [node name="AbaiPlayBtn" type="Button" parent="Cards/AbaiCard/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
-theme_type_variation = &"PrimaryButton"
-theme_override_font_sizes/font_size = 21
 text = "БАСТАУ"
+script = ExtResource("6_button")
 
 [node name="TogyzCard" type="PanelContainer" parent="Cards"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_mode_card")
+script = ExtResource("5_card")
+compact = true
 
 [node name="VBox" type="VBoxContainer" parent="Cards/TogyzCard"]
 layout_mode = 2
-theme_override_constants/separation = 14
+mouse_filter = 2
+
+[node name="Art" type="TextureRect" parent="Cards/TogyzCard/VBox"]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("9_art")
+stretch_mode = 3
 
 [node name="Kicker" type="Label" parent="Cards/TogyzCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 15
+theme_type_variation = &"CaptionLabel"
 text = "ТАҚТА ОЙЫНЫ"
 
 [node name="Name" type="Label" parent="Cards/TogyzCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 26
+theme_type_variation = &"HeadingLabel"
 text = "Тоғыз құмалақ"
 
 [node name="Desc" type="Label" parent="Cards/TogyzCard/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
-autowrap_mode = 2
-theme_override_colors/font_color = Color(0.28, 0.25, 0.22, 1)
-theme_override_font_sizes/font_size = 17
 text = "Ұлттық логикалық ойын: құмалақтарды тарат, қарсыластың отауын ұтып ал, 82 құмалақ жина. Адаммен де, компьютермен де ойналады."
+autowrap_mode = 3
 
 [node name="TogyzPlayBtn" type="Button" parent="Cards/TogyzCard/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
-theme_type_variation = &"PrimaryButton"
-theme_override_font_sizes/font_size = 21
 text = "БАСТАУ"
+script = ExtResource("6_button")
 
 [node name="AqSuyekCard" type="PanelContainer" parent="Cards"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_mode_card")
+script = ExtResource("5_card")
+compact = true
 
 [node name="VBox" type="VBoxContainer" parent="Cards/AqSuyekCard"]
 layout_mode = 2
-theme_override_constants/separation = 14
+mouse_filter = 2
 
-[node name="WipBadge" type="PanelContainer" parent="Cards/AqSuyekCard/VBox"]
+[node name="Art" type="TextureRect" parent="Cards/AqSuyekCard/VBox"]
 layout_mode = 2
-size_flags_horizontal = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_wip")
-
-[node name="Label" type="Label" parent="Cards/AqSuyekCard/VBox/WipBadge"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.984, 0.969, 0.933, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 13
-text = "ӘЗІРЛЕНУДЕ"
+mouse_filter = 2
+texture = ExtResource("10_art")
+stretch_mode = 3
 
 [node name="Kicker" type="Label" parent="Cards/AqSuyekCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.64, 0.42, 0.14, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 15
+theme_type_variation = &"CaptionLabel"
 text = "ІЗДЕУ ОЙЫНЫ"
 
 [node name="Name" type="Label" parent="Cards/AqSuyekCard/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 26
+theme_type_variation = &"HeadingLabel"
 text = "Ақ сүйек"
 
 [node name="Desc" type="Label" parent="Cards/AqSuyekCard/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
-autowrap_mode = 2
-theme_override_colors/font_color = Color(0.28, 0.25, 0.22, 1)
-theme_override_font_sizes/font_size = 16
 text = "Түнгі далада жасырылған ақ сүйекті іздейсіз. Жүру үшін қадам керек, ал қадамды дәстүр туралы сұраққа жауап бергенде аласыз."
+autowrap_mode = 3
 
 [node name="AqSuyekPlayBtn" type="Button" parent="Cards/AqSuyekCard/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
-theme_type_variation = &"PrimaryButton"
-theme_override_font_sizes/font_size = 21
 text = "БАСТАУ"
+script = ExtResource("6_button")
 
+[node name="StoryCard" type="PanelContainer" parent="Cards"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("5_card")
+compact = true
+
+[node name="VBox" type="VBoxContainer" parent="Cards/StoryCard"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Art" type="TextureRect" parent="Cards/StoryCard/VBox"]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("11_art")
+stretch_mode = 3
+
+[node name="Kicker" type="Label" parent="Cards/StoryCard/VBox"]
+layout_mode = 2
+theme_type_variation = &"CaptionLabel"
+text = "ТАРИХИ ОЙЫН"
+
+[node name="Name" type="Label" parent="Cards/StoryCard/VBox"]
+layout_mode = 2
+theme_type_variation = &"HeadingLabel"
+text = "Тарих жолы"
+
+[node name="Desc" type="Label" parent="Cards/StoryCard/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Батырды таңдап, оның тарауын өт: ауылды арала, елмен сөйлес, тапсырмалар мен ойындарды орында."
+autowrap_mode = 3
+
+[node name="StoryPlayBtn" type="Button" parent="Cards/StoryCard/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "БАСТАУ"
+script = ExtResource("6_button")

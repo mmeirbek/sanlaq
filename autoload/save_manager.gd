@@ -15,10 +15,12 @@ var equipped: Dictionary = {}
 var cloth_pool: Array[String] = []
 var settings: Dictionary = {}
 var career: Dictionary = {"wins": 0, "streak": 0, "best_streak": 0, "knowledge": 0}
+## Прогресс «Тарих жолы»: формат — в шапке StoryState, плюс выбранный герой "hero".
+var story: Dictionary = {}
 
 func _ready() -> void:
-	# Тесты идут на чистом профиле, как в CI, и не портят сохранение игрока.
-	if not RunContext.is_headless():
+	# Тесты и инструменты идут на чистом профиле и не портят сохранение игрока.
+	if not RunContext.is_automated():
 		_load_from_disk()
 	_ensure_equipped_outfit()
 
@@ -29,23 +31,11 @@ func set_equipped(slot_type: ClothingItem.SlotType, item_id: String) -> void:
 	equipped[slot_type] = item_id
 	_save_to_disk()
 
-func is_equipped(item_id: String) -> bool:
-	for slot in equipped.values():
-		if slot == item_id:
-			return true
-	return false
-
 func get_random_pool_item(slot_type: ClothingItem.SlotType) -> ClothingItem:
 	var items := AssetRegistry.get_clothing(slot_type)
 	if items.is_empty():
 		return null
 	return items[randi() % items.size()]
-
-func equip_random_outfit() -> void:
-	for slot in [ClothingItem.SlotType.HEAD, ClothingItem.SlotType.TORSO, ClothingItem.SlotType.PANTS, ClothingItem.SlotType.SHOES]:
-		var item := get_random_pool_item(slot)
-		if item:
-			set_equipped(slot, item.id)
 
 func get_setting(key: String, default: Variant = null) -> Variant:
 	return settings.get(key, default)
@@ -55,7 +45,7 @@ func set_setting(key: String, value: Variant) -> void:
 	_save_to_disk()
 
 func _save_to_disk() -> void:
-	if RunContext.is_headless():
+	if RunContext.is_automated():
 		return
 	var data := {
 		nickname = nickname,
@@ -63,6 +53,7 @@ func _save_to_disk() -> void:
 		cloth_pool = cloth_pool,
 		settings = settings,
 		career = career,
+		story = story,
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
@@ -94,6 +85,7 @@ func _load_from_disk() -> void:
 	cloth_pool = _array_string(data.get("cloth_pool", []))
 	settings = data.get("settings", {})
 	career = data.get("career", career)
+	story = data.get("story", {})
 
 ## Заполняет пустые слоты и слоты с удалёнными предметами стартовым образом.
 func _ensure_equipped_outfit() -> void:
@@ -134,7 +126,8 @@ func _dict_to_string_keys(d: Dictionary) -> Dictionary:
 		out[str(k)] = d[k]
 	return out
 
-func commit() -> void:
+## StoryState меняет словарь story на месте; сохраняет его владелец сюжета.
+func save_story() -> void:
 	_save_to_disk()
 
 func set_nickname(value: String) -> void:
@@ -151,12 +144,3 @@ func record_match(won: bool, correct_answers: int) -> Dictionary:
 		career["streak"] = 0
 	_save_to_disk()
 	return career.duplicate()
-
-func reset_all() -> void:
-	equipped.clear()
-	cloth_pool.clear()
-	nickname = ""
-	settings.clear()
-	career = {"wins": 0, "streak": 0, "best_streak": 0, "knowledge": 0}
-	_ensure_equipped_outfit()
-	_save_to_disk()

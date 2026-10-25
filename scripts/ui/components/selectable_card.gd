@@ -11,6 +11,11 @@ signal pressed
 	set(value):
 		selected = value
 		_refresh()
+## Узкие отступы — для плотных списков (роли, предметы шкафа).
+@export var compact: bool = false:
+	set(value):
+		compact = value
+		_refresh()
 
 var _hovered := false
 
@@ -40,9 +45,10 @@ func _set_hovered(value: bool) -> void:
 
 
 func _refresh() -> void:
+	var base := "CardCompact" if compact else "Card"
 	if selected:
-		theme_type_variation = "CardSelected"
+		theme_type_variation = base + "Selected"
 	elif _hovered:
-		theme_type_variation = "CardHover"
+		theme_type_variation = base + "Hover"
 	else:
-		theme_type_variation = "Card"
+		theme_type_variation = base

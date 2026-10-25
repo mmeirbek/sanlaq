@@ -1,221 +1,213 @@
 extends Control
+## Энциклопедия: два раздела. «Киім» — коллекция одежды по слотам и описание
+## вещи с иллюстрацией (иконка и персонаж, на котором она надета). «Тарих» —
+## статьи «Тарих жолы» по рубрикам; закрытая статья подсказывает, в какой
+## главе она открывается. Статьи общие для всех героев.
 
-const RARITY_NAMES := {0: "Кәдімгі", 1: "Сирек", 2: "Аңыз"}
-const RARITY_COLORS := {
-	0: Color("7d766a"),
-	1: Color("a36b24"),
-	2: SanlaqDesignTokens.RED_ACCENT,
+const RARITY_NAMES := {
+	ClothingItem.Rarity.COMMON: "Кәдімгі",
+	ClothingItem.Rarity.RARE: "Сирек",
+	ClothingItem.Rarity.LEGENDARY: "Аңыз",
 }
-const SLOT_NAMES := {0: "Бас киім", 1: "Сырт киім", 2: "Шалбар", 3: "Аяқ киім"}
-## Спокойная рамка обычной карточки. Редкость раньше красила рамку целиком, и
-## редкие предметы выглядели как выбранные — отличить настоящий выбор было
-## невозможно. Теперь редкость живёт только в подписи и в метке-точке.
-const CARD_BORDER := Color("d8c39a")
+const CATEGORIES := ["ТҰЛҒАЛАР", "ОҚИҒАЛАР", "ЖЕР-СУ", "МӘДЕНИЕТ"]
+const SUBTITLES := ["ҰЛТТЫҚ КИІМ · ТАРИХЫН ТАНЫ", "ТАРИХ ЖОЛЫ · ТҰЛҒАЛАР МЕН ОҚИҒАЛАР"]
+const LORE := ["Әр заттың тарихын оқып, өз образыңды жина.",
+	"Батырлармен бірге Тарих жолынан өтіп, жаңа беттерді аш."]
+const CHARACTER_SCENE := preload("res://scenes/entities/character_visual.tscn")
+## Персонаж в иллюстрации — ×3, целым масштабом.
+const MANNEQUIN_SCALE := 3
+const PICTURE_SIZE := Vector2(192, 192)
 
-## Какая карточка открыта в панели справа.
-var _selected_id: String = ""
-## id предмета -> части карточки, которые перекрашиваются при выборе.
-var _cards: Dictionary = {}
+enum Section { CLOTHING, HISTORY }
 
-## Какой раздел коллекции открыт. Все тринадцать предметов сразу в сетку не
-## помещались — приходилось прокручивать, а половина карточек была за краем.
+var section := Section.CLOTHING
 var _current_slot: ClothingItem.SlotType = ClothingItem.SlotType.HEAD
-var _tab_buttons: Array[Button] = []
+var _category := 0
+var _mannequin: CharacterVisual
+var _section_buttons: Array[PixelButton] = []
+var _categories: HBoxContainer
+## Статья -> название главы, в которой она открывается.
+var _where := {}
 
+@onready var _tabs: SlotTabs = %Tabs
 @onready var _grid: GridContainer = %Grid
-@onready var _tabs: HBoxContainer = %Tabs
-@onready var _detail_icon: TextureRect = %Icon
-@onready var _detail_name: Label = %NameLabel
-@onready var _detail_meta: Label = %MetaLabel
-@onready var _detail_desc: Label = %DescLabel
-@onready var _photo_credit: Label = %PhotoCredit
-@onready var _back_btn: Button = %BackBtn
+@onready var _mannequin_slot: Control = %MannequinSlot
+@onready var _header: ScreenHeader = %Header
+
 
 func _ready() -> void:
-	_back_btn.pressed.connect(func() -> void: SceneRouter.go_to_main_menu())
-	_build_tabs()
-	_show_slot(_current_slot)
+	_header.back_pressed.connect(SceneRouter.go_to_main_menu)
+	_tabs.slot_selected.connect(_show_slot)
+	_build_sections()
+	_build_mannequin()
+	_index_chapters()
+	show_section(SceneRouter.codex_section)
+	SceneRouter.codex_section = Section.CLOTHING
 
-func _build_tabs() -> void:
-	for slot in ClothingItem.SlotType.values():
-		var btn := Button.new()
-		btn.text = SLOT_NAMES.get(slot, str(slot))
-		btn.custom_minimum_size = Vector2(0, 38)
-		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		btn.toggle_mode = true
-		btn.focus_mode = Control.FOCUS_NONE
-		btn.add_theme_font_size_override("font_size", 15)
-		btn.pressed.connect(_show_slot.bind(slot as ClothingItem.SlotType))
-		_tabs.add_child(btn)
-		_tab_buttons.append(btn)
+
+func _build_sections() -> void:
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", UiTokens.SPACE_S)
+	var column := _tabs.get_parent()
+	column.add_child(row)
+	column.move_child(row, 0)
+	for i in 2:
+		var button := PixelButton.new()
+		button.text = tr(["КИІМ", "ТАРИХ"][i])
+		button.toggle_mode = true
+		button.theme_type_variation = "ButtonSecondary"
+		button.pressed.connect(show_section.bind(i))
+		row.add_child(button)
+		_section_buttons.append(button)
+	_categories = HBoxContainer.new()
+	_categories.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.add_child(_categories)
+	column.move_child(_categories, _tabs.get_index() + 1)
+	for i in CATEGORIES.size():
+		var card := SelectableCard.new()
+		card.compact = true
+		var label := Label.new()
+		label.text = tr(CATEGORIES[i])
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(label)
+		card.pressed.connect(_show_category.bind(i))
+		_categories.add_child(card)
+
+
+func _build_mannequin() -> void:
+	_mannequin = CHARACTER_SCENE.instantiate()
+	_mannequin.scale = Vector2.ONE * MANNEQUIN_SCALE
+	_mannequin.set_direction(Vector2.DOWN)
+	_mannequin_slot.add_child(_mannequin)
+	var step := UiTokens.PIXEL * MANNEQUIN_SCALE
+	_mannequin.set_rest_position((_mannequin_slot.custom_minimum_size / 2 / step).floor() * step)
+
+
+## Где открывается каждая статья: шаги и костры глав всех героев.
+func _index_chapters() -> void:
+	var cast := AssetRegistry.get_story_cast()
+	if cast == null:
+		return
+	for hero in cast.heroes:
+		var chapter := AssetRegistry.get_story_chapter(hero.chapter)
+		if chapter == null:
+			continue
+		for beat in chapter.beats:
+			for entry_id in beat.unlock:
+				_where[entry_id] = chapter.title
+			for topic in beat.topics:
+				_where[topic.entry] = chapter.title
+
+
+func show_section(index: int) -> void:
+	section = index as Section
+	for i in _section_buttons.size():
+		_section_buttons[i].set_pressed_no_signal(i == index)
+	_header.subtitle = tr(SUBTITLES[index])
+	_tabs.visible = section == Section.CLOTHING
+	%SlotName.visible = section == Section.CLOTHING
+	_categories.visible = section == Section.HISTORY
+	%LoreText.text = tr(LORE[index])
+	if section == Section.CLOTHING:
+		_show_slot(_current_slot)
+	else:
+		_show_category(_category)
+
+
+func _clear_grid() -> void:
+	for child in _grid.get_children():
+		_grid.remove_child(child)
+		child.queue_free()
+
+
+# --- Киім ---------------------------------------------------------------------
 
 func _show_slot(slot: ClothingItem.SlotType) -> void:
+	if section != Section.CLOTHING:
+		show_section(Section.CLOTHING)
+		return
 	_current_slot = slot
-	for i in _tab_buttons.size():
-		_tab_buttons[i].button_pressed = i == int(slot)
-	_build_grid()
-
-func _build_grid() -> void:
-	for c in _grid.get_children():
-		_grid.remove_child(c)
-		c.queue_free()
-	_cards.clear()
-	_selected_id = ""
-
-	var items := AssetRegistry.get_clothing(_current_slot)
+	_tabs.select(slot)
+	%SlotName.text = ClothingItem.SLOT_NAMES[slot]
+	_clear_grid()
+	var lang := GameSettings.get_lang_code()
+	var items := AssetRegistry.get_clothing(slot)
 	for item in items:
-		_grid.add_child(_make_card(item))
-	for item_id in _cards:
-		_refresh_card(item_id)
+		var card := ClothingCard.create(item, item.get_name_for_lang(lang))
+		card.pressed.connect(_select.bind(item))
+		_grid.add_child(card)
 	if not items.is_empty():
 		_select(items[0])
 
-func _make_card(item: ClothingItem) -> Control:
-	var card := Control.new()
-	card.custom_minimum_size = Vector2(160, 174)
-	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	card.tooltip_text = item.get_name_for_lang(GameSettings.get_lang_code())
-
-	var panel := PanelContainer.new()
-	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	card.add_child(panel)
-
-	var rarity_col: Color = RARITY_COLORS.get(item.rarity, RARITY_COLORS[ClothingItem.Rarity.COMMON])
-	panel.add_theme_stylebox_override("panel", _card_style())
-
-	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 3)
-
-	# Every card owns a clear photo area. The image comes from this exact item's
-	# reference_photo_path; only a missing file falls back to the small item icon.
-	var photo_frame := PanelContainer.new()
-	photo_frame.custom_minimum_size = Vector2(0, 112)
-	photo_frame.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	photo_frame.clip_contents = true
-	photo_frame.add_theme_stylebox_override("panel", _photo_style())
-
-	var tex := TextureRect.new()
-	tex.custom_minimum_size = Vector2(0, 106)
-	tex.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	# Кадрируем по рамке, а не вписываем: так все снимки читаются одним рядом,
-	# без разнобоя полей у портретных и ландшафтных.
-	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	tex.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
-	tex.texture = _photo_for(item)
-	if tex.texture == null and not item.icon_path.is_empty():
-		tex.texture = load(item.icon_path) as Texture2D
-	photo_frame.add_child(tex)
-	box.add_child(photo_frame)
-
-	var name_lbl := Label.new()
-	name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_lbl.add_theme_font_size_override("font_size", 14)
-	name_lbl.text = item.get_name_for_lang(GameSettings.get_lang_code())
-	box.add_child(name_lbl)
-
-	var rarity_lbl := Label.new()
-	rarity_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	rarity_lbl.add_theme_font_size_override("font_size", 12)
-	rarity_lbl.text = RARITY_NAMES.get(item.rarity, "")
-	box.add_child(rarity_lbl)
-
-	_cards[item.id] = {
-		"panel": panel,
-		"name": name_lbl,
-		"rarity_label": rarity_lbl,
-		"rarity": rarity_col,
-	}
-
-	panel.add_child(box)
-
-	var click := Button.new()
-	click.set_anchors_preset(Control.PRESET_FULL_RECT)
-	click.flat = true
-	click.focus_mode = Control.FOCUS_NONE
-	click.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	click.pressed.connect(_select.bind(item))
-	click.mouse_entered.connect(_refresh_card.bind(item.id, true))
-	click.mouse_exited.connect(_refresh_card.bind(item.id, false))
-	card.add_child(click)
-
-	return card
-
-## Выбранная карточка заливается тёмно-синим: на фоне кремовых соседей её видно
-## сразу и ни с чем не спутать, в отличие от рамки, которая спорила с рамкой
-## редкости.
-func _card_style(selected: bool = false, hovered: bool = false) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	if selected:
-		style.bg_color = SanlaqDesignTokens.NAVY
-		style.border_color = SanlaqDesignTokens.GOLD
-		style.set_border_width_all(4)
-		style.shadow_color = Color(0.04, 0.16, 0.23, 0.34)
-		style.shadow_size = 12
-		style.shadow_offset = Vector2(0, 5)
-	else:
-		style.bg_color = Color("fffaf0") if hovered else SanlaqDesignTokens.CREAM_LIGHT
-		style.border_color = SanlaqDesignTokens.GOLD_DARK if hovered else CARD_BORDER
-		style.set_border_width_all(3 if hovered else 2)
-		style.shadow_color = Color(0.04, 0.16, 0.23, 0.20 if hovered else 0.12)
-		style.shadow_size = 9 if hovered else 6
-		style.shadow_offset = Vector2(0, 4 if hovered else 3)
-	style.set_corner_radius_all(12)
-	style.set_content_margin_all(8)
-	return style
-
-## Перекрашивает карточку под её текущее состояние: и фон, и подписи, иначе на
-## тёмной заливке остался бы тёмный текст.
-func _refresh_card(item_id: String, hovered: bool = false) -> void:
-	var parts: Dictionary = _cards.get(item_id, {})
-	if parts.is_empty():
-		return
-	var selected := item_id == _selected_id
-	(parts["panel"] as PanelContainer).add_theme_stylebox_override(
-		"panel", _card_style(selected, hovered))
-
-	var name_lbl: Label = parts["name"]
-	var rarity_lbl: Label = parts["rarity_label"]
-	if selected:
-		name_lbl.add_theme_color_override("font_color", SanlaqDesignTokens.CREAM_LIGHT)
-		rarity_lbl.add_theme_color_override("font_color", SanlaqDesignTokens.GOLD)
-	else:
-		name_lbl.add_theme_color_override("font_color", SanlaqDesignTokens.NAVY)
-		rarity_lbl.add_theme_color_override("font_color", parts["rarity"])
-
-func _photo_style() -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color("ead8b0")
-	style.border_color = Color("a26a2e")
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(8)
-	style.set_content_margin_all(3)
-	return style
 
 func _select(item: ClothingItem) -> void:
-	var previous := _selected_id
-	_selected_id = item.id
-	if previous != "" and previous != item.id:
-		_refresh_card(previous)
-	_refresh_card(item.id)
-
+	for card in _grid.get_children():
+		(card as ClothingCard).selected = (card as ClothingCard).item.id == item.id
 	var lang := GameSettings.get_lang_code()
+	%Icon.texture = load(item.icon_path) as Texture2D
+	%Icon.visible = true
+	_show_picture(null)
+	%NameLabel.text = item.get_name_for_lang(lang)
+	%MetaLabel.text = "%s · %s" % [tr(ClothingItem.SLOT_NAMES[item.slot_type]), tr(RARITY_NAMES[item.rarity])]
+	%DescLabel.text = item.get_desc_for_lang(lang)
+	_dress_mannequin(item)
 
-	_detail_icon.texture = _photo_for(item)
-	if _detail_icon.texture == null and not item.icon_path.is_empty():
-		_detail_icon.texture = load(item.icon_path) as Texture2D
-	elif _detail_icon.texture == null:
-		_detail_icon.texture = null
-	_photo_credit.text = "Дереккөз: Wikimedia Commons · лицензиясы CREDITS.md файлында"
 
-	_detail_name.text = item.get_name_for_lang(lang)
-	_detail_meta.text = "%s · %s" % [
-		tr(SLOT_NAMES.get(item.slot_type, "?")),
-		tr(RARITY_NAMES.get(item.rarity, "?")),
-	]
-	_detail_desc.text = item.get_desc_for_lang(lang)
+## Персонаж в стартовом образе, но с выбранной вещью — так её видно на человеке.
+func _dress_mannequin(item: ClothingItem) -> void:
+	OutfitApplier.dress(_mannequin, OutfitApplier.starter_outfit_with(item))
 
-func _photo_for(item: ClothingItem) -> Texture2D:
-	var path: String = item.reference_photo_path
-	return load(path) as Texture2D if not path.is_empty() else null
+
+# --- Тарих --------------------------------------------------------------------
+
+func _show_category(index: int) -> void:
+	_category = index
+	for i in _categories.get_child_count():
+		(_categories.get_child(i) as SelectableCard).selected = i == index
+	_clear_grid()
+	var cast := AssetRegistry.get_story_cast()
+	var first: EntryCard = null
+	for entry in cast.entries if cast != null else []:
+		if entry.category != CATEGORIES[index]:
+			continue
+		var open := StoryState.entry_open(SaveManager.story, entry)
+		var card := EntryCard.create(entry, open, "" if open else _locked_hint(entry))
+		card.pressed.connect(_select_entry.bind(card))
+		_grid.add_child(card)
+		if first == null:
+			first = card
+	if first != null:
+		_select_entry(first)
+
+
+func _locked_hint(entry: EncyclopediaEntry) -> String:
+	if _where.has(entry.id):
+		return tr("%s — осы тарауда ашылады.") % tr(_where[entry.id])
+	return tr("Тарих жолында ашылады.")
+
+
+func _select_entry(chosen: EntryCard) -> void:
+	for card in _grid.get_children():
+		(card as EntryCard).selected = card == chosen
+	var entry := chosen.entry
+	%Icon.visible = false
+	_show_picture(EntryCard.picture(entry, chosen.opened, MANNEQUIN_SCALE, PICTURE_SIZE))
+	if chosen.opened:
+		%NameLabel.text = tr(entry.title)
+		%MetaLabel.text = tr(entry.category)
+		%DescLabel.text = tr(entry.text)
+	else:
+		%NameLabel.text = tr("Әлі ашылмаған")
+		%MetaLabel.text = tr(entry.category)
+		%DescLabel.text = _locked_hint(entry)
+
+
+## В рамке иллюстрации — либо манекен с одеждой, либо картинка статьи.
+func _show_picture(picture: Control) -> void:
+	for child in _mannequin_slot.get_children():
+		if child != _mannequin:
+			child.queue_free()
+	_mannequin.visible = picture == null
+	if picture != null:
+		_mannequin_slot.add_child(picture)

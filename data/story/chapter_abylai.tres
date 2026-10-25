@@ -1,0 +1,548 @@
+[gd_resource type="Resource" script_class="StoryChapter" format=3]
+
+[ext_resource type="Script" path="res://scripts/story/story_beat.gd" id="1_story_beat"]
+[ext_resource type="Script" path="res://scripts/story/story_task.gd" id="2_story_task"]
+[ext_resource type="Script" path="res://scripts/story/campfire_topic.gd" id="3_campfire_topic"]
+[ext_resource type="Script" path="res://scripts/story/story_placement.gd" id="4_story_placement"]
+[ext_resource type="Script" path="res://scripts/story/story_choice.gd" id="5_story_choice"]
+[ext_resource type="Script" path="res://scripts/story/story_dialogue.gd" id="6_story_dialogue"]
+[ext_resource type="Script" path="res://scripts/story/story_chapter.gd" id="7_story_chapter"]
+
+[sub_resource type="Resource" id="StoryBeat_1"]
+script = ExtResource("1_story_beat")
+npc = "NPC_BI"
+objective = "Бимен кеңес"
+dialogue = "DIA_A_BI"
+xp = 50
+checkpoint = "ABYLAI_COUNCIL"
+action = 0
+unlock = Array[String]([])
+location = 0
+
+[sub_resource type="Resource" id="StoryBeat_2"]
+script = ExtResource("1_story_beat")
+npc = "NPC_ENVOY_WEST"
+objective = "Кіші жүз елшісін тыңда"
+dialogue = "DIA_A_ENVOY_W"
+xp = 40
+checkpoint = "ABYLAI_WEST"
+action = 0
+unlock = Array[String]([])
+location = 0
+
+[sub_resource type="Resource" id="StoryBeat_3"]
+script = ExtResource("1_story_beat")
+npc = "NPC_ENVOY_SOUTH"
+objective = "Ұлы жүз елшісімен сөйлес"
+dialogue = "DIA_A_ENVOY_S"
+xp = 40
+checkpoint = "ABYLAI_SOUTH"
+action = 0
+unlock = Array[String]([])
+location = 0
+
+[sub_resource type="Resource" id="StoryTask_4"]
+script = ExtResource("2_story_task")
+title = "АТТЫ ЖЕТЕЛЕУ"
+hint = "Ат соңыңнан ереді. Оны бағанаға дейін апар."
+item_label = "Ат"
+props = Array[String](["post"])
+points = PackedVector2Array(11.6, -6.4)
+required = 1
+goal = Vector2(6.4, 10.6)
+
+[sub_resource type="Resource" id="StoryBeat_5"]
+script = ExtResource("1_story_beat")
+npc = "NPC_HERDER"
+objective = "Елшінің атын бағанаға жетеле"
+dialogue = "DIA_A_HERDER"
+xp = 60
+checkpoint = "ABYLAI_HORSE"
+action = 3
+unlock = Array[String]([])
+location = 0
+task = SubResource("StoryTask_4")
+
+[sub_resource type="Resource" id="StoryTask_6"]
+script = ExtResource("2_story_task")
+title = "БӘЙГЕ"
+hint = "Бес белгіні ретімен ал, қарсыласыңнан озып мәреге жет."
+item_label = "Белгі"
+props = Array[String](["post"])
+points = PackedVector2Array(16.0, -12.0, 18.0, 8.0, 0.0, 18.0, -18.0, 8.0, -16.0, -12.0)
+required = 5
+goal = Vector2(0.0, 14.0)
+
+[sub_resource type="Resource" id="StoryBeat_7"]
+script = ExtResource("1_story_beat")
+npc = "NPC_HERDER"
+objective = "Бәйгеге қосыл"
+dialogue = "DIA_A_BAIGE"
+xp = 120
+checkpoint = "ABYLAI_BAIGE"
+action = 7
+unlock = Array[String](["baige"])
+location = 0
+task = SubResource("StoryTask_6")
+
+[sub_resource type="Resource" id="StoryBeat_8"]
+script = ExtResource("1_story_beat")
+npc = "NPC_CHILDREN"
+objective = "Балалармен асық ат"
+dialogue = "DIA_A_CHILDREN"
+xp = 100
+checkpoint = "ABYLAI_GAME"
+action = 6
+unlock = Array[String](["asyk"])
+location = 0
+
+[sub_resource type="Resource" id="CampfireTopic_9"]
+script = ExtResource("3_campfire_topic")
+label = "Жоңғар заманы"
+dialogue = "DIA_A_T1"
+entry = "dzungar_wars"
+
+[sub_resource type="Resource" id="CampfireTopic_10"]
+script = ExtResource("3_campfire_topic")
+label = "Ақтабан шұбырынды"
+dialogue = "DIA_A_T4"
+entry = "aktaban"
+
+[sub_resource type="Resource" id="CampfireTopic_11"]
+script = ExtResource("3_campfire_topic")
+label = "Хан қалай сайланады?"
+dialogue = "DIA_A_T5"
+entry = "khan_saylau"
+
+[sub_resource type="Resource" id="CampfireTopic_12"]
+script = ExtResource("3_campfire_topic")
+label = "Асық ойыны"
+dialogue = "DIA_A_T3"
+entry = "asyk"
+
+[sub_resource type="Resource" id="StoryBeat_13"]
+script = ExtResource("1_story_beat")
+npc = "NPC_ELDER"
+objective = "Кешкі от басына бар"
+dialogue = "DIA_A_ELDER"
+xp = 50
+checkpoint = "ABYLAI_NIGHT"
+action = 9
+unlock = Array[String]([])
+location = 0
+campfire_title = "Түркістан алдындағы түн"
+topics = Array[ExtResource("3_campfire_topic")]([SubResource("CampfireTopic_9"), SubResource("CampfireTopic_10"), SubResource("CampfireTopic_11"), SubResource("CampfireTopic_12")])
+
+[sub_resource type="Resource" id="StoryBeat_14"]
+script = ExtResource("1_story_beat")
+npc = "NPC_BI"
+objective = "Түркістандағы жиынға қатыс"
+dialogue = "DIA_A_ROUTE"
+xp = 100
+checkpoint = "ABYLAI_COMPLETE"
+action = 10
+unlock = Array[String](["abylai_khan", "turkistan", "syrdariya", "karatau"])
+location = 2
+route_title = "Түркістанға жол"
+route_goal = "Үш жүздің жиынына жету"
+route_start = "Сарыарқа"
+route_end = "Түркістан"
+route = PackedVector2Array(0.56, 0.24, 0.5, 0.4, 0.45, 0.5800000000000001, 0.45, 0.75)
+
+[sub_resource type="Resource" id="StoryPlacement_15"]
+script = ExtResource("4_story_placement")
+npc = "NPC_BI"
+look = ""
+position = Vector2(-4.0, -6.0)
+facing = Vector2(0.0, 1.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_16"]
+script = ExtResource("4_story_placement")
+npc = "NPC_ENVOY_WEST"
+look = ""
+position = Vector2(-8.5, -3.5)
+facing = Vector2(1.0, 0.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_17"]
+script = ExtResource("4_story_placement")
+npc = "NPC_ENVOY_SOUTH"
+look = ""
+position = Vector2(8.4, -3.2)
+facing = Vector2(-1.0, 0.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_18"]
+script = ExtResource("4_story_placement")
+npc = "NPC_CHILDREN"
+look = ""
+position = Vector2(5.0, -7.0)
+facing = Vector2(0.0, 1.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_19"]
+script = ExtResource("4_story_placement")
+npc = "NPC_ELDER"
+look = ""
+position = Vector2(-5.6, 1.2)
+facing = Vector2(1.0, 0.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_20"]
+script = ExtResource("4_story_placement")
+npc = "NPC_HERDER"
+look = ""
+position = Vector2(10.5, 1.5)
+facing = Vector2(-1.0, 0.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_21"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "child_girl"
+position = Vector2(6.3, -6.2)
+facing = Vector2(-1.0, 0.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_22"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "warrior"
+position = Vector2(2.6, -12.4)
+facing = Vector2(0.0, 1.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_23"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "warrior"
+position = Vector2(-2.6, -12.4)
+facing = Vector2(0.0, 1.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_24"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "woman"
+position = Vector2(-10.0, -12.4)
+facing = Vector2(0.0, 1.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_25"]
+script = ExtResource("4_story_placement")
+npc = "NPC_ENVOY_SOUTH"
+look = ""
+position = Vector2(-2.4, -6.6)
+facing = Vector2(1.0, 0.0)
+location = 2
+
+[sub_resource type="Resource" id="StoryPlacement_26"]
+script = ExtResource("4_story_placement")
+npc = "NPC_BI"
+look = ""
+position = Vector2(2.6, -7.2)
+facing = Vector2(-1.0, 0.0)
+location = 2
+
+[sub_resource type="Resource" id="StoryPlacement_27"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "envoy"
+position = Vector2(-6.4, -2.6)
+facing = Vector2(1.0, 0.0)
+location = 2
+
+[sub_resource type="Resource" id="StoryPlacement_28"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "warrior"
+position = Vector2(6.2, -2.4)
+facing = Vector2(-1.0, 0.0)
+location = 2
+
+[sub_resource type="Resource" id="StoryPlacement_29"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "resident"
+position = Vector2(-8.6, 4.4)
+facing = Vector2(0.0, -1.0)
+location = 2
+
+[sub_resource type="Resource" id="StoryPlacement_30"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "woman"
+position = Vector2(8.4, 3.6)
+facing = Vector2(0.0, -1.0)
+location = 2
+
+[sub_resource type="Resource" id="StoryPlacement_31"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "child"
+position = Vector2(-3.6, 8.4)
+facing = Vector2(0.0, -1.0)
+location = 2
+
+[sub_resource type="Resource" id="StoryPlacement_32"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "warrior"
+position = Vector2(-4.6, 4.6)
+facing = Vector2(1.0, 0.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_33"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "warrior"
+position = Vector2(-3.2, 6.0)
+facing = Vector2(0.0, -1.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_34"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "envoy2"
+position = Vector2(4.2, 5.0)
+facing = Vector2(-1.0, 0.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryChoice_35"]
+script = ExtResource("5_story_choice")
+label = "Бірінші болып соққы береміз"
+next_dialogue = "DIA_A_BI_STRIKE"
+flag = "strike"
+xp = 10
+unity = 0
+
+[sub_resource type="Resource" id="StoryChoice_36"]
+script = ExtResource("5_story_choice")
+label = "Күшімізді біріктірейік"
+next_dialogue = "DIA_A_BI_UNITE"
+flag = "unite"
+xp = 20
+unity = 30
+
+[sub_resource type="Resource" id="StoryDialogue_37"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_BI"
+speaker = "Би"
+look = "bi"
+lines = Array[String](["Абылай сұлтан, жоңғар қаупі әлі сейілген жоқ. Шекарада шапқыншылар жиі көрінеді.", "Қолда жасақ бар. Бірақ ел бытыраңқы — әр жүз өз қамымен жүр.", "Қалай істейміз: бірінші болып соққы береміз бе, әлде күшімізді біріктіреміз бе?"])
+choices = Array[ExtResource("5_story_choice")]([SubResource("StoryChoice_35"), SubResource("StoryChoice_36")])
+check_note = "[ПРОВЕРИТЬ] обстановка перед избранием Абылая ханом"
+
+[sub_resource type="Resource" id="StoryDialogue_38"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_BI_STRIKE"
+speaker = "Би"
+look = "bi"
+lines = Array[String](["Жүрек батыл. Бірақ жалғыз қолдан шапалақ шықпас — алдымен елшілерді тыңдаңыз."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_39"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_BI_UNITE"
+speaker = "Би"
+look = "bi"
+lines = Array[String](["Дұрыс шешім. Үш жүздің басы қосылса, жау алмайтын қамал жоқ. Елшілер сізді күтіп тұр."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryChoice_40"]
+script = ExtResource("5_story_choice")
+label = "Екі жақты да тыңдап, әділ бітім айтамын"
+next_dialogue = "DIA_A_ENVOY_W_FAIR"
+flag = "fair"
+xp = 20
+unity = 30
+
+[sub_resource type="Resource" id="StoryChoice_41"]
+script = ExtResource("5_story_choice")
+label = "Күштінің сөзі өтеді"
+next_dialogue = "DIA_A_ENVOY_W_FORCE"
+flag = "force"
+xp = 10
+unity = 0
+
+[sub_resource type="Resource" id="StoryDialogue_42"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_ENVOY_W"
+speaker = "Кіші жүз елшісі"
+look = "envoy"
+lines = Array[String](["Сұлтан, біздің ауылдар жайылым үшін көршілерімен дауласып жүр.", "Әділ төрелік айтсаңыз, ел сізге құлақ асады."])
+choices = Array[ExtResource("5_story_choice")]([SubResource("StoryChoice_40"), SubResource("StoryChoice_41")])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_43"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_ENVOY_W_FAIR"
+speaker = "Кіші жүз елшісі"
+look = "envoy"
+lines = Array[String](["Бұл — бидің де, ханның да жолы. Біз бірлікке қосыламыз."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_44"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_ENVOY_W_FORCE"
+speaker = "Кіші жүз елшісі"
+look = "envoy"
+lines = Array[String](["Күшпен тоқтатылған дау кейін қайта өршиді... Бірақ бұйрығыңызды жеткіземін."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryChoice_45"]
+script = ExtResource("5_story_choice")
+label = "Жасақ жіберіп, жолды қорғаймыз"
+next_dialogue = "DIA_A_ENVOY_S_GUARD"
+flag = "guard"
+xp = 20
+unity = 20
+
+[sub_resource type="Resource" id="StoryChoice_46"]
+script = ExtResource("5_story_choice")
+label = "Кеңесіп, бірге шешейік"
+next_dialogue = "DIA_A_ENVOY_S_COUNCIL"
+flag = "council"
+xp = 20
+unity = 30
+
+[sub_resource type="Resource" id="StoryDialogue_47"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_ENVOY_S"
+speaker = "Ұлы жүз елшісі"
+look = "envoy2"
+lines = Array[String](["Оңтүстікте керуен жолы қауіпті. Түркістан маңы тыныш болуы керек.", "Біз сізден қолдау күтеміз."])
+choices = Array[ExtResource("5_story_choice")]([SubResource("StoryChoice_45"), SubResource("StoryChoice_46")])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_48"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_ENVOY_S_GUARD"
+speaker = "Ұлы жүз елшісі"
+look = "envoy2"
+lines = Array[String](["Рақмет. Батырлар жолды күзетсе, керуен де, ел де тынады."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_49"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_ENVOY_S_COUNCIL"
+speaker = "Ұлы жүз елшісі"
+look = "envoy2"
+lines = Array[String](["Кеңесті ел азбайды. Түркістандағы жиында кездесеміз."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_50"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_HERDER"
+speaker = "Малшы"
+look = "resident"
+lines = Array[String](["Елшінің аты бос жүр, сұлтаным.", "Атты бағанаға дейін жетелеп апарыңызшы — соңыңыздан ереді."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_51"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_BAIGE"
+speaker = "Малшы"
+look = "resident"
+lines = Array[String](["Жиын алдында бәйге бар, сұлтаным. Ауыл жігіті сізбен жарысқысы келеді.", "Бес белгіні ретімен алып, мәреге бірінші жетсеңіз — жеңіс сіздікі."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_52"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_CHILDREN"
+speaker = "Балалар"
+look = "child"
+lines = Array[String](["Сұлтан аға, сақаңызды алыңыз! Асық атып көрейік.", "Бес рет атасыз. Үш асықты шеңберден шығарсаңыз — жеңіс сіздікі!"])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_53"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_ELDER"
+speaker = "Ақсақал"
+look = "elder"
+lines = Array[String](["Ертең ұзақ жол. Бүгін от басында отырып, бабалар сөзін тыңдайық."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_54"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_T1"
+speaker = "Ақсақал"
+look = "elder"
+lines = Array[String](["1723 жылы жоңғарлар кенеттен шабуыл жасады. Ел ауыр күйге түсті.", "Халық ол жылдарды «Ақтабан шұбырынды» деп атады."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = "[ПРОВЕРИТЬ] 1723 год и название «Ақтабан шұбырынды»"
+
+[sub_resource type="Resource" id="StoryDialogue_55"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_T2"
+speaker = "Ақсақал"
+look = "elder"
+lines = Array[String](["Құрметті кісіге шапан жабу — ізет пен сыйдың белгісі.", "Шапанның сәні де, жылуы да — шеберінің қолында."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = "[ПРОВЕРИТЬ] обычай «шапан жабу»"
+
+[sub_resource type="Resource" id="StoryDialogue_56"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_T4"
+speaker = "Ақсақал"
+look = "elder"
+lines = Array[String](["Ауыр жылдары ел жаппай босыпты.", "Халық ол кезеңді «Ақтабан шұбырынды» деп атаған."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = "[ПРОВЕРИТЬ] происхождение выражения"
+
+[sub_resource type="Resource" id="StoryDialogue_57"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_T5"
+speaker = "Ақсақал"
+look = "elder"
+lines = Array[String](["Хан сайлауда ел өкілдері жиналады.", "Жаңа ханды ақ киізге көтеріп, жұртқа таныстырады."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = "[ПРОВЕРИТЬ] обряд поднятия на белой кошме"
+
+[sub_resource type="Resource" id="StoryDialogue_58"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_T3"
+speaker = "Ақсақал"
+look = "elder"
+lines = Array[String](["Асық — ауыл баласының сүйікті ойыны.", "Сақаны дәл ату үшін көз де, шыдам да керек."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_59"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_A_ROUTE"
+speaker = "Би"
+look = "bi"
+lines = Array[String](["Қала қақпасы ашық, үш жүздің өкілдері жиналып қалды.", "Ел алдына шығатын уақыт жетті."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = "[ПРОВЕРИТЬ] место избрания — Түркістан"
+
+[resource]
+script = ExtResource("7_story_chapter")
+id = "CH_ABYLAI"
+hero = "ROLE_ABYLAI"
+title = "II тарау · Бірлік"
+subtitle = "XVIII ғасыр"
+intro = "Жоңғар шапқыншылығы елді әлсіретті. Абылай сұлтан үш жүздің басын қосып, ел бірлігін нығайтуы керек."
+finale_title = "II ТАРАУ АЯҚТАЛДЫ"
+finale_text = "Түркістанда ел жиналды. Дәстүр бойынша Абылайды ақ киізге көтеріп, хан сайлады."
+finale_alt_text = "Түркістанда үш жүздің өкілдері бір дастарқанға жиналды. Бірлікті таңдаған Абылайды ел ақ киізге көтеріп, хан сайлады."
+finale_alt_min_unity = 60
+ally_min_unity = 50
+ally_message = "Кіші жүз бен Ұлы жүз жасағы келді"
+duel_ally_min_unity = 50
+beats = Array[ExtResource("1_story_beat")]([SubResource("StoryBeat_1"), SubResource("StoryBeat_2"), SubResource("StoryBeat_3"), SubResource("StoryBeat_5"), SubResource("StoryBeat_7"), SubResource("StoryBeat_8"), SubResource("StoryBeat_13"), SubResource("StoryBeat_14")])
+placements = Array[ExtResource("4_story_placement")]([SubResource("StoryPlacement_15"), SubResource("StoryPlacement_16"), SubResource("StoryPlacement_17"), SubResource("StoryPlacement_18"), SubResource("StoryPlacement_19"), SubResource("StoryPlacement_20"), SubResource("StoryPlacement_21"), SubResource("StoryPlacement_22"), SubResource("StoryPlacement_23"), SubResource("StoryPlacement_24"), SubResource("StoryPlacement_25"), SubResource("StoryPlacement_26"), SubResource("StoryPlacement_27"), SubResource("StoryPlacement_28"), SubResource("StoryPlacement_29"), SubResource("StoryPlacement_30"), SubResource("StoryPlacement_31")])
+allies = Array[ExtResource("4_story_placement")]([SubResource("StoryPlacement_32"), SubResource("StoryPlacement_33"), SubResource("StoryPlacement_34")])
+dialogues = Array[ExtResource("6_story_dialogue")]([SubResource("StoryDialogue_37"), SubResource("StoryDialogue_38"), SubResource("StoryDialogue_39"), SubResource("StoryDialogue_42"), SubResource("StoryDialogue_43"), SubResource("StoryDialogue_44"), SubResource("StoryDialogue_47"), SubResource("StoryDialogue_48"), SubResource("StoryDialogue_49"), SubResource("StoryDialogue_50"), SubResource("StoryDialogue_51"), SubResource("StoryDialogue_52"), SubResource("StoryDialogue_53"), SubResource("StoryDialogue_54"), SubResource("StoryDialogue_55"), SubResource("StoryDialogue_56"), SubResource("StoryDialogue_57"), SubResource("StoryDialogue_58"), SubResource("StoryDialogue_59")])

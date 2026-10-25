@@ -8,6 +8,10 @@ signal finished
 
 const REVEAL_TIME := 0.25
 
+## Где по высоте экрана середина полосы: 0.5 — по центру. Выше центра —
+## если в центре уже что-то есть (например, обратный отсчёт).
+@export_range(0.0, 1.0) var center_y := 0.5
+
 var _clip: Control
 var _strip: PanelContainer
 var _title: Label
@@ -25,8 +29,8 @@ func _ready() -> void:
 	_clip.clip_contents = true
 	_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_clip.anchor_right = 1.0
-	_clip.anchor_top = 0.5
-	_clip.anchor_bottom = 0.5
+	_clip.anchor_top = center_y
+	_clip.anchor_bottom = center_y
 	add_child(_clip)
 
 	_strip = PanelContainer.new()
@@ -63,7 +67,7 @@ func show_banner(title: String, subtitle: String = "", hold_seconds: float = 2.0
 	visible = true
 
 	await _animate_height(0.0, height)
-	await get_tree().create_timer(hold_seconds).timeout
+	await get_tree().create_timer(hold_seconds, false).timeout
 	if serial != _serial:
 		return
 	await _animate_height(height, 0.0)

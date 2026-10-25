@@ -21,6 +21,8 @@ const STEPS_WRONG := 1
 
 const HUMAN := 0
 const BOT := 1
+## Көмбе каждого игрока — противоположные углы поля.
+const HOMES: Array[Vector2i] = [Vector2i(0, GRID - 1), Vector2i(GRID - 1, 0)]
 
 ## Насколько холодно. Точное число не показываем: игрок должен догадываться, а
 ## не вычислять — иначе теряется сам смысл поиска.
@@ -55,7 +57,7 @@ func reset() -> void:
 
 ## Новый раунд: сүйек прячется заново, оба возвращаются в свои көмбе.
 func start_round() -> void:
-	positions = [Vector2i(0, GRID - 1), Vector2i(GRID - 1, 0)]
+	positions = HOMES.duplicate()
 	steps = [0, 0]
 	revealed = {}
 	current_player = HUMAN

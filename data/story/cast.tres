@@ -1,0 +1,477 @@
+[gd_resource type="Resource" script_class="StoryCast" format=3]
+
+[ext_resource type="Script" path="res://scripts/story/story_npc.gd" id="1_story_npc"]
+[ext_resource type="Script" path="res://scripts/story/story_hero.gd" id="2_story_hero"]
+[ext_resource type="Script" path="res://scripts/story/encyclopedia_entry.gd" id="3_encyclopedia_entry"]
+[ext_resource type="Script" path="res://scripts/story/story_cast.gd" id="4_story_cast"]
+
+[sub_resource type="Resource" id="StoryNpc_1"]
+script = ExtResource("1_story_npc")
+id = "NPC_BI"
+name = "Би"
+look = "bi"
+idle_line = "Асықпа. Әр істің өз уақыты бар."
+again_line = "Иә?"
+
+[sub_resource type="Resource" id="StoryNpc_2"]
+script = ExtResource("1_story_npc")
+id = "NPC_AISHA"
+name = "Айша"
+look = "woman"
+idle_line = "Ауылда шаруа көп: жүк те, бала да менде."
+again_line = "Шаруам бітпей жатыр."
+
+[sub_resource type="Resource" id="StoryNpc_3"]
+script = ExtResource("1_story_npc")
+id = "NPC_CHILDREN"
+name = "Балалар"
+look = "child"
+idle_line = "Біз ойнап жүрміз! Кейін бізге қосылыңыз."
+again_line = "Ойнаймыз ба?"
+
+[sub_resource type="Resource" id="StoryNpc_4"]
+script = ExtResource("1_story_npc")
+id = "NPC_ELDER"
+name = "Ақсақал"
+look = "elder"
+idle_line = "Кешке от басында әңгіме айтамын."
+again_line = "Кешке кел."
+
+[sub_resource type="Resource" id="StoryNpc_5"]
+script = ExtResource("1_story_npc")
+id = "NPC_HERDER"
+name = "Малшы"
+look = "resident"
+idle_line = "Жылқылар жайылымнан оралды. Бәрі аман."
+again_line = "Жылқы аман."
+
+[sub_resource type="Resource" id="StoryNpc_6"]
+script = ExtResource("1_story_npc")
+id = "NPC_ENVOY_WEST"
+name = "Кіші жүз елшісі"
+look = "envoy"
+idle_line = "Шешіміңізді күтеміз."
+again_line = "Күтіп тұрмыз."
+
+[sub_resource type="Resource" id="StoryNpc_7"]
+script = ExtResource("1_story_npc")
+id = "NPC_ENVOY_SOUTH"
+name = "Ұлы жүз елшісі"
+look = "envoy2"
+idle_line = "Ұлы жүз сізге сәлем айтты."
+again_line = "Сәлем."
+
+[sub_resource type="Resource" id="StoryNpc_8"]
+script = ExtResource("1_story_npc")
+id = "NPC_COMMANDER"
+name = "Жүзбасы"
+look = "warrior"
+idle_line = "Жасақ сапта тұр, батыр."
+again_line = "Бұйрық күтемін."
+
+[sub_resource type="Resource" id="StoryNpc_9"]
+script = ExtResource("1_story_npc")
+id = "NPC_SMITH"
+name = "Ұста"
+look = "resident"
+idle_line = "Балғам тынбайды — қару-жарақ көп."
+again_line = "Жұмыс көп."
+
+[sub_resource type="Resource" id="StoryNpc_10"]
+script = ExtResource("1_story_npc")
+id = "NPC_SCOUT"
+name = "Барлаушы"
+look = "envoy"
+idle_line = "Жау жақын. Сақ болыңыз."
+again_line = "Сақ бол."
+
+[sub_resource type="Resource" id="StoryHero_11"]
+script = ExtResource("2_story_hero")
+id = "ROLE_KEREY"
+name = "Керей хан"
+description = "Қазақ хандығының негізін қалаушылардың бірі."
+era = "ХАН • XV Ғ."
+tagline = "Көш. Ел. Бастау."
+look = "kerey"
+chapter = "CH_KEREY"
+order = 0
+
+[sub_resource type="Resource" id="StoryHero_12"]
+script = ExtResource("2_story_hero")
+id = "ROLE_ABYLAI"
+name = "Абылай хан"
+description = "Үш жүздің басын қосқан хан және дипломат."
+era = "ХАН • XVIII Ғ."
+tagline = "Бірлік. Дипломатия. Ел."
+look = "abylai"
+chapter = "CH_ABYLAI"
+order = 1
+
+[sub_resource type="Resource" id="StoryHero_13"]
+script = ExtResource("2_story_hero")
+id = "ROLE_KABANBAY"
+name = "Қабанбай батыр"
+description = "Жоңғар шапқыншылығына қарсы қол бастаған батыр."
+era = "БАТЫР • XVIII Ғ."
+tagline = "Ерлік. Қорғаныс. Ел."
+look = "kabanbay"
+chapter = "CH_KABANBAY"
+order = 2
+
+[sub_resource type="Resource" id="EncyclopediaEntry_14"]
+script = ExtResource("3_encyclopedia_entry")
+id = "kerey_khan"
+category = "ТҰЛҒАЛАР"
+title = "Керей хан"
+text = "Қазақ хандығының негізін Жәнібекпен бірге қалаған алғашқы хан. Ел оның тұсында Шу бойы мен Қозыбасы өңіріне қоныстанды."
+open_from_start = false
+look = "kerey"
+icon = ""
+check_note = "[ПРОВЕРИТЬ] годы правления Керея, роль Жәнібека, Қозыбасы"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_15"]
+script = ExtResource("3_encyclopedia_entry")
+id = "zhanibek_khan"
+category = "ТҰЛҒАЛАР"
+title = "Жәнібек хан"
+text = "Керейдің серігі, хандықтың екінші негізін қалаушы. Екеуі бір мезгілде ел басқарған деп айтылады."
+open_from_start = true
+look = "abylai"
+icon = ""
+check_note = "[ПРОВЕРИТЬ] происхождение Жәнібека, совместное правление"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_16"]
+script = ExtResource("3_encyclopedia_entry")
+id = "abylai_khan"
+category = "ТҰЛҒАЛАР"
+title = "Абылай хан"
+text = "XVIII ғасырдағы қазақ ханы, қолбасшы әрі дипломат. Жоңғар, Цин және Ресей арасында елдің дербестігін сақтауға тырысты. 1771 жылы Түркістанда хан сайланды."
+open_from_start = false
+look = "abylai"
+icon = ""
+check_note = "[ПРОВЕРИТЬ] годы жизни (1711–1781), избрание в 1771 г. в Туркестане"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_17"]
+script = ExtResource("3_encyclopedia_entry")
+id = "kabanbay_batyr"
+category = "ТҰЛҒАЛАР"
+title = "Қабанбай батыр"
+text = "XVIII ғасырдағы атақты батыр, қолбасшы. Жоңғар шапқыншылығына қарсы соғыстарда қол бастады. Халық оны «Дарабоз» деп атаған."
+open_from_start = false
+look = "kabanbay"
+icon = ""
+check_note = "[ПРОВЕРИТЬ] годы жизни, прозвище «Дарабоз», участие в сражениях"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_18"]
+script = ExtResource("3_encyclopedia_entry")
+id = "bogenbay_batyr"
+category = "ТҰЛҒАЛАР"
+title = "Бөгенбай батыр"
+text = "Қанжығалы Бөгенбай — XVIII ғасырдағы қолбасшы батыр. Аңырақай шайқасына қатысқан деп айтылады."
+open_from_start = false
+look = "warrior"
+icon = ""
+check_note = "[ПРОВЕРИТЬ] годы жизни, участие в Аңырақай"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_19"]
+script = ExtResource("3_encyclopedia_entry")
+id = "bi_institute"
+category = "ТҰЛҒАЛАР"
+title = "Би және билік"
+text = "Би — дауды шешетін, ел ішінде әділдік айтатын кісі. Оның беделі байлықпен емес, сөзімен және әділдігімен өлшенген."
+open_from_start = true
+look = "bi"
+icon = ""
+check_note = "[ПРОВЕРИТЬ] институт биев, судебная практика"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_20"]
+script = ExtResource("3_encyclopedia_entry")
+id = "aksakal"
+category = "ТҰЛҒАЛАР"
+title = "Ақсақал"
+text = "Ауылдың ең үлкені әрі ақылшысы. Дау-дамай, көш, той — бәрі ақсақалдың батасымен басталған."
+open_from_start = true
+look = "elder"
+icon = ""
+check_note = "[ПРОВЕРИТЬ] роль старейшин в общине"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_21"]
+script = ExtResource("3_encyclopedia_entry")
+id = "kazakh_woman"
+category = "ТҰЛҒАЛАР"
+title = "Қазақ әйелі"
+text = "Үй шаруасы, бала тәрбиесі, киіз үйдің жиналуы мен тігілуі — көш шаруашылығының көбі әйел қолында болған."
+open_from_start = true
+look = "woman"
+icon = ""
+check_note = "[ПРОВЕРИТЬ] хозяйственная роль женщины в кочевье"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_22"]
+script = ExtResource("3_encyclopedia_entry")
+id = "kazakh_khanate"
+category = "ОҚИҒАЛАР"
+title = "Қазақ хандығы"
+text = "XV ғасырдың ортасында Керей мен Жәнібек сұлтандар елін Жетісудың батысына бастап көшті. Осы көштен кейін, 1465 жылы, Қазақ хандығы құрылды."
+open_from_start = false
+look = ""
+icon = "banner"
+check_note = "[ПРОВЕРИТЬ] дата основания (в источниках 1456/1465), маршрут откочёвки"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_23"]
+script = ExtResource("3_encyclopedia_entry")
+id = "kosh"
+category = "ОҚИҒАЛАР"
+title = "Көш"
+text = "Көш — ауылдың жайлауға не қыстауға көшуі. Киіз үй жығылып, түйеге артылады; алдыңғы легте қарттар мен балалар жүреді."
+open_from_start = false
+look = ""
+icon = "horse"
+check_note = "[ПРОВЕРИТЬ] порядок перекочёвки, сезонные маршруты"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_24"]
+script = ExtResource("3_encyclopedia_entry")
+id = "dzungar_wars"
+category = "ОҚИҒАЛАР"
+title = "Жоңғар шапқыншылығы"
+text = "1723 жылғы жойқын шабуыл халық жадында «Ақтабан шұбырынды» деген атпен қалды. Кейін Бұланты мен Аңырақай шайқастарында қазақ жасақтары жеңіске жетті."
+open_from_start = false
+look = ""
+icon = "swords"
+check_note = "[ПРОВЕРИТЬ] даты: 1723, Бұланты (1727/1728), Аңырақай (1729/1730)"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_25"]
+script = ExtResource("3_encyclopedia_entry")
+id = "aktaban"
+category = "ОҚИҒАЛАР"
+title = "Ақтабан шұбырынды"
+text = "Ауыр жылдардың халықтық атауы: ел жаппай босып, мал мен жайылымнан айырылған. Бұл кезең жыр мен күйде де сақталған."
+open_from_start = false
+look = ""
+icon = "swords"
+check_note = "[ПРОВЕРИТЬ] происхождение выражения, хронология"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_26"]
+script = ExtResource("3_encyclopedia_entry")
+id = "anyrakay"
+category = "ОҚИҒАЛАР"
+title = "Аңырақай шайқасы"
+text = "Балқаштың оңтүстігіндегі даладағы ірі шайқас. Үш жүздің жасағы бірігіп қимылдағаны айтылады."
+open_from_start = false
+look = ""
+icon = "swords"
+check_note = "[ПРОВЕРИТЬ] дата (1729/1730), место, состав войск"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_27"]
+script = ExtResource("3_encyclopedia_entry")
+id = "turkistan"
+category = "ОҚИҒАЛАР"
+title = "Түркістан"
+text = "Сырдария бойындағы ежелгі қала. Хандық тұсында саяси және рухани орталық саналған; мұнда жиындар өткен."
+open_from_start = false
+look = ""
+icon = "yurt"
+check_note = "[ПРОВЕРИТЬ] статус Туркестана как столицы, Қожа Ахмет Ясауи кесенесі"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_28"]
+script = ExtResource("3_encyclopedia_entry")
+id = "zhekpe_zhek"
+category = "ОҚИҒАЛАР"
+title = "Жекпе-жек"
+text = "Үлкен шайқас алдында екі жақтың батыры жекпе-жекке шығатын дәстүр. Жеңіс жасақтың рухын көтерген."
+open_from_start = false
+look = ""
+icon = "naiza"
+check_note = "[ПРОВЕРИТЬ] традиция поединков перед сражением"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_29"]
+script = ExtResource("3_encyclopedia_entry")
+id = "khan_saylau"
+category = "ОҚИҒАЛАР"
+title = "Хан сайлау"
+text = "Жаңа ханды ел өкілдері сайлап, ақ киізге көтерген. Салт-жораның бір бөлігі — ханның киімін жұртқа үлестіру."
+open_from_start = false
+look = ""
+icon = "banner"
+check_note = "[ПРОВЕРИТЬ] обряд поднятия на белой кошме"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_30"]
+script = ExtResource("3_encyclopedia_entry")
+id = "saryarka"
+category = "ЖЕР-СУ"
+title = "Сарыарқа"
+text = "Орталық Қазақстанның кең даласы: ұсақ шоқылар, өзен аңғарлары, жазда шүйгін жайылым."
+open_from_start = true
+look = ""
+icon = "horse"
+check_note = "[ПРОВЕРИТЬ] границы Сарыарки, рельеф"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_31"]
+script = ExtResource("3_encyclopedia_entry")
+id = "zhetysu"
+category = "ЖЕР-СУ"
+title = "Жетісу"
+text = "Жеті өзеннің өлкесі. Тау бөктері мен өзен аңғарлары малға да, егінге де қолайлы болған."
+open_from_start = true
+look = ""
+icon = "yurt"
+check_note = "[ПРОВЕРИТЬ] какие именно семь рек"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_32"]
+script = ExtResource("3_encyclopedia_entry")
+id = "syrdariya"
+category = "ЖЕР-СУ"
+title = "Сырдария"
+text = "Оңтүстіктің басты өзені. Бойында Сығанақ, Отырар, Түркістан сияқты қалалар тұрған."
+open_from_start = true
+look = ""
+icon = "banner"
+check_note = "[ПРОВЕРИТЬ] города на Сырдарье"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_33"]
+script = ExtResource("3_encyclopedia_entry")
+id = "balkash"
+category = "ЖЕР-СУ"
+title = "Балқаш"
+text = "Батыс жағы тұщы, шығыс жағы тұзды деп айтылатын үлкен көл. Жағасы қыстауға ыңғайлы болған."
+open_from_start = true
+look = ""
+icon = "yurt"
+check_note = "[ПРОВЕРИТЬ] гидрология Балхаша"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_34"]
+script = ExtResource("3_encyclopedia_entry")
+id = "ulytau"
+category = "ЖЕР-СУ"
+title = "Ұлытау"
+text = "Сарыарқаның ортасындағы таулы өлке. Көне қорымдар мен кесенелер осында сақталған."
+open_from_start = false
+look = ""
+icon = "swords"
+check_note = "[ПРОВЕРИТЬ] памятники Улытау"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_35"]
+script = ExtResource("3_encyclopedia_entry")
+id = "karatau"
+category = "ЖЕР-СУ"
+title = "Қаратау"
+text = "Сырдария мен даланы бөліп тұрған таулы жота. Көш жолдары осы жотаның асуларымен өткен."
+open_from_start = false
+look = ""
+icon = "horse"
+check_note = "[ПРОВЕРИТЬ] перевалы и маршруты через Каратау"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_36"]
+script = ExtResource("3_encyclopedia_entry")
+id = "zhaylau"
+category = "ЖЕР-СУ"
+title = "Жайлау мен қыстау"
+text = "Жазда биік жайлау, қыста ықтасын қыстау. Мал шаруашылығының жылдық айналымы осы екі мекенге негізделген."
+open_from_start = true
+look = ""
+icon = "yurt"
+check_note = "[ПРОВЕРИТЬ] сезонный цикл кочевья"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_37"]
+script = ExtResource("3_encyclopedia_entry")
+id = "kiiz_ui"
+category = "МӘДЕНИЕТ"
+title = "Киіз үй"
+text = "Кереге, уық және шаңырақтан құралатын көшпелі баспана. Тез жиналады, жылы әрі желге төзімді."
+open_from_start = true
+look = ""
+icon = "yurt"
+check_note = "[ПРОВЕРИТЬ] конструкция и части юрты"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_38"]
+script = ExtResource("3_encyclopedia_entry")
+id = "zhuzder"
+category = "МӘДЕНИЕТ"
+title = "Үш жүз"
+text = "Қазақ халқы дәстүрлі түрде Ұлы, Орта және Кіші жүз болып бөлінеді. Әр жүздің өз аймағы мен руларының тізбегі бар."
+open_from_start = true
+look = ""
+icon = "zhuz"
+check_note = "[ПРОВЕРИТЬ] происхождение и территория жузов"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_39"]
+script = ExtResource("3_encyclopedia_entry")
+id = "dombyra"
+category = "МӘДЕНИЕТ"
+title = "Домбыра"
+text = "Екі ішекті ұлттық аспап. Күй арқылы оқиға да, көңіл-күй де айтылады."
+open_from_start = true
+look = ""
+icon = "dombra"
+check_note = "[ПРОВЕРИТЬ] устройство домбры, жанр күй"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_40"]
+script = ExtResource("3_encyclopedia_entry")
+id = "shapan"
+category = "МӘДЕНИЕТ"
+title = "Шапан"
+text = "Ұзын, кең етекті сырт киім. Құрметті қонаққа шапан жабу — ізет пен сыйластықтың белгісі."
+open_from_start = true
+look = ""
+icon = "shapan"
+check_note = "[ПРОВЕРИТЬ] крой и обычай «шапан жабу»"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_41"]
+script = ExtResource("3_encyclopedia_entry")
+id = "sauyt"
+category = "МӘДЕНИЕТ"
+title = "Сауыт"
+text = "Батырдың темір не былғары сауыты. Дулыға, шарайна және белбеумен толықтырылған."
+open_from_start = false
+look = ""
+icon = "sauyt"
+check_note = "[ПРОВЕРИТЬ] виды доспеха и их названия"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_42"]
+script = ExtResource("3_encyclopedia_entry")
+id = "dastarkhan"
+category = "МӘДЕНИЕТ"
+title = "Дастарқан"
+text = "Қонақ келгенде жайылатын дастарқан. Ет асу, шай құю, бата беру — бәрінің өз реті бар."
+open_from_start = true
+look = ""
+icon = "dastarkhan"
+check_note = "[ПРОВЕРИТЬ] этикет дастархана"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_43"]
+script = ExtResource("3_encyclopedia_entry")
+id = "asyk"
+category = "МӘДЕНИЕТ"
+title = "Асық ату"
+text = "Қойдың асығымен ойналатын ұлттық ойын. Ойыншы сақамен атып, сызықтағы асықтарды ұтып алады."
+open_from_start = false
+look = ""
+icon = "asyk"
+check_note = "[ПРОВЕРИТЬ] правила игры и название «сақа»"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_44"]
+script = ExtResource("3_encyclopedia_entry")
+id = "baige"
+category = "МӘДЕНИЕТ"
+title = "Бәйге"
+text = "Ат жарысы. Қашықтығы бірнеше шақырымға созылатын бәйгеге ауыл-ауылдан ат қосылған, жеңімпаз атқа да, баптаушысына да абырой әкелген."
+open_from_start = false
+look = ""
+icon = "horse"
+check_note = "[ПРОВЕРИТЬ] дистанции и правила байге"
+
+[sub_resource type="Resource" id="EncyclopediaEntry_45"]
+script = ExtResource("3_encyclopedia_entry")
+id = "sokyr_teke"
+category = "МӘДЕНИЕТ"
+title = "Соқыр теке"
+text = "Балалар ойыны. Көзі байланған «теке» дыбысқа қарап басқаларды ұстауға тырысады. Ұсталған ойыншы келесі «теке» болады."
+open_from_start = false
+look = ""
+icon = "blindfold"
+check_note = "[ПРОВЕРИТЬ] правила игры"
+
+[resource]
+script = ExtResource("4_story_cast")
+npcs = Array[ExtResource("1_story_npc")]([SubResource("StoryNpc_1"), SubResource("StoryNpc_2"), SubResource("StoryNpc_3"), SubResource("StoryNpc_4"), SubResource("StoryNpc_5"), SubResource("StoryNpc_6"), SubResource("StoryNpc_7"), SubResource("StoryNpc_8"), SubResource("StoryNpc_9"), SubResource("StoryNpc_10")])
+heroes = Array[ExtResource("2_story_hero")]([SubResource("StoryHero_11"), SubResource("StoryHero_12"), SubResource("StoryHero_13")])
+entries = Array[ExtResource("3_encyclopedia_entry")]([SubResource("EncyclopediaEntry_14"), SubResource("EncyclopediaEntry_15"), SubResource("EncyclopediaEntry_16"), SubResource("EncyclopediaEntry_17"), SubResource("EncyclopediaEntry_18"), SubResource("EncyclopediaEntry_19"), SubResource("EncyclopediaEntry_20"), SubResource("EncyclopediaEntry_21"), SubResource("EncyclopediaEntry_22"), SubResource("EncyclopediaEntry_23"), SubResource("EncyclopediaEntry_24"), SubResource("EncyclopediaEntry_25"), SubResource("EncyclopediaEntry_26"), SubResource("EncyclopediaEntry_27"), SubResource("EncyclopediaEntry_28"), SubResource("EncyclopediaEntry_29"), SubResource("EncyclopediaEntry_30"), SubResource("EncyclopediaEntry_31"), SubResource("EncyclopediaEntry_32"), SubResource("EncyclopediaEntry_33"), SubResource("EncyclopediaEntry_34"), SubResource("EncyclopediaEntry_35"), SubResource("EncyclopediaEntry_36"), SubResource("EncyclopediaEntry_37"), SubResource("EncyclopediaEntry_38"), SubResource("EncyclopediaEntry_39"), SubResource("EncyclopediaEntry_40"), SubResource("EncyclopediaEntry_41"), SubResource("EncyclopediaEntry_42"), SubResource("EncyclopediaEntry_43"), SubResource("EncyclopediaEntry_44"), SubResource("EncyclopediaEntry_45")])

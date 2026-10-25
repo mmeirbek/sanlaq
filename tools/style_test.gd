@@ -1,7 +1,7 @@
 extends "res://tools/test_case.gd"
 ## Единый стиль (docs/REDESIGN_PLAN.md, «Единый стиль»), проверяемый автоматически:
 ## - пиксель-арт только из общей палитры assets/palette/sanlaq.gpl, альфа 0 или 255;
-## - цвета интерфейса UiTokens — часть этой палитры;
+## - цвета интерфейса UiTokens и цвета мира WorldColors — часть этой палитры;
 ## - картинка лежит на сетке пикселя арта (UiTokens.PIXEL): каждый пиксель арта —
 ##   ровный квадрат, без сглаживания и дробного масштаба;
 ## - каждый theme_type_variation, упомянутый в коде, есть в теме.
@@ -9,7 +9,7 @@ extends "res://tools/test_case.gd"
 const THEME := preload("res://resources/ui/ui_theme.tres")
 const PALETTE_PATH := "res://assets/palette/sanlaq.gpl"
 ## Папки с пиксель-артом, который обязан следовать правилам (с подпапками).
-const PIXEL_ART_DIRS := ["res://assets/ui/frames", "res://assets/sprites"]
+const PIXEL_ART_DIRS := ["res://assets/ui/frames", "res://assets/ui/hud", "res://assets/sprites"]
 const CODE_DIRS := ["res://scenes", "res://scripts", "res://tools"]
 
 
@@ -21,6 +21,7 @@ func _init() -> void:
 		for path in _files(dir_path, ["png"]):
 			_check_pixel_art(path, palette)
 	_check_theme_variations()
+	_check_contrast()
 	finish("STYLE")
 
 
@@ -37,10 +38,12 @@ func _palette() -> Dictionary:
 
 
 func _check_tokens_in_palette(palette: Dictionary) -> void:
-	var constants: Dictionary = UiTokens.new().get_script().get_script_constant_map()
-	for token: String in constants:
-		if constants[token] is Color:
-			check(palette.has(constants[token].to_rgba32() >> 8), "UiTokens.%s есть в палитре" % token)
+	for owner: Script in [UiTokens, WorldColors]:
+		var constants := owner.get_script_constant_map()
+		for token: String in constants:
+			if constants[token] is Color:
+				check(palette.has(constants[token].to_rgba32() >> 8),
+					"%s.%s есть в палитре" % [owner.get_global_name(), token])
 
 
 func _check_pixel_art(path: String, palette: Dictionary) -> void:
@@ -74,7 +77,8 @@ func _check_pixel_art(path: String, palette: Dictionary) -> void:
 		var rgb := (data[i] << 16) | (data[i + 1] << 8) | data[i + 2]
 		if not palette.has(rgb):
 			off_palette["%06x" % rgb] = true
-	check(off_palette.is_empty(), "%s: только цвета палитры%s" % [name, "" if off_palette.is_empty() else " (лишние: %s)" % ", ".join(off_palette.keys().slice(0, 5))])
+	var extra := "" if off_palette.is_empty() else " (лишние: %s)" % ", ".join(off_palette.keys().slice(0, 5))
+	check(off_palette.is_empty(), "%s: только цвета палитры%s" % [name, extra])
 	check(soft_alpha == 0, "%s: без полупрозрачных пикселей (найдено %d)" % [name, soft_alpha])
 
 
@@ -88,16 +92,7 @@ func _check_theme_variations() -> void:
 				used[found.get_string(1)] = path
 	for variation: String in used:
 		var known := THEME.get_type_variation_base(variation) != &"" or ClassDB.class_exists(variation)
-		# Старая тема живёт до конца этапа 3; её варианты проверяем, только если
-		# экран уже на новой теме — поэтому смотрим лишь варианты новой темы.
-		if not known and _legacy_variation(variation):
-			continue
 		check(known, "вариант темы «%s» существует (%s)" % [variation, used[variation].get_file()])
-
-
-## Варианты старой темы sanlaq_theme.tres — уйдут вместе с ней в этапе 3.
-func _legacy_variation(variation: String) -> bool:
-	return load("res://resources/ui/sanlaq_theme.tres").get_type_variation_base(variation) != &""
 
 
 func _files(dir_path: String, extensions: Array) -> PackedStringArray:
@@ -108,3 +103,50 @@ func _files(dir_path: String, extensions: Array) -> PackedStringArray:
 	for sub_dir in DirAccess.get_directories_at(dir_path):
 		found.append_array(_files(dir_path.path_join(sub_dir), extensions))
 	return found
+
+
+## Контраст текста к фону — WCAG AA: 4,5 для обычного текста, 3 для крупного
+## (от 24 px или от 19 px жирным). Фон — заливка рамки темы в её центре.
+## Цвет текста, рамка, минимум, где встречается.
+const CONTRAST_PAIRS := [
+	["CREAM", "panel_burgundy", 4.5, "текст на панели"],
+	["GOLD", "panel_burgundy", 4.5, "HeadingLabel на панели"],
+	["GOLD_LIGHT", "panel_burgundy", 4.5, "TitleLabel"],
+	["MUTED", "panel_burgundy", 4.5, "CaptionLabel"],
+	["PARCHMENT_DARK", "panel_burgundy", 4.5, "SubtitleLabel"],
+	["EMBER", "panel_burgundy", 4.5, "WarningLabel"],
+	["DANGER", "panel_burgundy", 3.0, "«Қате!» крупным"],
+	["SUCCESS", "panel_burgundy", 4.5, "«Дұрыс!»"],
+	["CREAM", "button_normal", 4.5, "кнопка"],
+	["CREAM", "button_secondary_normal", 4.5, "второстепенная кнопка"],
+	["CREAM", "card_selected", 4.5, "выбранная карточка"],
+	["GOLD_LIGHT", "card_selected", 4.5, "ходящий в «Абай айтады»"],
+	["CREAM", "panel_hud", 4.5, "HUD"],
+	["DANGER", "panel_hud", 3.0, "таймер последних секунд"],
+	["INK", "panel_parchment", 4.5, "InkLabel"],
+	["BURGUNDY", "panel_parchment", 4.5, "InkHeadingLabel"],
+	["CREAM", "panel_wood", 4.5, "счёт и владелец қазана"],
+	["PARCHMENT_DARK", "panel_wood", 4.5, "номер отау"],
+	["GOLD_LIGHT", "panel_wood", 3.0, "счёт қазана крупным"],
+]
+
+
+func _check_contrast() -> void:
+	for pair: Array in CONTRAST_PAIRS:
+		var text: Color = (UiTokens as Script).get_script_constant_map()[pair[0]]
+		var frame := Image.load_from_file("res://assets/ui/frames/%s.png" % pair[1])
+		var fill := frame.get_pixel(frame.get_width() / 2, frame.get_height() / 2)
+		var ratio := _contrast(text, fill)
+		check(ratio >= pair[2], "контраст %s на %s — %.1f, нужно %.1f (%s)" % [pair[0], pair[1], ratio, pair[2], pair[3]])
+
+
+func _contrast(a: Color, b: Color) -> float:
+	var la := _relative_luminance(a)
+	var lb := _relative_luminance(b)
+	return (maxf(la, lb) + 0.05) / (minf(la, lb) + 0.05)
+
+
+## Относительная яркость по WCAG: из линейного sRGB, а не Color.get_luminance().
+func _relative_luminance(color: Color) -> float:
+	var linear := color.srgb_to_linear()
+	return 0.2126 * linear.r + 0.7152 * linear.g + 0.0722 * linear.b

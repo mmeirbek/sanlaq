@@ -30,15 +30,21 @@ const SCENES := {
 	"settings": "res://scenes/ui/settings.tscn",
 	"about": "res://scenes/ui/about.tscn",
 	"results": "res://scenes/ui/results.tscn",
+	"hero_select": "res://scenes/story/hero_select.tscn",
+	"story_world": "res://scenes/story/story_world.tscn",
 	"ui_gallery": "res://tools/ui_gallery.tscn",
 	"ui_gallery_overlays": "res://tools/ui_gallery_overlays.tscn",
 }
 ## Брифинг общий для всех режимов, поэтому снимается по разу на каждый.
 const BRIEFINGS := ["sokyroteke", "abai_says", "togyz_qumalaq", "aq_suyek"]
-## Соқыртеке снимается дважды из одного запуска: секунда от старта
-## (обратный отсчёт) и разгар раунда.
+## Соқыртеке снимается из двух запусков. За ловца — секунда от старта
+## (обратный отсчёт), разгар раунда и квиз; за бегуна — разгар раунда, где без
+## тумана ловца виден весь аул. Числа — секунды от старта.
 const GAME_SCENE := "res://scenes/world/game.tscn"
-const GAME_SHOTS := {"game_countdown": 1.0, "game_playing": 6.0}
+const GAME_RUNS := {
+	Roles.Role.SOKYROTEKE: {"game_countdown": 1.0, "game_playing": 6.0, "game_quiz": 6.5},
+	Roles.Role.RUNNER: {"game_runner": 6.0},
+}
 
 var _out_dir := ""
 ## Пусто — снимать всё.
@@ -65,7 +71,8 @@ func _init() -> void:
 	for mode_id in BRIEFINGS:
 		root.get_node("/root/SceneRouter").set_pending_briefing(mode_id)
 		await _shoot("briefing_" + mode_id, "res://scenes/ui/mode_briefing.tscn")
-	await _shoot_game()
+	for role in GAME_RUNS:
+		await _shoot_game(role, GAME_RUNS[role])
 
 	print("\nготово: ", _out_dir)
 	quit()
@@ -84,20 +91,31 @@ func _shoot(name: String, scene_path: String) -> void:
 	await _unmount(instance)
 
 
-func _shoot_game() -> void:
-	if not GAME_SHOTS.keys().any(_wanted):
+func _shoot_game(role: Roles.Role, shots: Dictionary) -> void:
+	if not shots.keys().any(_wanted):
 		return
+	root.get_node("/root/SceneRouter").set_pending_game_data({"role": role})
 	var game := _mount(GAME_SCENE)
 	if game == null:
 		return
 	var elapsed := 0.0
-	for name in GAME_SHOTS:
-		var at: float = GAME_SHOTS[name]
+	for name in shots:
+		var at: float = shots[name]
 		await create_timer(at - elapsed).timeout
 		elapsed = at
+		if name == "game_quiz":
+			await _open_quiz(game)
 		if _wanted(name):
 			_capture(name)
 	await _unmount(game)
+
+
+## Квиз как после поимки первого бегуна.
+func _open_quiz(game: Node) -> void:
+	var runner = game.match_mgr.players.filter(func(p) -> bool: return p != game.match_mgr.sokyroteke)[0]
+	game.quiz_hud.show_quiz(runner.get_random_clothing_item_for_quiz(), 10.0)
+	for _i in 6:
+		await process_frame
 
 
 func _mount(scene_path: String) -> Node:

@@ -5,7 +5,6 @@
 [resource]
 script = ExtResource("1")
 profile_id = "bot_easy"
-display_name = "Бастаушы"
 difficulty = 0
 wander_speed_mult = 0.6
 fear_distance = 200.0
@@ -14,4 +13,3 @@ reaction_delay = 0.5
 noise_mistake_chance = 0.25
 can_sprint = false
 use_hiding_spots = true
-taunt_chance = 0.02

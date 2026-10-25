@@ -1,6 +1,5 @@
 extends Control
-
-@onready var _back_btn: Button = $BackBtn
+## «Об игре»: правила и смысл Соқыртеке в четырёх карточках с картинками.
 
 func _ready() -> void:
-	_back_btn.pressed.connect(func() -> void: SceneRouter.go_to_main_menu())
+	(%Header as ScreenHeader).back_pressed.connect(SceneRouter.go_to_main_menu)

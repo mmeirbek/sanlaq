@@ -4,8 +4,6 @@ extends Node
 @export var enabled: bool = true
 @export var input_provider_id: int = 0
 
-signal input_changed(direction: Vector2, sprint: bool)
-
 var _direction: Vector2 = Vector2.ZERO
 var _sprinting: bool = false
 var _touch_sprint: bool = false
@@ -34,7 +32,6 @@ func _process(_delta: float) -> void:
 	if dir != _direction or sprint != _sprinting:
 		_direction = dir
 		_sprinting = sprint
-		input_changed.emit(dir, sprint)
 
 func get_direction() -> Vector2:
 	return _direction
@@ -46,7 +43,6 @@ func set_remote_input(dir: Vector2, sprint: bool) -> void:
 	if _direction != dir or _sprinting != sprint:
 		_direction = dir
 		_sprinting = sprint
-		input_changed.emit(dir, sprint)
 
 func set_touch_sprint_active(active: bool) -> void:
 	_touch_sprint = active

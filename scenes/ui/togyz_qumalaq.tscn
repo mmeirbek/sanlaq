@@ -1,44 +1,12 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene format=3]
 
-[ext_resource type="Script" path="res://scenes/ui/togyz_qumalaq.gd" id="1"]
-[ext_resource type="FontFile" path="res://assets/fonts/NotoSans-Bold.ttf" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="4"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_header.tscn" id="2"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-content_margin_left = 26.0
-content_margin_top = 24.0
-content_margin_right = 26.0
-content_margin_bottom = 24.0
-bg_color = Color(0.984, 0.969, 0.933, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.918, 0.761, 0.357, 1)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
-shadow_color = Color(0.039, 0.169, 0.239, 0.22)
-shadow_size = 12
-shadow_offset = Vector2(0, 5)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kazan"]
-content_margin_left = 10.0
-content_margin_top = 12.0
-content_margin_right = 10.0
-content_margin_bottom = 12.0
-bg_color = Color(0.929, 0.847, 0.69, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.635, 0.416, 0.18, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+[ext_resource type="Script" path="res://scenes/ui/togyz_qumalaq.gd" id="1_script"]
+[ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://scripts/ui/components/pixel_backdrop.gd" id="3_backdrop"]
+[ext_resource type="Script" path="res://scripts/ui/components/screen_header.gd" id="4_header"]
+[ext_resource type="Script" path="res://scripts/ui/components/pixel_button.gd" id="5_button"]
+[ext_resource type="Texture2D" path="res://assets/sprites/togyz/kazan.png" id="6_kazan"]
+[ext_resource type="Script" path="res://scripts/ui/components/gem_divider.gd" id="7_divider"]
 
 [node name="TogyzQumalaq" type="Control"]
 layout_mode = 3
@@ -47,45 +15,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1")
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
 
-[node name="Background" parent="." instance=ExtResource("4")]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-variant = 6
-
-[node name="Header" parent="." instance=ExtResource("2")]
-layout_mode = 1
-anchors_preset = 0
-offset_left = 44.0
-offset_top = 48.0
-offset_right = 44.0
-offset_bottom = 48.0
-grow_horizontal = 1
-grow_vertical = 1
-title = "ТОҒЫЗ ҚҰМАЛАҚ"
-subtitle = "ҰЛТТЫҚ ЛОГИКАЛЫҚ ОЙЫН · 82 ҚҰМАЛАҚ ЖИНАҒАН ҰТАДЫ"
-
-[node name="BackBtn" type="Button" parent="."]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 1
-anchor_right = 1.0
-offset_left = -176.0
-offset_top = 36.0
-offset_right = -28.0
-offset_bottom = 84.0
-grow_horizontal = 0
-theme_override_font_sizes/font_size = 18
-text = "← Артқа"
-
-[node name="BoardPanel" type="Control" parent="."]
-unique_name_in_owner = true
-visible = false
+[node name="Background" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -93,223 +26,235 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("3_backdrop")
+variant = 1
+veil = 0.55
 
-[node name="TurnLabel" type="Label" parent="BoardPanel"]
+[node name="Header" type="VBoxContainer" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_top = 136.0
-offset_bottom = 172.0
+offset_left = 32.0
+offset_top = 24.0
+offset_right = -32.0
+offset_bottom = 120.0
 grow_horizontal = 2
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 24
-text = "—"
-horizontal_alignment = 1
-
-[node name="LeftKazan" type="PanelContainer" parent="BoardPanel"]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 20.0
-offset_top = 208.0
-offset_right = 124.0
-offset_bottom = 416.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_kazan")
-
-[node name="VBox" type="VBoxContainer" parent="BoardPanel/LeftKazan"]
-layout_mode = 2
-alignment = 1
-theme_override_constants/separation = 8
-
-[node name="LeftOwner" type="Label" parent="BoardPanel/LeftKazan/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-autowrap_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.26, 0.11, 1)
-theme_override_font_sizes/font_size = 14
-text = "ҚАЗАН"
-horizontal_alignment = 1
-
-[node name="LeftCount" type="Label" parent="BoardPanel/LeftKazan/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 34
-text = "0"
-horizontal_alignment = 1
-
-[node name="RightKazan" type="PanelContainer" parent="BoardPanel"]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 1156.0
-offset_top = 208.0
-offset_right = 1260.0
-offset_bottom = 416.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_kazan")
-
-[node name="VBox" type="VBoxContainer" parent="BoardPanel/RightKazan"]
-layout_mode = 2
-alignment = 1
-theme_override_constants/separation = 8
-
-[node name="RightOwner" type="Label" parent="BoardPanel/RightKazan/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-autowrap_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.26, 0.11, 1)
-theme_override_font_sizes/font_size = 14
-text = "ҚАЗАН"
-horizontal_alignment = 1
-
-[node name="RightCount" type="Label" parent="BoardPanel/RightKazan/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 34
-text = "0"
-horizontal_alignment = 1
-
-[node name="TopRow" type="HBoxContainer" parent="BoardPanel"]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 140.0
-offset_top = 208.0
-offset_right = 1140.0
-offset_bottom = 304.0
-theme_override_constants/separation = 8
-
-[node name="BottomRow" type="HBoxContainer" parent="BoardPanel"]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 140.0
-offset_top = 320.0
-offset_right = 1140.0
-offset_bottom = 416.0
-theme_override_constants/separation = 8
-
-[node name="StatusLabel" type="Label" parent="BoardPanel"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 430.0
-offset_bottom = 466.0
-grow_horizontal = 2
-theme_override_colors/font_color = Color(0.64, 0.35, 0.08, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 20
-text = ""
-horizontal_alignment = 1
+script = ExtResource("4_header")
+title = "ТОҒЫЗ ҚҰМАЛАҚ"
+subtitle = "ҰЛТТЫҚ ЛОГИКАЛЫҚ ОЙЫН · 82 ҚҰМАЛАҚ ЖИНАҒАН ҰТАДЫ"
 
 [node name="SetupPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 370.0
-offset_top = 210.0
-offset_right = 910.0
-offset_bottom = 500.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -120.0
+offset_right = 280.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="VBox" type="VBoxContainer" parent="SetupPanel"]
 layout_mode = 2
-theme_override_constants/separation = 14
 
 [node name="Kicker" type="Label" parent="SetupPanel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 15
+theme_type_variation = &"CaptionLabel"
 text = "ДАЙЫНДЫҚ"
 horizontal_alignment = 1
 
 [node name="Question" type="Label" parent="SetupPanel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 28
+theme_type_variation = &"HeadingLabel"
 text = "Кіммен ойнайсыз?"
 horizontal_alignment = 1
 
 [node name="VsHumanBtn" type="Button" parent="SetupPanel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 62)
 layout_mode = 2
-theme_type_variation = &"PrimaryButton"
-theme_override_font_sizes/font_size = 21
+theme_type_variation = &"ButtonLarge"
 text = "АДАММЕН ОЙНАУ"
+script = ExtResource("5_button")
 
 [node name="VsBotBtn" type="Button" parent="SetupPanel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 62)
 layout_mode = 2
-theme_type_variation = &"PrimaryButton"
-theme_override_font_sizes/font_size = 21
+theme_type_variation = &"ButtonLarge"
 text = "КОМПЬЮТЕРМЕН ОЙНАУ"
+script = ExtResource("5_button")
 
 [node name="Hint" type="Label" parent="SetupPanel/VBox"]
+custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
-autowrap_mode = 2
-theme_override_colors/font_color = Color(0.28, 0.25, 0.22, 1)
-theme_override_font_sizes/font_size = 15
+theme_type_variation = &"CaptionLabel"
 text = "Өз жағыңыздағы бос емес отауды таңдаңыз. Соңғы құмалақ қарсыласта жұп сан жасаса — бәрін қазаныңызға аласыз."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="BoardPanel" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = 136.0
+offset_right = -32.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="TurnLabel" type="Label" parent="BoardPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HeadingLabel"
+text = "—"
+horizontal_alignment = 1
+
+[node name="Board" type="PanelContainer" parent="BoardPanel"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"WoodPanel"
+
+[node name="Columns" type="HBoxContainer" parent="BoardPanel/Board"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="LeftKazan" type="VBoxContainer" parent="BoardPanel/Board/Columns"]
+custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
+alignment = 1
+
+[node name="LeftOwner" type="Label" parent="BoardPanel/Board/Columns/LeftKazan"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+horizontal_alignment = 1
+
+[node name="Icon" type="TextureRect" parent="BoardPanel/Board/Columns/LeftKazan"]
+layout_mode = 2
+texture = ExtResource("6_kazan")
+stretch_mode = 3
+
+[node name="LeftCount" type="Label" parent="BoardPanel/Board/Columns/LeftKazan"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TimerLabel"
+text = "0"
+horizontal_alignment = 1
+
+[node name="Rows" type="VBoxContainer" parent="BoardPanel/Board/Columns"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TopRow" type="HBoxContainer" parent="BoardPanel/Board/Columns/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Divider" type="Control" parent="BoardPanel/Board/Columns/Rows"]
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("7_divider")
+
+[node name="BottomRow" type="HBoxContainer" parent="BoardPanel/Board/Columns/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="RightKazan" type="VBoxContainer" parent="BoardPanel/Board/Columns"]
+custom_minimum_size = Vector2(152, 0)
+layout_mode = 2
+alignment = 1
+
+[node name="RightOwner" type="Label" parent="BoardPanel/Board/Columns/RightKazan"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+horizontal_alignment = 1
+
+[node name="Icon" type="TextureRect" parent="BoardPanel/Board/Columns/RightKazan"]
+layout_mode = 2
+texture = ExtResource("6_kazan")
+stretch_mode = 3
+
+[node name="RightCount" type="Label" parent="BoardPanel/Board/Columns/RightKazan"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TimerLabel"
+text = "0"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="BoardPanel"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+theme_type_variation = &"WarningLabel"
 horizontal_alignment = 1
 
 [node name="EndPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
 visible = false
-layout_mode = 0
-offset_left = 380.0
-offset_top = 200.0
-offset_right = 900.0
-offset_bottom = 510.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -150.0
+offset_right = 280.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="VBox" type="VBoxContainer" parent="EndPanel"]
 layout_mode = 2
-theme_override_constants/separation = 12
 
 [node name="EndKicker" type="Label" parent="EndPanel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 15
+theme_type_variation = &"CaptionLabel"
 text = "ЖЕҢІМПАЗ"
 horizontal_alignment = 1
 
 [node name="WinnerLabel" type="Label" parent="EndPanel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-autowrap_mode = 2
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 32
+theme_type_variation = &"TitleLabel"
 text = "—"
 horizontal_alignment = 1
 
 [node name="ScoreLabel" type="Label" parent="EndPanel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_vertical = 3
-theme_override_colors/font_color = Color(0.28, 0.25, 0.22, 1)
-theme_override_font_sizes/font_size = 22
+theme_type_variation = &"HeadingLabel"
 text = "—"
 horizontal_alignment = 1
 
+[node name="Divider" type="Control" parent="EndPanel/VBox"]
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("7_divider")
+
 [node name="AgainBtn" type="Button" parent="EndPanel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
-theme_type_variation = &"PrimaryButton"
-theme_override_font_sizes/font_size = 21
+theme_type_variation = &"ButtonLarge"
 text = "ТАҒЫ ОЙНАУ"
+script = ExtResource("5_button")
 
 [node name="MenuBtn" type="Button" parent="EndPanel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-theme_override_font_sizes/font_size = 19
+theme_type_variation = &"ButtonSecondary"
 text = "БАС МӘЗІРГЕ"
+script = ExtResource("5_button")

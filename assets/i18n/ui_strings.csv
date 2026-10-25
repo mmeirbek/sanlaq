@@ -18,26 +18,19 @@ keys,kk,en
 ДАЙЫНДЫҚ АЛАҢЫ,ДАЙЫНДЫҚ АЛАҢЫ,STAGING GROUND
 ДЫБЫС,ДЫБЫС,SOUND
 ДЫБЫС ПЕН ОЙЫНШЫ ПРОФИЛІ,ДЫБЫС ПЕН ОЙЫНШЫ ПРОФИЛІ,SOUND & PLAYER PROFILE
-ДЫБЫС ӘСЕРЛЕРІ,ДЫБЫС ӘСЕРЛЕРІ,SOUND EFFECTS
-Дереккөз: Wikimedia Commons,Дереккөз: Wikimedia Commons,Source: Wikimedia Commons
 "Әр заттың тарихын оқып, өз образыңды жина.","Әр заттың тарихын оқып, өз образыңды жина.",Read each item's history and build your own look.
-ЗАТТАРДЫ АШ · ТАРИХЫН ТАНЫ,ЗАТТАРДЫ АШ · ТАРИХЫН ТАНЫ,UNLOCK ITEMS · LEARN THEIR HISTORY
 КИІМ ШКАФЫ,КИІМ ШКАФЫ,WARDROBE
 КИІМДІ ТАҢДА · ОБРАЗЫҢДЫ ҚҰР,КИІМДІ ТАҢДА · ОБРАЗЫҢДЫ ҚҰР,CHOOSE CLOTHING · BUILD YOUR LOOK
 КОЛЛЕКЦИЯ,КОЛЛЕКЦИЯ,COLLECTION
-Кезең 1/1,Кезең 1/1,Round 1/1
-Киім туралы,Киім туралы,About the clothing
 Киім шкафы,Киім шкафы,Wardrobe
 Киімді таңдаңыз,Киімді таңдаңыз,Choose clothing
 МАҚСАТ,МАҚСАТ,OBJECTIVE
-МУЗЫКА,МУЗЫКА,MUSIC
 Музыка мен әсерлер бөлек сақталады.,Музыка мен әсерлер бөлек сақталады.,Music and effects are saved separately.
 Музыканы қосу,Музыканы қосу,Enable music
 МҰРА  ·  ЭНЦИКЛОПЕДИЯ,МҰРА  ·  ЭНЦИКЛОПЕДИЯ,HERITAGE  ·  ENCYCLOPEDIA
 МҰРА · КИІМ ЭНЦИКЛОПЕДИЯСЫ,МҰРА · КИІМ ЭНЦИКЛОПЕДИЯСЫ,HERITAGE · CLOTHING ENCYCLOPEDIA
 НӘТИЖЕ,НӘТИЖЕ,RESULT
 ОЙНАУ,ОЙНАУ,PLAY
-ОЙЫН · ОҚИҒАЛАР · КИІМ ҚАСИЕТТЕРІ · ҰЛТТЫҚ МҰРА,ОЙЫН · ОҚИҒАЛАР · КИІМ ҚАСИЕТТЕРІ · ҰЛТТЫҚ МҰРА,GAMEPLAY · EVENTS · CLOTHING PROPERTIES · NATIONAL HERITAGE
 ОЙЫН АЛДЫНДАҒЫ БАПТАУ,ОЙЫН АЛДЫНДАҒЫ БАПТАУ,PRE-GAME SETUP
 ОЙЫН ТУРАЛЫ,ОЙЫН ТУРАЛЫ,ABOUT THE GAME
 ОЙЫНШЫ ЖОЛЫ,ОЙЫНШЫ ЖОЛЫ,PLAYER PROGRESS
@@ -50,7 +43,6 @@ keys,kk,en
 РАУНД АЯҚТАЛДЫ,РАУНД АЯҚТАЛДЫ,ROUND OVER
 РОЛЬДІ ТАҢДА,РОЛЬДІ ТАҢДА,CHOOSE A ROLE
 СІЗДІҢ КЕЙПІҢІЗ,СІЗДІҢ КЕЙПІҢІЗ,YOUR APPEARANCE
-СОҚЫРТЕКЕ · ОЙЫН ТУРАЛЫ,СОҚЫРТЕКЕ · ОЙЫН ТУРАЛЫ,SOKYROTEKE · ABOUT THE GAME
 СОҚЫРТЕКЕ БОЛУ,СОҚЫРТЕКЕ БОЛУ,BE THE SOKYROTEKE
 СЫНАП КӨРУ,СЫНАП КӨРУ,TRY IT ON
 Соқыртеке қашушыларды ұстайды. Ұстағаннан кейін киімге қатысты сұраққа дұрыс жауап беру керек. Қашушы уақыт біткенше аман қалса — жеңеді.,Соқыртеке қашушыларды ұстайды. Ұстағаннан кейін киімге қатысты сұраққа дұрыс жауап беру керек. Қашушы уақыт біткенше аман қалса — жеңеді.,"The sokyroteke catches the runners. After catching one, they must correctly answer a question about their clothing. If a runner survives until time runs out, they win."
@@ -58,18 +50,14 @@ keys,kk,en
 Тымақ баяулау уақытын 30% қысқартады. Шапан қарсыласқа азырақ көрінуге көмектеседі. Саптама етік құрғақ жерде жылдамдықты 8% арттырады.,Тымақ баяулау уақытын 30% қысқартады. Шапан қарсыласқа азырақ көрінуге көмектеседі. Саптама етік құрғақ жерде жылдамдықты 8% арттырады.,Tymaq reduces slow duration by 30%. Shapan helps you stay less visible to your opponent. Saptama etik increases speed by 8% on dry ground.
 Шығу,Шығу,Exit
 Экран треморі,Экран треморі,Screen shake
-ҚАБІЛЕТ,ҚАБІЛЕТ,ABILITY
 ҚАЗІРГІ ДӘРЕЖЕ,ҚАЗІРГІ ДӘРЕЖЕ,CURRENT RANK
-ҚАЙТА ОЙНАУ ,ҚАЙТА ОЙНАУ ,PLAY AGAIN 
+ҚАЙТА ОЙНАУ,ҚАЙТА ОЙНАУ,PLAY AGAIN
 ҚАСИЕТІ: —,ҚАСИЕТІ: —,PROPERTY: —
 ҚАШУШЫ БОЛУ,ҚАШУШЫ БОЛУ,BE THE RUNNER
 ҚЫСҚАША ЕРЕЖЕ,ҚЫСҚАША ЕРЕЖЕ,QUICK RULES
-Қалды 3/3,Қалды 3/3,Remaining 3/3
 "Қатысушыларды реттеңіз де, аңшылықты бастаңыз","Қатысушыларды реттеңіз де, аңшылықты бастаңыз",Set up the participants and start the hunt
 Қашушы бір рет 3 секунд жүгіре алады. Соқыртекеде бір рет Үн тыңдау бар. Тұман түскенде Соқыртекенің көру аймағы азаяды.,Қашушы бір рет 3 секунд жүгіре алады. Соқыртекеде бір рет Үн тыңдау бар. Тұман түскенде Соқыртекенің көру аймағы азаяды.,"A runner can sprint once for 3 seconds. The sokyroteke has one Echo Listen. When fog rolls in, the sokyroteke's vision range shrinks."
 "Қашқындарды ұста да, олардың киімін дұрыс атаңыз.","Қашқындарды ұста да, олардың киімін дұрыс атаңыз.",Catch the runners and correctly name their clothing.
-ҰЛТТЫҚ ОЙЫН · NATIONAL GAME,ҰЛТТЫҚ ОЙЫН · NATIONAL GAME,NATIONAL GAME
-ҰЛТТЫҚ ҚУЫМДЫ ОЙЫН,ҰЛТТЫҚ ҚУЫМДЫ ОЙЫН,NATIONAL CHASE GAME
 ҰСТАЛДЫҢЫЗ,ҰСТАЛДЫҢЫЗ,YOU'VE BEEN CAUGHT
 Әсерлерді қосу,Әсерлерді қосу,Enable sound effects
 ← Артқа,← Артқа,← Back
@@ -77,12 +65,10 @@ keys,kk,en
 Ойыннан шығасыз ба?,Ойыннан шығасыз ба?,Exit the game?
 Аяқ киім,Аяқ киім,Footwear
 Аңыз,Аңыз,Legendary
-Дереккөз: Wikimedia Commons · лицензиясы CREDITS.md файлында,Дереккөз: Wikimedia Commons · лицензиясы CREDITS.md файлында,Source: Wikimedia Commons · license in CREDITS.md
 Кәдімгі,Кәдімгі,Common
 Сирек,Сирек,Rare
 Сырт киім,Сырт киім,Outerwear
 Шалбар,Шалбар,Pants
-[color=#a36b24](✓ жабдықталған)[/color],[color=#a36b24](✓ жабдықталған)[/color],[color=#a36b24](✓ equipped)[/color]
 Баяулау уақыты −30%,Баяулау уақыты −30%,Slow duration −30%
 Киім санатын ашу · Open category,Киім санатын ашу · Open category,Open clothing category
 Киім,Киім,Clothing
@@ -94,26 +80,17 @@ E · ҮН ТЫҢДАУ × %d,E · ҮН ТЫҢДАУ × %d,E · ECHO LISTEN × %d
 SHIFT · ЖҮГІРУ × %d,SHIFT · ЖҮГІРУ × %d,SHIFT · SPRINT × %d
 БАЯУЛАУ %.0fс,БАЯУЛАУ %.0fс,SLOW %.0fs
 ЖҮГІРУ %.1fс,ЖҮГІРУ %.1fс,SPRINT %.1fs
-Кезең %d/%d,Кезең %d/%d,Round %d/%d
-Қалды %d/%d,Қалды %d/%d,Remaining %d/%d
 ҮН ТЫҢДАУ %.1fс,ҮН ТЫҢДАУ %.1fс,ECHO LISTEN %.1fs
 «%s» дұрыс тапты — сіз ұсталдыныз!,«%s» дұрыс тапты — сіз ұсталдыныз!,«%s» guessed correctly — you're caught!
 «%s» юртада ұзақ — орны ашылды!,«%s» юртада ұзақ — орны ашылды!,«%s» stayed in the yurt too long — their spot is revealed!
 «%s» қателесті — қашып кеттіңіз!,«%s» қателесті — қашып кеттіңіз!,«%s» guessed wrong — you got away!
 «%s» ұсталды!,«%s» ұсталды!,«%s» was caught!
 «%s» — Соқыртеке! Қашыңыз!,«%s» — Соқыртеке! Қашыңыз!,«%s» is the Sokyroteke! Run!
-ЖЕҢІС: Соқыртеке!,ЖЕҢІС: Соқыртеке!,VICTORY: Sokyroteke!
-ЖЕҢІС: Қашушылар!,ЖЕҢІС: Қашушылар!,VICTORY: Runners!
-МАҚСАТ: %.0f СЕКУНД АМАН ҚАЛ,МАҚСАТ: %.0f СЕКУНД АМАН ҚАЛ,OBJECTIVE: SURVIVE %.0f SECONDS
-МАҚСАТ: %d/%d ҚАШУШЫ ҰСТАЛДЫ,МАҚСАТ: %d/%d ҚАШУШЫ ҰСТАЛДЫ,OBJECTIVE: %d/%d RUNNERS CAUGHT
 МАҚСАТ: БАРЛЫҚ ҚАШУШЫНЫ ҰСТА,МАҚСАТ: БАРЛЫҚ ҚАШУШЫНЫ ҰСТА,OBJECTIVE: CATCH ALL RUNNERS
 МАҚСАТ: УАҚЫТ АЯҚТАЛҒАНША АМАН ҚАЛ,МАҚСАТ: УАҚЫТ АЯҚТАЛҒАНША АМАН ҚАЛ,OBJECTIVE: SURVIVE UNTIL TIME RUNS OUT
-СОҚЫРТЕКЕ ҰТТЫ! Барлығы ұсталды!,СОҚЫРТЕКЕ ҰТТЫ! Барлығы ұсталды!,SOKYROTEKE WINS! Everyone was caught!
-Сіз — Соқыртеке! Қуып ұстаңыз!,Сіз — Соқыртеке! Қуып ұстаңыз!,You are the Sokyroteke! Chase and catch!
 Сізді ұстады! Киім: %s,Сізді ұстады! Киім: %s,You've been caught! Clothing: %s
 Сізді ұстады!,Сізді ұстады!,You've been caught!
 ТҰМАН ТҮСТІ: КӨРІНІС АЗАЙДЫ,ТҰМАН ТҮСТІ: КӨРІНІС АЗАЙДЫ,FOG ROLLED IN: VISION REDUCED
-ҚАШУШЫЛАР ҰТТЫ! Уақыт бітті!,ҚАШУШЫЛАР ҰТТЫ! Уақыт бітті!,RUNNERS WIN! Time's up!
 ҮН ТЫҢДАУ ІСКЕ ҚОСЫЛДЫ,ҮН ТЫҢДАУ ІСКЕ ҚОСЫЛДЫ,ECHO LISTEN ACTIVATED
 "БІЛІМ ҰПАЙЫ: %d
 ЖЕҢІС: %d
@@ -128,25 +105,17 @@ WINS: %d
 CURRENT STREAK: %d
 BEST STREAK: %d
 %s"
-"
-
-ДӘРЕЖЕ: %s · БІЛІМ: +%d · ЖЕҢІС: %d · СЕРИЯ: %d
-%s","
-
-ДӘРЕЖЕ: %s · БІЛІМ: +%d · ЖЕҢІС: %d · СЕРИЯ: %d
-%s","
-
-RANK: %s · KNOWLEDGE: +%d · WINS: %d · STREAK: %d
+"ДӘРЕЖЕ: %s · БІЛІМ: +%d · ЖЕҢІС: %d · СЕРИЯ: %d
+%s","ДӘРЕЖЕ: %s · БІЛІМ: +%d · ЖЕҢІС: %d · СЕРИЯ: %d
+%s","RANK: %s · KNOWLEDGE: +%d · WINS: %d · STREAK: %d
 %s"
 СОҚЫРТЕКЕ ЖЕҢДІ!,СОҚЫРТЕКЕ ЖЕҢДІ!,SOKYROTEKE WINS!
 Соқыртеке барлық қашушыны ұстап алды!,Соқыртеке барлық қашушыны ұстап алды!,The sokyroteke caught all the runners!
 Уақыт бітті — қашушылар аман қалды!,Уақыт бітті — қашушылар аман қалды!,Time's up — the runners survived!
 ҚАШУШЫЛАР ЖЕҢДІ!,ҚАШУШЫЛАР ЖЕҢДІ!,RUNNERS WIN!
-  ·  Ойыншы,  ·  Ойыншы,  ·  Player
 Боттар: %d,Боттар: %d,Bots: %d
 Боттарға қарсы,Боттарға қарсы,Vs Bots
 Классикалық,Классикалық,Classic
-Қарсылас %d,Қарсылас %d,Opponent %d
 %s ДӘРЕЖЕСІНЕ ДЕЙІН: %d ЖЕҢІС,%s ДӘРЕЖЕСІНЕ ДЕЙІН: %d ЖЕҢІС,%s RANK: %d WINS TO GO
 ШИРАҚ,ШИРАҚ,SHIRAQ (NIMBLE ONE)
 ТОЙ БАСЫ,ТОЙ БАСЫ,TOI BASY (HOST OF HONOR)
@@ -155,18 +124,6 @@ RANK: %s · KNOWLEDGE: +%d · WINS: %d · STREAK: %d
 БАТЫР,БАТЫР,BATYR (HERO)
 ЕҢ ЖОҒАРЫ ДӘРЕЖЕГЕ ЖЕТТІҢІЗ!,ЕҢ ЖОҒАРЫ ДӘРЕЖЕГЕ ЖЕТТІҢІЗ!,YOU'VE REACHED THE HIGHEST RANK!
 Бұл қандай %s?,Бұл қандай %s?,What is this %s?
-бас киім,бас киім,headwear
-сырт киім,сырт киім,outerwear
-шалбар,шалбар,pants
-аяқ киім,аяқ киім,footwear
-"Дұрыс!  ✓
-%s","Дұрыс!  ✓
-%s","Correct!  ✓
-%s"
-"Қате!  ✗
-Бұл: %s","Қате!  ✗
-Бұл: %s","Wrong!  ✗
-This is: %s"
 Ойын түрі: %s,Ойын түрі: %s,Game mode: %s
 ОЙЫН РЕЖІМДЕРІ,ОЙЫН РЕЖІМДЕРІ,GAME MODES
 РЕЖИМДІ ТАҢДА · ОЙЫНДЫ БАСТА,РЕЖИМДІ ТАҢДА · ОЙЫНДЫ БАСТА,PICK A MODE · START PLAYING
@@ -217,7 +174,6 @@ This is: %s"
 Тең ойын,Тең ойын,Draw
 ҚАЛАЙ ОЙНАЛАДЫ,ҚАЛАЙ ОЙНАЛАДЫ,HOW TO PLAY
 НЕНІ ҮЙРЕТЕДІ,НЕНІ ҮЙРЕТЕДІ,WHAT IT TEACHES
-ОЙЫН РЕЖІМІ,ОЙЫН РЕЖІМІ,GAME MODE
 Дыбыстық сүйемелдеу,Дыбыстық сүйемелдеу,Play narration
 "Соқыртекенің көзі байлаулы: жарық шеңберінен тыс қашушыларды көрмейді, тек дыбысты естиді.","Соқыртекенің көзі байлаулы: жарық шеңберінен тыс қашушыларды көрмейді, тек дыбысты естиді.",The blind goat's eyes are covered: it cannot see runners outside the ring of light and only hears them.
 Қашушыны қуып жетіп ұстаңыз. Ұстаған сәтте оның үстіндегі киімді суреттен тану керек.,Қашушыны қуып жетіп ұстаңыз. Ұстаған сәтте оның үстіндегі киімді суреттен тану керек.,Chase a runner down and tag them. At the moment of the tag you must identify the clothing they are wearing from a picture.
@@ -340,8 +296,130 @@ This is: %s"
 Аз қадаммен мақсатқа жетуді жоспарлауға жаттықтырады.,Аз қадаммен мақсатқа жетуді жоспарлауға жаттықтырады.,Trains you to plan a route that reaches the goal in as few steps as possible.
 ІЗДЕУ ОЙЫНЫ,ІЗДЕУ ОЙЫНЫ,SEARCH GAME
 "Түнгі далада жасырылған ақ сүйекті іздейсіз. Жүру үшін қадам керек, ал қадамды дәстүр туралы сұраққа жауап бергенде аласыз.","Түнгі далада жасырылған ақ сүйекті іздейсіз. Жүру үшін қадам керек, ал қадамды дәстүр туралы сұраққа жауап бергенде аласыз.","You search the night steppe for a hidden white bone. Moving costs steps, and you earn steps by answering questions about tradition."
-ӘЗІРЛЕНУДЕ,ӘЗІРЛЕНУДЕ,IN PROGRESS
-Бұл режим әлі жетілдірілуде,Бұл режим әлі жетілдірілуде,This mode is still being worked on
 Иә,Иә,Yes
 Жоқ,Жоқ,No
 БАСТА!,БАСТА!,GO!
+Жабдықталған,Жабдықталған,Equipped
+СІЗ СОҚЫРТЕКЕСІЗ!,СІЗ СОҚЫРТЕКЕСІЗ!,YOU ARE THE SOKYROTEKE!
+СІЗ ҚАШУШЫСЫЗ!,СІЗ ҚАШУШЫСЫЗ!,YOU ARE A RUNNER!
+Бұл: %s,Бұл: %s,It is: %s
+ҰЛТТЫҚ КИІМ · ТАРИХЫН ТАНЫ,ҰЛТТЫҚ КИІМ · ТАРИХЫН ТАНЫ,NATIONAL CLOTHING · LEARN ITS HISTORY
+САҢЛАҚ ТУРАЛЫ,САҢЛАҚ ТУРАЛЫ,ABOUT SANLAQ
+ОЙЫН ЕРЕЖЕСІ · МӘДЕНИ МАЗМҰНЫ,ОЙЫН ЕРЕЖЕСІ · МӘДЕНИ МАЗМҰНЫ,GAME RULES · CULTURAL CONTENT
+СТАНЦИЯ БҰҒАТТАЛДЫ,СТАНЦИЯ БҰҒАТТАЛДЫ,STATION LOCKED
+Бұл құрылғылар саны лимитінен асып кетті.,Бұл құрылғылар саны лимитінен асып кетті.,This station is over the device limit.
+Лицензия жойылды.,Лицензия жойылды.,The license has been revoked.
+Ұйымдастырушыға хабарласыңыз.,Ұйымдастырушыға хабарласыңыз.,Please contact the organizer.
+АҚ СҮЙЕК,АҚ СҮЙЕК,AQ SUYEK
+ҮЗІЛІС,ҮЗІЛІС,PAUSE
+ЖАЛҒАСТЫРУ,ЖАЛҒАСТЫРУ,CONTINUE
+БАС МӘЗІР,БАС МӘЗІР,MAIN MENU
+Ойын тоқтатылады. Бас мәзірге шығасыз ба?,Ойын тоқтатылады. Бас мәзірге шығасыз ба?,The game will stop. Go to the main menu?
+САҢЛАҚҚА ҚОШ КЕЛДІҢ!,САҢЛАҚҚА ҚОШ КЕЛДІҢ!,WELCOME TO SANLAQ!
+ТҮСІНІКТІ,ТҮСІНІКТІ,GOT IT
+АТЫҢДЫ ЖАЗ,АТЫҢДЫ ЖАЗ,ENTER YOUR NAME
+Басты мәзірде атыңды жаз — ол ойында сенің кейіпкеріңнің үстінде тұрады.,Басты мәзірде атыңды жаз — ол ойында сенің кейіпкеріңнің үстінде тұрады.,Type your name in the main menu — it will float above your character in the game.
+ОЙЫН ТАҢДА,ОЙЫН ТАҢДА,CHOOSE A GAME
+Төрт ұлттық ойын бар. Әр ойын алдында қалай ойналатыны суретпен түсіндіріледі.,Төрт ұлттық ойын бар. Әр ойын алдында қалай ойналатыны суретпен түсіндіріледі.,"There are four national games. Before each one, pictures explain how it is played."
+КИІМ МЕН МҰРА,КИІМ МЕН МҰРА,CLOTHES AND HERITAGE
+"Киім шкафында кейіпкеріңді киіндір, энциклопедияда әр киімнің тарихын оқы.","Киім шкафында кейіпкеріңді киіндір, энциклопедияда әр киімнің тарихын оқы.",Dress your character in the wardrobe and read the story of each garment in the encyclopedia.
+Айгүл,Айгүл,Aigul
+Батыр,Батыр,Batyr
+Дәулет,Дәулет,Daulet
+Аружан,Аружан,Aruzhan
+Нұрлан,Нұрлан,Nurlan
+Жанар,Жанар,Zhanar
+ТАРИХИ ОЙЫН,ТАРИХИ ОЙЫН,HISTORY GAME
+Тарих жолы,Тарих жолы,Path of History
+"Батырды таңдап, оның тарауын өт: ауылды арала, елмен сөйлес, тапсырмалар мен ойындарды орында.","Батырды таңдап, оның тарауын өт: ауылды арала, елмен сөйлес, тапсырмалар мен ойындарды орында.","Choose a hero and play through their chapter: walk the aul, talk to people, finish tasks and games."
+АЯҚТАЛДЫ,АЯҚТАЛДЫ,COMPLETED
+E · ЖОЛҒА ШЫҒУ,E · ЖОЛҒА ШЫҒУ,E · SET OFF
+ЭНЦИКЛОПЕДИЯ: %s,ЭНЦИКЛОПЕДИЯ: %s,ENCYCLOPEDIA: %s
+ТАҒЫ БІР РЕТ?,ТАҒЫ БІР РЕТ?,TRY AGAIN?
+"Бұл жолы болмады. Қайталайсың ба, әлде кейінірек пе?","Бұл жолы болмады. Қайталайсың ба, әлде кейінірек пе?",It didn't work out this time. Try again now or later?
+ҚАЙТАЛАУ,ҚАЙТАЛАУ,RETRY
+КЕЙІНІРЕК,КЕЙІНІРЕК,LATER
+Тарау аяқталды,Тарау аяқталды,Chapter complete
+Жолға шық: %s,Жолға шық: %s,Set off: %s
+ЖОЛҒА ШЫҒУ,ЖОЛҒА ШЫҒУ,SET OFF
+ТАРИХ ЖОЛЫ · ТҰЛҒАЛАР МЕН ОҚИҒАЛАР,ТАРИХ ЖОЛЫ · ТҰЛҒАЛАР МЕН ОҚИҒАЛАР,TARIKH ZHOLY · PEOPLE AND EVENTS
+"Батырлармен бірге Тарих жолынан өтіп, жаңа беттерді аш.","Батырлармен бірге Тарих жолынан өтіп, жаңа беттерді аш.",Travel the Path of History with the batyrs and open new pages.
+КИІМ,КИІМ,CLOTHES
+ТАРИХ,ТАРИХ,HISTORY
+%s — осы тарауда ашылады.,%s — осы тарауда ашылады.,%s — opens in this chapter.
+Тарих жолында ашылады.,Тарих жолында ашылады.,Opens on the Path of History.
+Әлі ашылмаған,Әлі ашылмаған,Not yet opened
+E · ӘРІ ҚАРАЙ,E · ӘРІ ҚАРАЙ,E · NEXT
+АСЫҚ АТУ,АСЫҚ АТУ,ASYK ATU
+"Екі рет бас: алдымен бағытты, сосын күшті дәл тап.","Екі рет бас: алдымен бағытты, сосын күшті дәл тап.","Press twice: first hit the direction, then the power."
+БАҒЫТ,БАҒЫТ,AIM
+КҮШ,КҮШ,POWER
+1 · БАҒЫТТЫ ТАҢДА — E / БОС ОРЫН,1 · БАҒЫТТЫ ТАҢДА — E / БОС ОРЫН,1 · PICK THE AIM — E / SPACE
+2 · КҮШТІ ТАҢДА — E / БОС ОРЫН,2 · КҮШТІ ТАҢДА — E / БОС ОРЫН,2 · PICK THE POWER — E / SPACE
+Атыс: %d   ·   Ұтыс: %d / %d,Атыс: %d   ·   Ұтыс: %d / %d,Throws: %d   ·   Won: %d / %d
+ЖЕҢІС!,ЖЕҢІС!,VICTORY!
+АСЫҚТАР ШЕҢБЕРДЕ ҚАЛДЫ,АСЫҚТАР ШЕҢБЕРДЕ ҚАЛДЫ,THE ASYKS STAYED IN THE CIRCLE
+Ақсақалдан не сұрайсың?,Ақсақалдан не сұрайсың?,What will you ask the elder?
+ЖЕКПЕ-ЖЕК,ЖЕКПЕ-ЖЕК,SINGLE COMBAT
+Жау батыры,Жау батыры,Enemy batyr
+Жекпе-жек басталады!,Жекпе-жек басталады!,The duel begins!
+ШАБУЫЛ,ШАБУЫЛ,ATTACK
+18–28 зақым,18–28 зақым,18–28 damage
+ҚОРҒАНУ,ҚОРҒАНУ,GUARD
+зақым екі есе аз,зақым екі есе аз,half damage
+АЙЛА,АЙЛА,FEINT
+"35 зақым, 60%","35 зақым, 60%","35 damage, 60%"
+ШИПА,ШИПА,REMEDY
++34 күш,+34 күш,+34 strength
+КӨМЕК,КӨМЕК,ALLY
+40 зақым,40 зақым,40 damage
+ЖАУДЫҢ КЕЗЕГІ,ЖАУДЫҢ КЕЗЕГІ,ENEMY'S TURN
+САҚ БОЛ! ҚОРҒАН!,САҚ БОЛ! ҚОРҒАН!,WATCH OUT! GUARD!
+СЕНІҢ КЕЗЕГІҢ,СЕНІҢ КЕЗЕГІҢ,YOUR TURN
+ҚОРҒАН,ҚОРҒАН,GUARD
+ЖАЛТАРДЫ,ЖАЛТАРДЫ,DODGED
+АЙЛА ӨТТІ!,АЙЛА ӨТТІ!,FEINT WORKED!
+ЖАСАҚ!,ЖАСАҚ!,COMRADE!
+ТОСТЫҢ!,ТОСТЫҢ!,BLOCKED!
+Соққың дәл тиді: %d зақым.,Соққың дәл тиді: %d зақым.,Your blow landed: %d damage.
+Қалқанды көтердің. Келесі соққы әлсіз тиеді.,Қалқанды көтердің. Келесі соққы әлсіз тиеді.,You raised your shield. The next blow will be weaker.
+Айла-шарғың өтті! 35 зақым.,Айла-шарғың өтті! 35 зақым.,Your feint worked! 35 damage.
+Жау айлаңды аңғарып қалды.,Жау айлаңды аңғарып қалды.,The enemy saw through your feint.
+"Жарақатыңды таңып, күш жинадың: +%d.","Жарақатыңды таңып, күш жинадың: +%d.",You bound your wounds and gathered strength: +%d.
+Жасақтас жауды дәл тапты: 40 зақым!,Жасақтас жауды дәл тапты: 40 зақым!,Your comrade struck true: 40 damage!
+Ауыр соққыны қалқанмен тостың: %d зақым.,Ауыр соққыны қалқанмен тостың: %d зақым.,You took the heavy blow on your shield: %d damage.
+Ауыр соққы тиді: %d зақым!,Ауыр соққы тиді: %d зақым!,A heavy blow hit you: %d damage!
+Жау найзасын көтерді — ауыр соққыға дайындалуда!,Жау найзасын көтерді — ауыр соққыға дайындалуда!,The enemy raised his spear — a heavy blow is coming!
+Жасақтас қалқанымен бөгеді: %d зақым.,Жасақтас қалқанымен бөгеді: %d зақым.,Your comrade blocked with his shield: %d damage.
+Жаудың соққысы: %d зақым.,Жаудың соққысы: %d зақым.,The enemy's blow: %d damage.
+Жау батыры жеңілді!,Жау батыры жеңілді!,The enemy batyr is defeated!
+Жекпе-жекте жеңілдің.,Жекпе-жекте жеңілдің.,You lost the duel.
+ЖЕҢІЛДІҢ,ЖЕҢІЛДІҢ,DEFEAT
+Жасақтың рухы көтерілді!,Жасақтың рухы көтерілді!,The troops' spirits rose!
+"Тыныс алып, қайта шық.","Тыныс алып, қайта шық.",Catch your breath and go again.
+Энциклопедияда ашылды: %d,Энциклопедияда ашылды: %d,Opened in the encyclopedia: %d
+БАСҚА БАТЫР,БАСҚА БАТЫР,ANOTHER BATYR
+ЭНЦИКЛОПЕДИЯ,ЭНЦИКЛОПЕДИЯ,ENCYCLOPEDIA
+WASD / стрелкалар — жүру · E — сөйлесу · Esc — үзіліс,WASD / стрелкалар — жүру · E — сөйлесу · Esc — үзіліс,WASD / arrows — walk · E — talk · Esc — pause
+Ауыл,Ауыл,Aul
+Дала,Дала,Steppe
+%s ОРЫН   ·   Белгі: %d / %d   ·   %d с,%s ОРЫН   ·   Белгі: %d / %d   ·   %d с,%s PLACE   ·   Flags: %d / %d   ·   %d s
+1-ШІ,1-ШІ,1ST
+2-ШІ,2-ШІ,2ND
+Мәреге бірінші жеттің!,Мәреге бірінші жеттің!,You reached the finish first!
+Уақыт бітті.,Уақыт бітті.,Time is up.
+Қарсылас озып кетті.,Қарсылас озып кетті.,Your rival got ahead.
+Киіз,Киіз,Felt
+Қолыңда: %s      Тұрғызылды: %d/%d,Қолыңда: %s      Тұрғызылды: %d/%d,Carrying: %s      Built: %d/%d
+АЛДЫМЕН: %s,АЛДЫМЕН: %s,FIRST: %s
+КИІЗ ҮЙ ДАЙЫН!,КИІЗ ҮЙ ДАЙЫН!,THE YURT IS UP!
+Атқа қайта бар!,Атқа қайта бар!,Go back to the horse!
+Бағанаға дейін: %d қадам,Бағанаға дейін: %d қадам,To the post: %d steps
+АТ БАЙЛАНДЫ!,АТ БАЙЛАНДЫ!,HORSE TIED!
+ЫСТЫҚ! ІЗ КӨРІНДІ,ЫСТЫҚ! ІЗ КӨРІНДІ,HOT! TRACKS IN SIGHT
+ЖЫЛЫ,ЖЫЛЫ,WARM
+СУЫҚ,СУЫҚ,COLD
+ТАБЫЛДЫ: %s,ТАБЫЛДЫ: %s,FOUND: %s
+МҰРА · ЭНЦИКЛОПЕДИЯ,МҰРА · ЭНЦИКЛОПЕДИЯ,HERITAGE · ENCYCLOPEDIA
+ТАРИХ ЖОЛЫ,ТАРИХ ЖОЛЫ,PATH OF HISTORY
+БАТЫРДЫ ТАҢДА · ОНЫҢ ТАРАУЫН ӨТ,БАТЫРДЫ ТАҢДА · ОНЫҢ ТАРАУЫН ӨТ,CHOOSE A BATYR · PLAY THROUGH THEIR CHAPTER

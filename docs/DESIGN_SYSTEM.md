@@ -1,7 +1,7 @@
 # Дизайн-система САҢЛАҚ
 
 Пиксельный стиль по образцу atilla: бордо, золото, кремовый.
-Правила стиля — в [REDESIGN_PLAN.md](REDESIGN_PLAN.md), раздел «Единый стиль».
+Правила стиля — в [STYLE_GUIDE.md](STYLE_GUIDE.md).
 Часть правил проверяет `tools/style_test.gd`.
 
 ## Из чего состоит
@@ -10,6 +10,8 @@
 |---|---|---|
 | Цвета, шрифты, размеры, отступы | `scripts/ui/ui_tokens.gd` (`UiTokens`) | руками |
 | Пиксельные рамки и иконки интерфейса | `assets/ui/frames/*.png` + `frames.json` | генератором `tools/artgen/` |
+| Иконки HUD и сенсорного стика | `assets/ui/hud/*.png` | генератором `tools/artgen/hud_icons.py` |
+| Цвета мира, которые рисует код (вода, следы, брызги) | `scripts/systems/world_colors.gd` (`WorldColors`) | руками, только из палитры |
 | Тема Godot | `resources/ui/ui_theme.tres`, `resources/ui/fonts/` | генератором `tools/build_theme.gd` |
 | Компоненты | `scripts/ui/components/` | руками |
 | Витрины | `tools/ui_gallery.tscn`, `tools/ui_gallery_overlays.tscn` | руками |
@@ -19,17 +21,15 @@
 
 ## Как подключить на экране
 
-Пока идёт этап 3, новая тема ставится на корневой узел экрана:
-`theme = res://resources/ui/ui_theme.tres`. Когда все экраны переедут, она станет темой
-проекта, а старая `sanlaq_theme.tres` будет удалена.
+`resources/ui/ui_theme.tres` — тема проекта (`gui/theme/custom`), её получают все экраны.
 
 Вид задаётся через `theme_type_variation`, без ручных `theme_override_*`:
 
 | Узел | Варианты |
 |---|---|
-| `Button` / `PixelButton` | по умолчанию — бордовая кнопка; `ButtonLarge` — главное действие; `ButtonSecondary` — «Артқа», «Жоқ» |
-| `Label` | по умолчанию — текст на тёмном; `TitleLabel`, `HeadingLabel`, `CaptionLabel`, `HudLabel`, `TimerLabel`; на пергаменте — `InkLabel`, `InkHeadingLabel` |
-| `PanelContainer` | по умолчанию — бордовая панель; `ParchmentPanel` — длинный текст; `HudPanel`; `InsetPanel`; `Card`, `CardHover`, `CardSelected` |
+| `Button` / `PixelButton` | по умолчанию — бордовая кнопка; `ButtonLarge` — главное действие; `ButtonSecondary` — «Артқа», «Жоқ»; `AnswerButton` — ответ квиза шрифтом Handjet |
+| `Label` | по умолчанию — текст на тёмном; `TitleLabel`, `HeadingLabel`, `SubtitleLabel` (на фоне), `WarningLabel`, `CaptionLabel`, `HudLabel`, `TimerLabel`, `HudTimerLabel` (таймер на плашке HUD), `LeadLabel` (крупный текст, вопрос квиза), `NameTagLabel` (имя над игроком в мире); на пергаменте — `InkLabel`, `InkHeadingLabel` |
+| `PanelContainer` | по умолчанию — бордовая панель; `ParchmentPanel` — длинный текст; `HudPanel`; `InsetPanel`; `Card`, `CardHover`, `CardSelected`; компактные `CardCompact*` |
 
 ## Компоненты
 
@@ -42,10 +42,15 @@
 | `Toast` | Короткое сообщение: `show_message(text, seconds)` |
 | `Banner` | Полоса через экран: `show_banner(title, subtitle, hold)` |
 | `Countdown` | «3, 2, 1, БАСТА!»: `start(3)`, сигнал `finished` |
-| `ConfirmDialog` | «Иә / Жоқ» с затемнением. API как у старого `SanlaqDialog` |
+| `ConfirmDialog` | «Иә / Жоқ» с затемнением: `open()`, сигналы `confirmed` / `cancelled`; подписи кнопок меняются. Фокус — на безопасном варианте: «Жоқ», а с `focus_confirm = true` — «Иә» |
+| `TimeBar` | Полоска оставшегося времени: `ratio` от 0 до 1, последняя треть — красная |
+| `PauseMenu` | Пауза: ЖАЛҒАСТЫРУ, БАПТАУЛАР (звук), БАС МӘЗІР с подтверждением; `open()`, сигнал `main_menu_requested`. Ставит дерево на паузу, Esc — продолжить |
+| `PixelBackdrop` | Фон экрана в целом масштабе, с вуалью |
+| `SlotTabs`, `ClothingCard` | Вкладки слотов одежды и карточка вещи — общие для шкафа и энциклопедии |
 
 Компоненты не обращаются к автолоадам: они шлют сигналы, а что делать дальше, решает
-экран. Их поведение проверяет `tools/components_test.gd`.
+экран. Исключение — `PauseMenu`: он сам меняет громкость в `GameSettings`.
+Поведение компонентов проверяет `tools/components_test.gd`.
 
 ## Подводные камни
 
@@ -54,7 +59,11 @@
 - **Масштаб только целый.** Не растягивайте пиксельные картинки на дробный коэффициент
   и не уменьшайте их с размытием.
 - **Пиксель-арт не бывает полупрозрачным.** Затемнения и виньетки делаются цветом с
-  альфой, как в `ConfirmDialog`, а не картинкой.
+  альфой, как в `ConfirmDialog`, а не картинкой. Тени и «полупрозрачность» в мире —
+  шахматкой из непрозрачных пикселей (тень под ногами, край обзора ловца), эффекты
+  не бледнеют, а пропадают по пикселю (`PixelBurst`, звуковые волны, следы).
+- **Код рисует на сетке мира.** Всё, что рисуется в `_draw()` или шейдером, округляется
+  до `UiTokens.PIXEL` в координатах мира, иначе пиксели «плывут» при движении камеры.
 
 ## Как поменять стиль
 

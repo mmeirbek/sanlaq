@@ -4,6 +4,6 @@
 [ext_resource type="Resource" path="res://data/maps/map_steppe_village.tres" id="2"]
 
 [node name="Map" type="Node2D"]
-z_index = -9
+y_sort_enabled = true
 map_data = ExtResource("2")
 script = ExtResource("1")

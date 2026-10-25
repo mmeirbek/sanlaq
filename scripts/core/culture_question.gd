@@ -16,6 +16,3 @@ extends Resource
 @export var correct: int = 0
 ## Короткий факт, который показывается после ответа — ради него режим и затеян.
 @export var fact: String = ""
-
-func correct_option() -> String:
-	return options[correct] if correct >= 0 and correct < options.size() else ""

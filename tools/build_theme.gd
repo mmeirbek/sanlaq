@@ -8,11 +8,12 @@ extends SceneTree
 ##     godot --headless --path . --script res://tools/build_theme.gd
 ##
 ## Варианты типов (theme_type_variation) — справочник для экранов:
-##   Button: (по умолчанию — бордовая), ButtonSecondary, ButtonLarge
+##   Button: (по умолчанию — бордовая), ButtonSecondary, ButtonLarge, AnswerButton
 ##   Label: (по умолчанию — текст на тёмном), TitleLabel, HeadingLabel,
-##          CaptionLabel, InkLabel, InkHeadingLabel, HudLabel, TimerLabel
+##          CaptionLabel, SubtitleLabel, WarningLabel, InkLabel, InkHeadingLabel, HudLabel, TimerLabel,
+##          HudTimerLabel, LeadLabel, NameTagLabel
 ##   PanelContainer: (по умолчанию — бордовая панель), ParchmentPanel,
-##          HudPanel, Card, CardHover, CardSelected, InsetPanel
+##          HudPanel, Card*, CardCompact* (плотные списки), InsetPanel, WoodPanel
 
 const THEME_PATH := "res://resources/ui/ui_theme.tres"
 const FONTS_DIR := "res://resources/ui/fonts/"
@@ -36,6 +37,11 @@ func _init() -> void:
 	_labels(theme, fonts)
 	_panels(theme)
 	_inputs(theme, fonts)
+	# Шаг между элементами контейнеров по умолчанию — экраны его не переопределяют.
+	for box in ["VBoxContainer", "HBoxContainer", "GridContainer"]:
+		theme.set_constant("separation", box, UiTokens.SPACE_XS)
+	theme.set_constant("h_separation", "GridContainer", UiTokens.SPACE_S)
+	theme.set_constant("v_separation", "GridContainer", UiTokens.SPACE_S)
 	_save(theme, THEME_PATH)
 	print("тема собрана: ", THEME_PATH)
 	quit()
@@ -50,6 +56,10 @@ func _buttons(theme: Theme, fonts: Dictionary) -> void:
 	# Крупная — главные действия экрана (ОЙНАУ, БАСТАУ).
 	_variation(theme, "ButtonLarge", "Button")
 	theme.set_font_size("font_size", "ButtonLarge", UiTokens.DISPLAY_MEDIUM)
+	# Ответ квиза: название вещи читаемым шрифтом, крупно.
+	_variation(theme, "AnswerButton", "Button")
+	theme.set_font("font", "AnswerButton", fonts.body_bold)
+	theme.set_font_size("font_size", "AnswerButton", UiTokens.BODY_LARGE)
 
 
 func _button_type(theme: Theme, type: String, frame: String, font: Font, size: int) -> void:
@@ -91,10 +101,36 @@ func _labels(theme: Theme, fonts: Dictionary) -> void:
 	_display_label(theme, "HeadingLabel", fonts.display, UiTokens.DISPLAY_SMALL, UiTokens.GOLD)
 	_display_label(theme, "HudLabel", fonts.display, UiTokens.DISPLAY_SMALL, UiTokens.CREAM)
 	_display_label(theme, "TimerLabel", fonts.display, UiTokens.DISPLAY_HERO, UiTokens.GOLD_LIGHT)
+	# Таймер раунда на плашке HUD — крупно, но плашка остаётся компактной.
+	_display_label(theme, "HudTimerLabel", fonts.display, UiTokens.DISPLAY_LARGE, UiTokens.GOLD_LIGHT)
+
+	# Крупный текст: вопрос квиза.
+	_variation(theme, "LeadLabel", "Label")
+	theme.set_font_size("font_size", "LeadLabel", UiTokens.BODY_LARGE)
+
+	# Имя над игроком в мире: обводка контуром читается на траве и на воде.
+	_variation(theme, "NameTagLabel", "Label")
+	theme.set_font("font", "NameTagLabel", fonts.body_bold)
+	theme.set_font_size("font_size", "NameTagLabel", UiTokens.BODY_SMALL)
+	theme.set_color("font_outline_color", "NameTagLabel", UiTokens.OUTLINE)
+	theme.set_constant("outline_size", "NameTagLabel", UiTokens.PIXEL * 3)
 
 	_variation(theme, "CaptionLabel", "Label")
 	theme.set_font_size("font_size", "CaptionLabel", UiTokens.BODY_SMALL)
 	theme.set_color("font_color", "CaptionLabel", UiTokens.MUTED)
+
+	# Подзаголовок экрана лежит прямо на фоне — светлый и с тенью, как заголовок.
+	_variation(theme, "SubtitleLabel", "Label")
+	theme.set_font_size("font_size", "SubtitleLabel", UiTokens.BODY_SMALL)
+	theme.set_color("font_color", "SubtitleLabel", UiTokens.PARCHMENT_DARK)
+	theme.set_color("font_shadow_color", "SubtitleLabel", UiTokens.OUTLINE)
+	theme.set_constant("shadow_offset_x", "SubtitleLabel", UiTokens.PIXEL)
+	theme.set_constant("shadow_offset_y", "SubtitleLabel", UiTokens.PIXEL)
+
+	# Предупреждение («сначала введите имя»): жирнее и тёплым цветом.
+	_variation(theme, "WarningLabel", "Label")
+	theme.set_font("font", "WarningLabel", fonts.body_bold)
+	theme.set_color("font_color", "WarningLabel", UiTokens.EMBER)
 
 	# Для пергаментных панелей: тёмный текст на светлом.
 	_variation(theme, "InkLabel", "Label")
@@ -134,12 +170,24 @@ func _panels(theme: Theme) -> void:
 		"Card": "card",
 		"CardHover": "card_hover",
 		"CardSelected": "card_selected",
+		# Компактные карточки — для плотных списков (роли, предметы шкафа).
+		"CardCompact": "card",
+		"CardCompactHover": "card_hover",
+		"CardCompactSelected": "card_selected",
 		"InsetPanel": "inset",
+		# Доска тоғыз құмалақ.
+		"WoodPanel": "panel_wood",
 	}
+	var tight := Vector2(UiTokens.SPACE_S, UiTokens.SPACE_XS)
+	var compact := Vector2(UiTokens.SPACE_XS, UiTokens.SPACE_XS)
 	for type: String in variations:
 		_variation(theme, type, "PanelContainer")
-		var small := type == "HudPanel" or type == "InsetPanel"
-		theme.set_stylebox("panel", type, _frame(variations[type], Vector2(UiTokens.SPACE_S, UiTokens.SPACE_XS) if small else padding))
+		var inner := padding
+		if type.begins_with("CardCompact"):
+			inner = compact
+		elif type in ["HudPanel", "InsetPanel"]:
+			inner = tight
+		theme.set_stylebox("panel", type, _frame(variations[type], inner))
 
 	var line := StyleBoxLine.new()
 	line.color = UiTokens.GOLD_DARK
@@ -190,7 +238,8 @@ func _inputs(theme: Theme, fonts: Dictionary) -> void:
 	theme.set_stylebox("focus", "CheckButton", StyleBoxEmpty.new())
 	theme.set_font("font", "CheckButton", fonts.body)
 	theme.set_font_size("font_size", "CheckButton", UiTokens.BODY)
-	for color_name in ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color"]:
+	var states := ["font_color", "font_hover_color", "font_pressed_color", "font_hover_pressed_color", "font_focus_color"]
+	for color_name in states:
 		theme.set_color(color_name, "CheckButton", UiTokens.CREAM)
 	theme.set_color("font_disabled_color", "CheckButton", UiTokens.MUTED)
 

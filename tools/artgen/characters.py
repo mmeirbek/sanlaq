@@ -1,6 +1,6 @@
 """Пиксельный персонаж САҢЛАҚ по слоям: тело (3 варианта) и 13 предметов одежды.
 
-Лист — контракт scripts/entities/character_visual.gd (см. assets/character/README.md):
+Лист — контракт scripts/entities/character_visual.gd (см. assets/sprites/character/README.md):
 4 строки (вниз, вверх, влево, вправо) × 6 кадров (покой ×2, шаг ×4). Клетка —
 32×32 пикселя арта, лист сохраняется ×2: кадр 64×64, лист 384×256. Право —
 зеркало лева.
@@ -329,6 +329,45 @@ def head_saukele(canvas, fig):
         fill(canvas, pendants, c("gold"))
 
 
+def torso_sauyt(canvas, fig):
+    """Сауыт — стальная кольчуга до бёдер поверх бурой рубахи, кожаный пояс."""
+    mail = fig.torso(bottom=24, flare=1)
+    sleeves = fig.arms(cuff=20)
+    steel = ramp("steel_light", "steel", "steel_dark")
+    paint_upper(canvas, fig, steel, steel, mail, sleeves)
+    up = fig.up
+    # Кольца — шахматка тёмных точек по корпусу.
+    fill(canvas, {(x, y) for x, y in mail if (x + y) % 2 == 0 and 17 + up <= y <= 23 + up
+                  and (x - 1, y) in mail and (x + 1, y) in mail}, c("steel_dark"))
+    fill(canvas, {(x, 20 + up) for x, y in mail if y == 20 + up}, c("leather_dark"))
+    paint(canvas, shifted(rows({y: (9, 10) for y in range(21, 23)}) | rows({y: (21, 22) for y in range(21, 23)}), dy=up)
+          if fig.dir in ("down", "up") else shifted(rows({y: (15, 17) for y in range(21, 23)}), dx=-fig.pose.stride, dy=up),
+          ramp("leather_light", "leather", "leather_dark"))
+
+
+def head_dulyga(canvas, fig):
+    """Дулыға — островерхий стальной шлем с бармицей на плечи и золотым навершием."""
+    up = fig.up
+    dome = shifted(rows({1: (15, 16), 2: (14, 17), 3: (13, 18), 4: (12, 19), 5: (11, 20), 6: (11, 20)}), dy=up)
+    if fig.dir == "left":
+        aventail = shifted(rows({y: (17, 21) for y in range(7, 15)}), dy=up)
+    elif fig.dir == "up":
+        aventail = shifted(rows({y: (10, 21) for y in range(7, 15)}), dy=up)
+    else:
+        aventail = shifted(rows({y: (10, 11) for y in range(7, 15)}) | rows({y: (20, 21) for y in range(7, 15)}), dy=up)
+    paint(canvas, aventail, ramp("steel", "steel_dark", "ink_soft"))
+    paint(canvas, dome, ramp("steel_light", "steel", "steel_dark"))
+    fill(canvas, {(15, up), (16, up)}, c("gold"))
+    fill(canvas, {(x, 6 + up) for x, y in dome if y == 6 + up}, c("gold_dark"))
+
+
+## Облики героев и жителей «Тарих жолы»: этих вещей нет в шкафу и квизе.
+STORY_ITEMS = {
+    "torso_sauyt_01": torso_sauyt,
+    "head_dulyga_01": head_dulyga,
+}
+
+
 ITEMS = {
     "head_borik_01": head_borik,
     "head_kimeshek_01": head_kimeshek,
@@ -370,7 +409,7 @@ def body_sheet(name):
 
 
 def item_sheet(item_id):
-    return sheet(ITEMS[item_id])
+    return sheet(ITEMS.get(item_id) or STORY_ITEMS[item_id])
 
 
 def build():
@@ -378,7 +417,7 @@ def build():
     written = []
     for name in BODIES:
         written.append(save(body_sheet(name), os.path.join(OUT_DIR, "base", name + ".png")))
-    for item_id in ITEMS:
+    for item_id in list(ITEMS) + list(STORY_ITEMS):
         slot = item_id.split("_")[0]
         written.append(save(item_sheet(item_id), os.path.join(OUT_DIR, slot, item_id + ".png")))
     return written

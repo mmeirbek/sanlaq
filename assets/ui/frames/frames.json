@@ -44,6 +44,9 @@
   "panel_parchment": {
     "margin": 18
   },
+  "panel_wood": {
+    "margin": 18
+  },
   "slider_fill": {
     "margin": 6
   }

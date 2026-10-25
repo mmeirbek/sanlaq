@@ -188,13 +188,14 @@ The project also uses a separate character visual structure.
 
 SAÑLAQ is no longer a single-mode game. The main menu's **ОЙНАУ** button opens a
 **mode select screen** (`scenes/ui/mode_select.tscn`), which is the only entry
-point into gameplay. Three modes exist:
+point into gameplay. Four modes exist (the code map is in `docs/ARCHITECTURE.md`):
 
 | Mode | Scene | Rules / logic | Spec file |
 |------|-------|---------------|-----------|
 | **Соқыртеке** — chase, the original mode | `scenes/world/game.tscn` | `scripts/systems/match_manager.gd` | this document |
 | **Абай айтады** — memory, 2-4 players pass-and-play | `scenes/ui/abai_says.tscn` | in the screen script; content in `data/words/` | `Abai_aitady_mode_spec_1.md` |
 | **Тоғыз құмалақ** — board game, vs human or bot | `scenes/ui/togyz_qumalaq.tscn` | `scripts/core/game_board.gd` + `scripts/ai/togyz_bot.gd` | `Togyz_qumalaq_mode_spec.md` |
+| **Ақ сүйек** — night search, vs bot | `scenes/ui/aq_suyek.tscn` | `scripts/core/aq_suyek_board.gd` + `scripts/ai/aq_suyek_bot.gd` | `Aq_suiek_mode_spec.md` |
 
 **Every mode is entered through an explanation screen**
 (`scenes/ui/mode_briefing.tscn`), which tells the player how the game is played
@@ -203,12 +204,11 @@ screen serves all modes; the content is a `ModeBriefing` resource in
 `data/briefings/<mode>.tres`, so adding a mode's briefing takes no new code.
 
 Each step of "how it is played" carries its own **diagram** of that step —
-which pit is chosen and how many balls are in it, which card is lit, what the
-catcher can and cannot see. These are drawn in code (`StepDiagram`), not stored
-as images: they show exact game state, contain no words at all so localization
-cannot break them, and they change together with the rules. `STEPS_DRAWN` in
-that script records how many steps each mode's diagram covers, and the mode
-tests fail the build if a briefing gains a step the diagram cannot draw.
+which pit is chosen, which card is lit, what the catcher can and cannot see.
+They are pixel images made by `tools/artgen/briefing_art.py`
+(`assets/sprites/briefing/<mode>_<step>.png`) and contain no words, so
+localization cannot break them. The mode tests fail the build if a step has no
+diagram of its own.
 
 Narration is **off by default** — the briefing is meant to be readable in
 silence. A toggle on the screen turns it on and the choice is remembered
@@ -226,7 +226,7 @@ voice.
 
 Navigation for every mode goes through `autoload/scene_router.gd`
 (`go_to_mode_select()`, `go_to_mode_briefing(id)`, `go_to_abai_says()`,
-`go_to_togyz_qumalaq()`). Modes are
+`go_to_togyz_qumalaq()`, `go_to_aq_suyek()`). Modes are
 **self-contained**: each has its own scene and script and shares no runtime state
 with the chase mode. Adding a mode therefore never requires touching
 `match_manager.gd`.
@@ -238,13 +238,12 @@ landed, capture, tұздық, atsyrau, game-over state) and the screen builds th
 animation from it. This is what makes the rules testable headless, without
 instantiating any scene — see `tools/togyz_rules_test.gd`.
 
-**Automated tests gate CI** (`.github/workflows/pages.yml`) before the web
-export: `tools/togyz_rules_test.gd` (every rule + 300 random self-play games)
-and `tools/modes_smoke_test.gd` (mode screens boot, buttons wired, a full match
-runs through real button presses). Both exit 1 on failure. Do not add a mode
-without extending `modes_smoke_test.gd` and the `SCENES` list in
-`tools/ui_audit.gd`. The mode tests also fail the build when a briefing line is
-missing its English translation or its voice-over on either language.
+**Automated tests gate CI** (`.github/workflows/ci.yml`): every `tools/*_test.gd`
+runs through `tools/run_tests.sh` and exits 1 on failure, and `gdlint` checks the
+code. Do not add a mode without extending `modes_smoke_test.gd`,
+`navigation_test.gd` and the `SCENES` list in `tools/ui_audit.gd`. The mode tests
+also fail the build when a briefing line is missing its English translation or its
+voice-over on either language.
 
 `ui_audit.gd` catches overlapping controls but cannot see a dark title on a dark
 background — for that run `tools/screenshot_screens.gd`, which writes a PNG of
@@ -339,56 +338,32 @@ Do not create random “Central Asian-looking” clothing.
 
 # 11. Visual Direction
 
-## Overall Style
+**Updated October 2026: the redesign switched the whole game to pixel art in the
+style of the sister project atilla.** The rules live in `docs/STYLE_GUIDE.md`; how art
+is produced is in `docs/ART_PIPELINE.md`. In short:
 
-The desired visual style is:
-
-**soft stylized 2D cartoon**
-
-Characteristics:
-
-- clean silhouettes;
-- simple readable shapes;
-- soft forms;
-- friendly proportions;
-- controlled details;
-- polished mobile-game appearance;
-- no unnecessary realism.
+- everything is pixel art on one grid (one art pixel = 2 screen pixels at 1280×720,
+  always shown at a whole scale);
+- one shared palette `assets/palette/sanlaq.gpl`, alpha only 0 or 255;
+- 3/4 view and y-sorting in the world;
+- light from the upper left, tinted dark outline, stepped shadows;
+- pixel fonts: PressStart2P for headings, Handjet for text.
 
 ## Explicitly Avoid
 
-- photorealism;
-- realistic textures;
-- pixel art;
-- excessive gradients;
-- noisy backgrounds;
-- visual clutter;
-- generic AI-art appearance;
-- excessive decorative details;
-- neon aesthetics.
+- photos and photorealism;
+- vector or soft cartoon art next to pixel art;
+- gradients, blur, soft shadows, rounded corners;
+- semi-transparent sprites and fractional scaling;
+- neon colors.
 
 ---
 
 # 12. Color Direction
 
-The core visual identity uses:
-
-- **deep navy blue**
-- **sand / warm yellow**
-
-Supporting colors may be used where necessary.
-
-The palette should feel:
-
-- warm;
-- modern;
-- culturally compatible;
-- calm;
-- playful.
-
-Do not randomly introduce neon colors.
-
-Do not redesign the entire palette without a strong reason.
+Burgundy, gold and cream, as in atilla, with a warm sunset range for backgrounds.
+Interface colors are tokens in `scripts/ui/ui_tokens.gd`; every one of them is also
+in the shared palette. Text contrast must meet WCAG AA (checked by `style_test`).
 
 ---
 
@@ -511,128 +486,43 @@ The visible gameplay area should be deliberately composed.
 
 # 18. Current Development Status
 
-## Phase 1 — Foundation
+The pixel-art redesign is tracked in `docs/REDESIGN_PLAN.md`, one stage per branch
+and pull request:
 
-**Status: completed / substantially completed**
-
-The project has:
-
-- Godot project foundation;
-- basic gameplay architecture;
-- player object;
-- movement;
-- role-related logic;
-- catch-related logic;
-- bots / other player concepts;
-- initial character integration.
-
----
-
-## Phase 2 — Character Integration
-
-**Status: completed**
-
-The SAÑLAQ boy was integrated as the default static player visual without changing the existing gameplay mechanics.
-
-The existing player remains a gameplay object and the character visual is handled separately.
-
-The principle was:
-
-> Change the appearance, not the functioning gameplay system.
-
----
-
-## Phase 3 — Environment / Main Map
-
-**Status: current / in progress**
-
-The next major focus is the main gameplay map and its visual assets.
-
-This includes:
-
-- map composition;
-- terrain;
-- obstacles;
-- rocks;
-- logs;
-- bushes;
-- water;
-- yurt;
-- environmental decoration;
-- collision where needed;
-- camera framing.
-
-The map must fit the established SAÑLAQ visual language.
+- stages 0–4: tests and CI, design system, art pipeline, menu screens, the
+  Соқыртеке world, HUD and quiz;
+- stage 5: Тоғыз құмалақ, Абай айтады, Ақ сүйек and the explanation screens in
+  pixel style, project theme switched;
+- stage 6: pause, Esc everywhere, whole-pixel scaling, first-launch onboarding,
+  missing translations;
+- stage 7: dead code and duplicates removed, roles as enums, gdlint in CI, docs;
+- stage 8 (next): the story mode «Тарих жолы» from the atilla concept.
 
 ---
 
 # 19. What Is Already Working
 
-The AI assistant should assume that the following systems may already exist and must be inspected before changing them:
+Inspect before changing — all of this exists and is covered by tests in `tools/`:
 
-- player movement;
-- player `CharacterBody2D`;
-- collision;
-- catch area;
-- role assignment;
-- catch mechanics;
-- bots;
-- character visual instantiation;
-- basic gameplay flow;
-- the mode select screen, the per-mode explanation screen, and two complete
-  extra modes (**Абай айтады**, **Тоғыз құмалақ**) — see section 7;
+- four playable modes: Соқыртеке, Абай айтады, Тоғыз құмалақ, Ақ сүйек;
+- mode select, per-mode explanation screens with pixel diagrams and narration;
+- lobby, wardrobe, encyclopedia, settings, about, results, pause;
+- player movement, roles, catching, the clothing quiz, bots, spectating;
 - KZ/EN localization through `TranslationServer`
   (`assets/i18n/ui_strings.csv`, keys are the Kazakh strings, used via `tr()`);
 - telemetry and per-station licensing (`autoload/telemetry.gd`);
-- audio: music plus sfx files, with the rest synthesized in
-  `scripts/systems/game_audio.gd`.
+- audio: music, sfx files, a synthesized UI click and synthesized cues.
 
 **Do not recreate these systems blindly.**
-
-First inspect the repository.
 
 ---
 
 # 20. What We Want to Build Next
 
-The immediate goal is to move from a technically functioning prototype toward a visually coherent playable MVP.
-
-Priority order:
-
-### P0 — Must work
-
-- Main map
-- Player visual
-- Player movement
-- Catch interaction
-- Roles
-- Basic round flow
-- Mobile-friendly camera
-- Basic UI
-
-### P1 — Important
-
-- Clothing variants
-- Clothing identification / guessing UI
-- Better character animations
-- Better environmental assets
-- Improved map readability
-- Sound effects
-- Basic feedback animations
-
-### P2 — Later
-
-- Progression
-- More maps
-- More character customization
-- Advanced scoring
-- Online multiplayer
-- Accounts
-- Cosmetics
-- Achievements
-- Leaderboards
-
-Do not jump to P2 while P0 is unfinished.
+Stage 8 of `docs/REDESIGN_PLAN.md`: the story mode «Тарих жолы». The player picks a
+hero, walks the aul, talks to people, completes tasks and mini-games and unlocks
+encyclopedia articles. Chapter I first, then II and III. Content comes from atilla
+and is reviewed by the team for historical accuracy (`docs/HISTORY_REVIEW.md`).
 
 ---
 
@@ -657,32 +547,12 @@ The MVP does NOT need every planned feature.
 
 # 22. UI Direction
 
-UI should be:
+Pixel interface built from the design system (`docs/DESIGN_SYSTEM.md`): gold pixel
+frames on burgundy, ink or parchment, `PixelButton`, `ScreenHeader`, cards, toasts,
+banners. Every screen has «Артқа» and Esc; games have a pause.
 
-- minimal;
-- clean;
-- readable;
-- mobile-friendly;
-- consistent with the navy/sand identity.
-
-Avoid:
-
-- excessive panels;
-- complicated HUD;
-- tiny text;
-- unnecessary buttons;
-- generic template UI.
-
-UI should communicate gameplay state immediately.
-
-Examples of information that may need to be visible:
-
-- current role;
-- round state;
-- catch status;
-- timer, if implemented;
-- identification prompt;
-- result.
+Avoid tiny text (body ≥ 20 px, captions ≥ 16 px at 1280×720), ad-hoc
+`theme_override_*` styling and symbols missing from the pixel fonts.
 
 ---
 
@@ -836,45 +706,15 @@ The final asset should match the established game style, not simply be copied fr
 
 # 30. Current Priority
 
-### RIGHT NOW
-
-The highest priority is:
-
-> **Build the main SAÑLAQ gameplay map in the established stylized 2D visual style and integrate it into the existing Godot project without breaking gameplay.**
-
-This means:
-
-```text
-Map
- ↓
-Environment assets
- ↓
-Collision
- ↓
-Camera
- ↓
-Player placement
- ↓
-Gameplay test
- ↓
-Visual polish
-```
+Get the stage 5–7 pull requests merged, then build «Тарих жолы» chapter I
+(stage 8 in `docs/REDESIGN_PLAN.md`).
 
 ---
 
 # 31. Definition of “Done” for the Current Phase
 
-The current environment phase is considered complete when:
-
-- the main map exists in Godot;
-- the map fits the mobile camera;
-- player movement works correctly on it;
-- obstacles are correctly placed;
-- gameplay remains readable;
-- environmental assets use one coherent art style;
-- the yurt/water/natural elements fit the composition;
-- collisions work where necessary;
-- no existing gameplay systems are broken.
+See «Правила работы» in `docs/REDESIGN_PLAN.md`: tests and `style_test` green,
+screenshots before/after in 16:9, 20:9 and 4:3, no new Godot warnings.
 
 ---
 
@@ -921,61 +761,19 @@ But these are **future possibilities**, not current requirements.
 
 ```text
 PROJECT: SAÑLAQ
-TYPE: 2D Mobile Game
-ENGINE: Godot
-GENRE: Collection of Kazakh traditional games
-CULTURAL BASIS: “Соқыртеке” (chase) + “Тоғыз құмалақ” (board) + memory mode
+TYPE: 2D game for web, desktop and mobile
+ENGINE: Godot 4.7
+STYLE: pixel art, shared palette, atilla look
 
-MODES (entered from the mode select screen):
-Соқыртеке — chase, human vs bots
+MODES:
+Соқыртеке — chase, human vs bots, clothing quiz
 Абай айтады — memory, 2-4 players pass-and-play
 Тоғыз құмалақ — board game, vs human or bot
-Ақ сүйек — planned, not started
+Ақ сүйек — night search, questions give steps, vs bot
+Тарих жолы — story mode, planned (stage 8)
 
-CHASE MODE GAMEPLAY:
-Role assignment
-→ Movement
-→ Chase
-→ Catch
-→ Clothing identification
-→ Result
-→ Continue round
-
-TECHNICAL FOUNDATION:
-██████████  Mostly complete
-
-CHARACTER INTEGRATION:
-██████████  Complete
-
-MAIN MAP:
-██████░░░░  In progress
-
-ENVIRONMENT ASSETS:
-██████░░░░  In progress
-
-CLOTHING VARIANTS:
-████░░░░░░  Planned / partially implemented
-
-UI POLISH:
-███░░░░░░░  Later
-
-ABAI AITADY MODE:
-██████████  Complete (word voice-over files still missing)
-
-TOGYZ QUMALAQ MODE:
-██████████  Complete (single bot difficulty)
-
-LOCALIZATION (KZ/EN):
-██████████  Complete
-
-MODE EXPLANATION SCREENS:
-██████████  Complete, narrated in both languages
-
-AUDIO:
-██████░░░░  Music + sfx in place, rest synthesized
-
-ADVANCED FEATURES:
-░░░░░░░░░░  Future
+DONE: redesign stages 0-7 (see docs/REDESIGN_PLAN.md)
+NEXT: stage 8 — Тарих жолы
 ```
 
 ---
@@ -1013,9 +811,8 @@ Instead:
 5. inspect the `Player` implementation;
 6. inspect `CharacterVisual`;
 7. inspect current asset directories;
-8. read `Abai_aitady_mode_spec_1.md` and `Togyz_qumalaq_mode_spec.md` —
-   they are the specs for the two modes added after this document was written,
-   and section 7 above lists where their code lives;
+8. read `docs/REDESIGN_PLAN.md`, `docs/ARCHITECTURE.md` and the `*_mode_spec.md`
+   files in the repository root;
 9. determine the exact current state;
 10. compare it with this document;
 11. only then begin implementation.
@@ -1036,5 +833,5 @@ The current challenge is to transform that foundation into a coherent visual and
 
 The immediate mission is:
 
-> **Finish the main playable environment, integrate it safely into Godot, preserve existing mechanics, and move the project toward a polished MVP.**
+> **Keep the four modes polished and green, and build the story mode «Тарих жолы» on the same systems.**
 

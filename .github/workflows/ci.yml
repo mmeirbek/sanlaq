@@ -20,8 +20,22 @@ jobs:
       - name: Run tests
         run: tools/run_tests.sh
 
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install gdtoolkit
+        run: pip install "gdtoolkit==4.5.0"
+      # Настройки — gdlintrc в корне. gdformat не запускаем: у проекта свой
+      # стиль пустых строк, переформатирование тронуло бы 75 файлов.
+      - name: gdlint
+        run: gdlint scenes scripts autoload tools
+
   build-web:
-    needs: test
+    needs: [test, lint]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:

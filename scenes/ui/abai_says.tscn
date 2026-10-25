@@ -1,28 +1,11 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3]
 
-[ext_resource type="Script" path="res://scenes/ui/abai_says.gd" id="1"]
-[ext_resource type="FontFile" path="res://assets/fonts/NotoSans-Bold.ttf" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_scene_backdrop.tscn" id="4"]
-[ext_resource type="PackedScene" path="res://scenes/ui/components/sanlaq_header.tscn" id="2"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-content_margin_left = 26.0
-content_margin_top = 24.0
-content_margin_right = 26.0
-content_margin_bottom = 24.0
-bg_color = Color(0.984, 0.969, 0.933, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.918, 0.761, 0.357, 1)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
-shadow_color = Color(0.039, 0.169, 0.239, 0.22)
-shadow_size = 12
-shadow_offset = Vector2(0, 5)
+[ext_resource type="Script" path="res://scenes/ui/abai_says.gd" id="1_script"]
+[ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://scripts/ui/components/pixel_backdrop.gd" id="3_backdrop"]
+[ext_resource type="Script" path="res://scripts/ui/components/screen_header.gd" id="4_header"]
+[ext_resource type="Script" path="res://scripts/ui/components/pixel_button.gd" id="5_button"]
+[ext_resource type="Script" path="res://scripts/ui/components/gem_divider.gd" id="6_divider"]
 
 [node name="AbaiSays" type="Control"]
 layout_mode = 3
@@ -31,45 +14,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1")
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
 
-[node name="Background" parent="." instance=ExtResource("4")]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-variant = 5
-
-[node name="Header" parent="." instance=ExtResource("2")]
-layout_mode = 1
-anchors_preset = 0
-offset_left = 44.0
-offset_top = 48.0
-offset_right = 44.0
-offset_bottom = 48.0
-grow_horizontal = 1
-grow_vertical = 1
-title = "АБАЙ АЙТАДЫ"
-subtitle = "ТІЗБЕКТІ ЕСТЕ САҚТА · ДӘЛ СОЛ РЕТПЕН ҚАЙТАЛА"
-
-[node name="BackBtn" type="Button" parent="."]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 1
-anchor_right = 1.0
-offset_left = -188.0
-offset_top = 46.0
-offset_right = -28.0
-offset_bottom = 98.0
-grow_horizontal = 0
-theme_override_font_sizes/font_size = 18
-text = "← Артқа"
-
-[node name="PlayPanel" type="Control" parent="."]
-unique_name_in_owner = true
-visible = false
+[node name="Background" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -77,84 +25,108 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("3_backdrop")
+variant = 0
+veil = 0.55
 
-[node name="RoundLabel" type="Label" parent="PlayPanel"]
+[node name="Header" type="VBoxContainer" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_top = 144.0
-offset_bottom = 180.0
+offset_left = 32.0
+offset_top = 24.0
+offset_right = -32.0
+offset_bottom = 120.0
 grow_horizontal = 2
-theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 24
+script = ExtResource("4_header")
+title = "АБАЙ АЙТАДЫ"
+subtitle = "ТІЗБЕКТІ ЕСТЕ САҚТА · ДӘЛ СОЛ РЕТПЕН ҚАЙТАЛА"
+
+[node name="PlayPanel" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = 132.0
+offset_right = -32.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="TopBar" type="HBoxContainer" parent="PlayPanel"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="RoundLabel" type="Label" parent="PlayPanel/TopBar"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_type_variation = &"HeadingLabel"
 text = "1-РАУНД"
-horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayersRow" type="HBoxContainer" parent="PlayPanel/TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="ProgressLabel" type="Label" parent="PlayPanel/TopBar"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_type_variation = &"HudLabel"
+horizontal_alignment = 2
+vertical_alignment = 1
 
 [node name="StatusLabel" type="Label" parent="PlayPanel"]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 184.0
-offset_bottom = 216.0
-grow_horizontal = 2
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
-theme_override_font_sizes/font_size = 20
+layout_mode = 2
+theme_type_variation = &"LeadLabel"
 text = "—"
 horizontal_alignment = 1
 
 [node name="CardGrid" type="GridContainer" parent="PlayPanel"]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 340.0
-offset_top = 232.0
-offset_right = 940.0
-offset_bottom = 616.0
-theme_override_constants/h_separation = 14
-theme_override_constants/v_separation = 14
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 16
 columns = 3
-
-[node name="ProgressLabel" type="Label" parent="PlayPanel"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 628.0
-offset_bottom = 660.0
-grow_horizontal = 2
-theme_override_colors/font_color = Color(0.55, 0.53, 0.5, 1)
-theme_override_font_sizes/font_size = 18
-text = ""
-horizontal_alignment = 1
 
 [node name="SetupPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 390.0
-offset_top = 220.0
-offset_right = 890.0
-offset_bottom = 490.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -130.0
+offset_right = 280.0
+offset_bottom = 130.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="VBox" type="VBoxContainer" parent="SetupPanel"]
 layout_mode = 2
-theme_override_constants/separation = 16
 
 [node name="Kicker" type="Label" parent="SetupPanel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 15
+theme_type_variation = &"CaptionLabel"
 text = "ДАЙЫНДЫҚ"
 horizontal_alignment = 1
 
 [node name="Question" type="Label" parent="SetupPanel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 28
+theme_type_variation = &"HeadingLabel"
 text = "Ойыншы саны"
 horizontal_alignment = 1
 
@@ -165,137 +137,140 @@ alignment = 1
 
 [node name="P2Btn" type="Button" parent="SetupPanel/VBox/Buttons"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(120, 76)
+custom_minimum_size = Vector2(112, 0)
 layout_mode = 2
-theme_type_variation = &"PrimaryButton"
-theme_override_font_sizes/font_size = 30
+theme_type_variation = &"ButtonLarge"
 text = "2"
+script = ExtResource("5_button")
 
 [node name="P3Btn" type="Button" parent="SetupPanel/VBox/Buttons"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(120, 76)
+custom_minimum_size = Vector2(112, 0)
 layout_mode = 2
-theme_type_variation = &"PrimaryButton"
-theme_override_font_sizes/font_size = 30
+theme_type_variation = &"ButtonLarge"
 text = "3"
+script = ExtResource("5_button")
 
 [node name="P4Btn" type="Button" parent="SetupPanel/VBox/Buttons"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(120, 76)
+custom_minimum_size = Vector2(112, 0)
 layout_mode = 2
-theme_type_variation = &"PrimaryButton"
-theme_override_font_sizes/font_size = 30
+theme_type_variation = &"ButtonLarge"
 text = "4"
+script = ExtResource("5_button")
 
 [node name="Hint" type="Label" parent="SetupPanel/VBox"]
+custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
-autowrap_mode = 2
-theme_override_colors/font_color = Color(0.28, 0.25, 0.22, 1)
-theme_override_font_sizes/font_size = 15
+theme_type_variation = &"CaptionLabel"
 text = "Бір құрылғыны кезекпен беріп ойнайсыздар. Әр раундта тізбек бір элементке ұзарады."
 horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="HandoffPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
 visible = false
-layout_mode = 0
-offset_left = 370.0
-offset_top = 220.0
-offset_right = 910.0
-offset_bottom = 500.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -140.0
+offset_right = 280.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="VBox" type="VBoxContainer" parent="HandoffPanel"]
 layout_mode = 2
-theme_override_constants/separation = 14
 
 [node name="Kicker" type="Label" parent="HandoffPanel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 15
+theme_type_variation = &"CaptionLabel"
 text = "КЕЗЕК"
 horizontal_alignment = 1
 
 [node name="HandoffName" type="Label" parent="HandoffPanel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 34
+theme_type_variation = &"TitleLabel"
 text = "Ойыншы 1"
 horizontal_alignment = 1
 
 [node name="Hint" type="Label" parent="HandoffPanel/VBox"]
+custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
-size_flags_vertical = 3
-autowrap_mode = 2
-theme_override_colors/font_color = Color(0.28, 0.25, 0.22, 1)
-theme_override_font_sizes/font_size = 18
+theme_type_variation = &"CaptionLabel"
 text = "Құрылғыны осы ойыншыға беріңіз. Дайын болғанда «Дайын» түймесін өзі бассын."
 horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="ReadyBtn" type="Button" parent="HandoffPanel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 62)
 layout_mode = 2
-theme_type_variation = &"PrimaryButton"
-theme_override_font_sizes/font_size = 22
+theme_type_variation = &"ButtonLarge"
 text = "ДАЙЫН"
+script = ExtResource("5_button")
 
 [node name="EndPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
 visible = false
-layout_mode = 0
-offset_left = 370.0
-offset_top = 190.0
-offset_right = 910.0
-offset_bottom = 530.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -150.0
+offset_right = 280.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="VBox" type="VBoxContainer" parent="EndPanel"]
 layout_mode = 2
-theme_override_constants/separation = 12
 
 [node name="EndKicker" type="Label" parent="EndPanel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.851, 0.663, 0.247, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 15
+theme_type_variation = &"CaptionLabel"
 text = "ЖЕҢІМПАЗ"
 horizontal_alignment = 1
 
 [node name="WinnerLabel" type="Label" parent="EndPanel/VBox"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
-autowrap_mode = 2
-theme_override_colors/font_color = Color(0.039, 0.169, 0.239, 1)
-theme_override_fonts/font = ExtResource("3")
-theme_override_font_sizes/font_size = 32
+theme_type_variation = &"TitleLabel"
 text = "—"
 horizontal_alignment = 1
+autowrap_mode = 2
 
 [node name="RoundsLabel" type="Label" parent="EndPanel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_vertical = 3
-theme_override_colors/font_color = Color(0.28, 0.25, 0.22, 1)
-theme_override_font_sizes/font_size = 19
+theme_type_variation = &"HeadingLabel"
 text = "—"
 horizontal_alignment = 1
 
+[node name="Divider" type="Control" parent="EndPanel/VBox"]
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("6_divider")
+
 [node name="AgainBtn" type="Button" parent="EndPanel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
-theme_type_variation = &"PrimaryButton"
-theme_override_font_sizes/font_size = 21
+theme_type_variation = &"ButtonLarge"
 text = "ТАҒЫ ОЙНАУ"
+script = ExtResource("5_button")
 
 [node name="MenuBtn" type="Button" parent="EndPanel/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-theme_override_font_sizes/font_size = 19
+theme_type_variation = &"ButtonSecondary"
 text = "БАС МӘЗІРГЕ"
+script = ExtResource("5_button")
