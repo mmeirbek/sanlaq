@@ -13,3 +13,5 @@ build/
 WhatsApp Image 2026-08-14 at 23.26.13.jpeg
 # Local MCP tool used during development (own git repo, holds an HF API token in .env)
 game-asset-mcp/
+# Документы передачи между сессиями Claude (.claude/skills/handoff) — личные, не для репозитория
+.claude/handoffs/
