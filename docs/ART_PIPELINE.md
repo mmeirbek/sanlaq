@@ -31,7 +31,7 @@ tools/run_tests.sh                                              # style_test п�
 | `world_art.py` | мир Соқыртеке: трава, юрта сверху (`yurt_top`; `yurt` сбоку — для «Дала жолы»), камни, брёвна, арена, забор | `assets/sprites/world/` |
 | `story_art.py` | Дала жолы: реквизит аула и степи, стадии юрты, Түркістан (стены, башни, дома, мавзолей, ряды), конь и түйе, маркеры, площадка асыка, арена поединка, карта маршрутов, иконки статей | `assets/sprites/story/` |
 | `togyz_art.py` | лунка, кольца, тұздық, камешек, қазан | `assets/sprites/togyz/` |
-| `aq_suyek_art.py` | ночная клетка, следы, кольцо шага, сүйек, отау, фигурки | `assets/sprites/aq_suyek/` |
+| `aq_suyek_art.py` | сүйек, отау-көмбе двух команд, фигурки для схем | `assets/sprites/aq_suyek/` |
 | `briefing_art.py` | 16 схем шагов для экранов-объяснений | `assets/sprites/briefing/` |
 | `app_icon.py` | иконка приложения 512×512 | `assets/sprites/ui/app_icon.png` |
 | `import_atilla.py` | перенос логотипа и фонов меню из atilla | `assets/sprites/ui/`, `backgrounds/` |
