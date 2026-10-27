@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://scripts/ui/components/pixel_button.gd" id="6_button"]
 [ext_resource type="Texture2D" path="res://assets/sprites/modes/role_seeker.png" id="7_seeker"]
 [ext_resource type="Texture2D" path="res://assets/sprites/modes/role_runner.png" id="8_runner"]
+[ext_resource type="Texture2D" path="res://assets/sprites/story/icon_asyk.png" id="9_asyk"]
 
 [node name="Lobby" type="Control"]
 layout_mode = 3
@@ -72,6 +73,29 @@ size_flags_horizontal = 3
 layout_mode = 2
 theme_type_variation = &"HeadingLabel"
 text = "РОЛЬДІ ТАҢДА"
+
+[node name="RandomCard" type="PanelContainer" parent="Body/VBox/Columns/Role"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("5_card")
+compact = true
+
+[node name="Row" type="HBoxContainer" parent="Body/VBox/Columns/Role/RandomCard"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="Body/VBox/Columns/Role/RandomCard/Row"]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("9_asyk")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="Body/VBox/Columns/Role/RandomCard/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"HeadingLabel"
+text = "КЕЗДЕЙСОҚ РӨЛ"
+autowrap_mode = 2
 
 [node name="SokyrotekeCard" type="PanelContainer" parent="Body/VBox/Columns/Role"]
 unique_name_in_owner = true
