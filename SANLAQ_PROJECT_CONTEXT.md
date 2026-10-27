@@ -195,7 +195,7 @@ point into gameplay. Four modes exist (the code map is in `docs/ARCHITECTURE.md`
 | **Соқыртеке** — chase, the original mode | `scenes/world/game.tscn` | `scripts/systems/match_manager.gd` | this document |
 | **Абай айтады** — memory, 2-4 players pass-and-play | `scenes/ui/abai_says.tscn` | in the screen script; content in `data/words/` | `Abai_aitady_mode_spec_1.md` |
 | **Тоғыз құмалақ** — board game, vs human or bot | `scenes/ui/togyz_qumalaq.tscn` | `scripts/core/game_board.gd` + `scripts/ai/togyz_bot.gd` | `Togyz_qumalaq_mode_spec.md` |
-| **Ақ сүйек** — night search, vs bot | `scenes/ui/aq_suyek.tscn` | `scripts/core/aq_suyek_board.gd` + `scripts/ai/aq_suyek_bot.gd` | `Aq_suiek_mode_spec.md` |
+| **Ақ сүйек** — two teams on the night map | `scenes/world/aq_suyek.tscn` | `scripts/core/aq_suyek_match.gd` + `scripts/ai/aq_suyek_brain.gd` | `Aq_suiek_mode_spec.md` |
 
 **Every mode is entered through an explanation screen**
 (`scenes/ui/mode_briefing.tscn`), which tells the player how the game is played
@@ -769,7 +769,7 @@ MODES:
 Соқыртеке — chase, human vs bots, clothing quiz
 Абай айтады — memory, 2-4 players pass-and-play
 Тоғыз құмалақ — board game, vs human or bot
-Ақ сүйек — night search, questions give steps, vs bot
+Ақ сүйек — two teams of three on the night map, carry the bone to your kombe
 Дала жолы — story mode, planned (stage 8)
 
 DONE: redesign stages 0-7 (see docs/REDESIGN_PLAN.md)

@@ -15,6 +15,10 @@ func _test_lobby() -> void:
 	var router := autoload("SceneRouter")
 	router.set_pending_game_data({})
 	var lobby := await mount("res://scenes/ui/lobby.tscn")
+	var random_card: SelectableCard = lobby.get_node("%RandomCard")
+	check(random_card.selected and not (lobby.get_node("%SokyrotekeCard") as SelectableCard).selected
+		and not (lobby.get_node("%RunnerCard") as SelectableCard).selected,
+		"по умолчанию роль — по жребию, как в документации")
 	var players: HBoxContainer = lobby.get_node("%PlayersRow")
 	for _i in 10:
 		(lobby.get_node("%PlusBtn") as Button).pressed.emit()
@@ -26,8 +30,8 @@ func _test_lobby() -> void:
 	check(players.get_child_count() == 2, "ботов не меньше 1: 2 портрета, получено %d" % players.get_child_count())
 	var runner: SelectableCard = lobby.get_node("%RunnerCard")
 	runner.pressed.emit()
-	check(runner.selected and not (lobby.get_node("%SokyrotekeCard") as SelectableCard).selected,
-		"выбрана одна роль — бегун")
+	check(runner.selected and not (lobby.get_node("%SokyrotekeCard") as SelectableCard).selected
+		and not random_card.selected, "выбрана одна роль — бегун")
 	(lobby.get_node("%StartBtn") as Button).pressed.emit()
 	var sent: Dictionary = router.peek_pending_game_data()
 	check(sent.get("bots") == 1 and sent.get("role") == Roles.Role.RUNNER, "в игру уходят роль и число ботов: %s" % sent)
@@ -36,6 +40,17 @@ func _test_lobby() -> void:
 	if current_scene:
 		current_scene.queue_free()
 	await unmount(lobby)
+	_test_role_draw()
+
+
+## Жребий: из четырёх участников ловцом выпадает каждый — игрок примерно в
+## четверти партий. В 400 бросках выйти за 50…150 почти невозможно (±5,7σ).
+func _test_role_draw() -> void:
+	var seekers := 0
+	for _i in 400:
+		if Roles.draw(4) == Roles.Role.SOKYROTEKE:
+			seekers += 1
+	check(seekers > 50 and seekers < 150, "игрок ловец примерно в 1 из 4 партий: %d из 400" % seekers)
 
 
 func _test_wardrobe() -> void:

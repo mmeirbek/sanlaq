@@ -230,16 +230,21 @@ func _process_sokyroteke(delta: float) -> void:
 	_player.get_controller().set_remote_input(_avoid_obstacles(dir), false)
 
 func _avoid_obstacles(dir: Vector2) -> Vector2:
+	return steer_around(_map, _player.global_position, dir)
+
+## Отводит направление dir от камней и стен юрт рядом с точкой from. Общее для
+## ботов Соқыртеке и Ақ сүйек.
+static func steer_around(map: MapManager, from: Vector2, dir: Vector2) -> Vector2:
 	if dir.length() < 0.1:
 		return dir
-	for obs in _map.obstacle_positions:
-		var to_obs := obs - _player.global_position
+	for obs in map.obstacle_positions:
+		var to_obs := obs - from
 		var dist := to_obs.length()
 		if dist < 60.0:
 			var away := -to_obs.normalized()
 			dir = dir * 0.5 + away * 0.5
-	for yurt in _map.yurt_positions:
-		var to_yurt := yurt - _player.global_position
+	for yurt in map.yurt_positions:
+		var to_yurt := yurt - from
 		var dist := to_yurt.length()
 		if dist < 70.0:
 			continue

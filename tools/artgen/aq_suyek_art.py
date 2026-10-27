@@ -1,13 +1,10 @@
-"""Ақ сүйек: ночное поле 5×5 — клетка травы, следы-подсказки, кольцо шага,
-сүйек, отау-көмбе и фигурки двоих игроков. Сохраняются ×2 в assets/sprites/aq_suyek/.
+"""Ақ сүйек: сүйек, отау-көмбе двух команд и фигурки игроков на кольце своего
+цвета. Сохраняются ×2 в assets/sprites/aq_suyek/. Көмбе и сүйек ставит на карту
+scenes/world/aq_suyek.gd, фигурки — схемы экрана-объяснения (briefing_art.py).
 
-Клетка — CELL×CELL пикселей арта. Всё, что лежит в клетке (след, кольцо,
-отау, фигурка), рисуется на холсте того же размера: экран просто кладёт
-картинки друг на друга в углу клетки.
+Отау и фигурка рисуются на холсте CELL×CELL пикселей арта.
 """
 import os
-
-import numpy as np
 
 import characters as ch
 from item_icons import ellipse, ramp
@@ -16,54 +13,6 @@ from pixel import Canvas, fill, outline, paint, rows, save
 
 OUT_DIR = os.path.join(ROOT, "assets", "sprites", "aq_suyek")
 CELL = 36
-
-# Подсказки по спецификации: чем ближе сүйек, тем горячее цвет следа.
-HINTS = {
-    "found": ("parchment", "cream"),
-    "very_close": ("red_light", "rust"),
-    "close": ("ember", "rust_light"),
-    "near": ("sun", "gold"),
-    "far": ("blue_light", "blue"),
-}
-
-
-def cell():
-    """Ночная трава: тёмная клетка с бликами травинок и ступенчатой кромкой."""
-    canvas = Canvas(CELL, CELL, c("grass_deep"))
-    # Ночь: каждый второй пиксель через строку — тёмный.
-    fill(canvas, {(x, y) for y in range(0, CELL, 2) for x in range(y % 4 // 2, CELL, 2)}, c("night"))
-    rng = np.random.default_rng(3)
-    for x, y in rng.integers(2, CELL - 2, size=(26, 2)):
-        fill(canvas, {(int(x), int(y)), (int(x) + 1, int(y) - 1)}, c("grass_dark"))
-    for x, y in rng.integers(3, CELL - 3, size=(6, 2)):
-        fill(canvas, {(int(x), int(y))}, c("night_blue"))
-    canvas.ring(0, c("grass_dark"), c("grass_dark"), c("night"), c("night"))
-    return canvas
-
-
-def hint(colors):
-    """След-подсказка: рамка цвета подсказки и шахматная подсветка внутри —
-    клетка «светится», но трава под ней видна, без полупрозрачности."""
-    light, base = (c(n) for n in colors)
-    canvas = Canvas(CELL, CELL)
-    canvas.ring(1, light, light, base, base)
-    canvas.ring(2, base, base, base, base)
-    for y in range(3, CELL - 3):
-        for x in range(3, CELL - 3):
-            if (x + y) % 4 == 0:
-                canvas.put(x, y, base)
-    return canvas
-
-
-def reach():
-    """Кольцо клетки, куда можно шагнуть: золотые уголки."""
-    canvas = Canvas(CELL, CELL)
-    for x0, y0, dx, dy in ((0, 0, 1, 1), (CELL - 1, 0, -1, 1), (0, CELL - 1, 1, -1), (CELL - 1, CELL - 1, -1, -1)):
-        for k in range(8):
-            fill(canvas, {(x0 + dx * k, y0), (x0, y0 + dy * k)}, c("gold_light"))
-            fill(canvas, {(x0 + dx * k, y0 + dy), (x0 + dx, y0 + dy * k)}, c("gold"))
-    return canvas
-
 
 def bone():
     """Сүйек 24×12 — белая кость с бликом, светится в темноте."""
@@ -76,8 +25,7 @@ def bone():
 
 
 def otau(door):
-    """Отау — маленькая юрта-көмбе у левого края клетки; дверь в цвете хозяина.
-    Правая половина клетки свободна: там встаёт фигурка, вернувшаяся домой."""
+    """Отау — маленькая юрта-көмбе у левого края холста; дверь в цвете команды."""
     canvas = Canvas(CELL, CELL)
     cx = 11
     walls = rows({y: (2, 19) for y in range(20, 31)})
@@ -107,8 +55,6 @@ def token(body, items, ring):
 
 def drawings():
     art = {
-        "cell": cell(),
-        "reach": reach(),
         "bone": bone(),
         "otau_human": otau(("blue_light", "blue", "blue_dark")),
         "otau_bot": otau(("rust_light", "rust", "rust_dark")),
@@ -117,8 +63,6 @@ def drawings():
         "token_bot": token("base", ["shoes_kebis_01", "pants_shalbar_decorated_01", "torso_shapan_01",
                                     "head_tymaq_01"], "SEEKER"),
     }
-    for name, colors in HINTS.items():
-        art["hint_" + name] = hint(colors)
     return art
 
 

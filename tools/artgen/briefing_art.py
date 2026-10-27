@@ -286,66 +286,68 @@ def chase_field():
 
 # --- Ақ сүйек ----------------------------------------------------------------
 
-def aq_cells(canvas, x0, y0, cols, rows_n, size=8, colors=None):
-    colors = colors or {}
-    for r in range(rows_n):
-        for k in range(cols):
-            x, y = x0 + k * (size + 1), y0 + r * (size + 1)
-            base = colors.get((k, r), "grass_deep")
-            fill(canvas, rows({yy: (x, x + size - 1) for yy in range(y, y + size)}), c(base))
+AQ = "assets/sprites/aq_suyek/"
 
 
-def aq_hidden():
-    """Сүйек спрятан где-то на поле; двое стартуют из своих углов."""
+def aq_night(canvas):
+    """Ночная трава в шахматку — как поле за кругом света."""
+    for y in range(1, H - 1):
+        for x in range(1, W - 1):
+            canvas.put(x, y, c("night") if (x + y) % 2 else c("grass_deep"))
+
+
+def aq_teams():
+    """Две көмбе по краям, сүйек брошен в ночное поле между ними."""
     canvas = frame("night")
-    aq_cells(canvas, 4, 4, 10, 5)
-    fill(canvas, rows({y: (5, 10) for y in range(41, 43)}), c("blue_light"))
-    fill(canvas, rows({y: (86, 91) for y in range(5, 7)}), c("red_light"))
-    bone = art("assets/sprites/aq_suyek/bone.png")
-    put(canvas, silhouette(bone, "grass_dark"), 37, 19)
+    aq_night(canvas)
+    put(canvas, art(AQ + "otau_human.png"), 2, 8)
+    put(canvas, art(AQ + "otau_bot.png"), 72, 8)
+    for i, (x, y) in enumerate([(26, 30), (29, 22), (33, 16), (38, 12), (44, 12), (49, 16), (53, 23)]):
+        fill(canvas, rows({y: (x, x + 1)}), c("parchment" if i % 2 else "cream"))
+    put(canvas, art(AQ + "bone.png"), 44, 30)
     return canvas
 
 
 def aq_question():
-    """Ответ на вопрос даёт шаги: верный — три, неверный — один."""
+    """Верный ответ на вопрос — видно, куда упал сүйек: место светится."""
     canvas = frame()
-    card(canvas, 4, 4, 44, 40)
+    card(canvas, 4, 4, 40, 40)
     for i in range(3):
-        bar(canvas, 8, 10 + i * 10, 36, lit=i == 1)
-    check(canvas, 50, 8)
-    arrow(canvas, 52, 30, 60, 30)
-    for i in range(3):
-        fill(canvas, rows({y: (64 + i * 10, 71 + i * 10) for y in range(26, 34)}), c("gold_light"))
+        bar(canvas, 8, 10 + i * 10, 32, lit=i == 1)
+    check(canvas, 44, 6)
+    arrow(canvas, 46, 30, 54, 30)
+    fill(canvas, rows({y: (58, 92) for y in range(10, 44)}), c("night"))
+    ring = ellipse(75, 30, 15, 8) - ellipse(75, 30, 13, 6.5)
+    fill(canvas, ring, c("gold_light"))
+    put(canvas, art(AQ + "bone.png"), 63, 24)
     return canvas
 
 
-def aq_hints():
-    """Чем ближе сүйек, тем горячее след."""
+def aq_carry():
+    """Нашедший несёт сүйек к своей көмбе, соперник догоняет."""
     canvas = frame("night")
-    tiers = ["blue", "gold", "rust_light", "rust"]
-    for i, tier in enumerate(tiers):
-        x = 4 + i * 18
-        fill(canvas, rows({y: (x, x + 15) for y in range(10, 26)}), c("grass_deep"))
-        edge = {(x, y) for y in range(10, 26)} | {(x + 15, y) for y in range(10, 26)} \
-            | {(xx, 10) for xx in range(x, x + 16)} | {(xx, 25) for xx in range(x, x + 16)}
-        fill(canvas, edge, c(tier))
-    arrow(canvas, 8, 36, 70, 36)
-    put(canvas, art("assets/sprites/aq_suyek/bone.png"), 72, 12)
+    aq_night(canvas)
+    put(canvas, art(AQ + "otau_human.png"), 2, 8)
+    runner = art(AQ + "token_human.png")
+    put(canvas, runner, 30, 10)
+    put(canvas, art(AQ + "bone.png"), 36, 2)
+    arrow(canvas, 32, 42, 22, 42, "blue_light")
+    put(canvas, art(AQ + "token_bot.png"), 58, 10)
+    arrow(canvas, 72, 42, 60, 42, "red_light")
     return canvas
 
 
-def aq_win():
-    """Кто первым встал на сүйек, тот взял раунд; партия — до двух побед."""
+def aq_score():
+    """Донёс до көмбе — очко; партия — до двух очков из трёх раундов."""
     canvas = frame("night")
-    cell = art("assets/sprites/aq_suyek/cell.png")
-    put(canvas, cell, 6, 6)
-    put(canvas, art("assets/sprites/aq_suyek/bone.png"), 12, 30)
-    put(canvas, art("assets/sprites/aq_suyek/token_human.png"), 6, 2)
+    aq_night(canvas)
+    put(canvas, art(AQ + "otau_human.png"), 4, 8)
+    put(canvas, art(AQ + "bone.png"), 22, 32)
+    check(canvas, 30, 6)
     for i, lit in enumerate((True, True, False)):
-        cx = 56 + i * 12
+        cx = 60 + i * 12
         diamond = {(x, y) for x in range(cx - 4, cx + 5) for y in range(20, 29) if abs(x - cx) + abs(y - 24) <= 4}
         fill(canvas, diamond, c("gold_light") if lit else c("ink_soft"))
-    check(canvas, 62, 6)
     return canvas
 
 
@@ -353,7 +355,7 @@ DIAGRAMS = {
     "sokyroteke": [chase_vision, chase_catch, chase_answer, chase_field],
     "abai_says": [abai_show, abai_repeat, abai_growth, abai_turns],
     "togyz_qumalaq": [togyz_sowing, lambda: togyz_capture(False), lambda: togyz_capture(True), togyz_win],
-    "aq_suyek": [aq_hidden, aq_question, aq_hints, aq_win],
+    "aq_suyek": [aq_teams, aq_question, aq_carry, aq_score],
 }
 
 

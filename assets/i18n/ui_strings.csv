@@ -43,6 +43,7 @@ keys,kk,en
 РАУНД АЯҚТАЛДЫ,РАУНД АЯҚТАЛДЫ,ROUND OVER
 РОЛЬДІ ТАҢДА,РОЛЬДІ ТАҢДА,CHOOSE A ROLE
 СІЗДІҢ КЕЙПІҢІЗ,СІЗДІҢ КЕЙПІҢІЗ,YOUR APPEARANCE
+КЕЗДЕЙСОҚ РӨЛ,КЕЗДЕЙСОҚ РӨЛ,RANDOM ROLE
 СОҚЫРТЕКЕ БОЛУ,СОҚЫРТЕКЕ БОЛУ,BE THE SOKYROTEKE
 СЫНАП КӨРУ,СЫНАП КӨРУ,TRY IT ON
 Соқыртеке қашушыларды ұстайды. Ұстағаннан кейін киімге қатысты сұраққа дұрыс жауап беру керек. Қашушы уақыт біткенше аман қалса — жеңеді.,Соқыртеке қашушыларды ұстайды. Ұстағаннан кейін киімге қатысты сұраққа дұрыс жауап беру керек. Қашушы уақыт біткенше аман қалса — жеңеді.,"The sokyroteke catches the runners. After catching one, they must correctly answer a question about their clothing. If a runner survives until time runs out, they win."
@@ -270,32 +271,8 @@ BEST STREAK: %d
 "Бесікке салу — сәбидің алғашқы мерекелерінің бірі, жеке ғұрпы бар.","Бесікке салу — сәбидің алғашқы мерекелерінің бірі, жеке ғұрпы бар.",Placing a baby in the besik is one of its first celebrations and has its own rite.
 ТҮНГІ ОЙЫН,ТҮНГІ ОЙЫН,NIGHT GAME
 Ақ сүйек,Ақ сүйек,Aq Suyek
-СҰРАҚҚА ЖАУАП БЕР · ҚАДАМ ЖИНА · СҮЙЕКТІ ТАП,СҰРАҚҚА ЖАУАП БЕР · ҚАДАМ ЖИНА · СҮЙЕКТІ ТАП,ANSWER · EARN STEPS · FIND THE BONE
-Кезек: Сіз,Кезек: Сіз,Turn: You
-Кезек: Компьютер,Кезек: Компьютер,Turn: Computer
-Қалған қадам: %d,Қалған қадам: %d,Steps left: %d
 ЕСЕП %d : %d,ЕСЕП %d : %d,SCORE %d : %d
-"Көрші отауды таңдап, жүріңіз","Көрші отауды таңдап, жүріңіз",Pick a neighbouring cell and move
-Дұрыс! %d қадам,Дұрыс! %d қадам,Correct! %d steps
-Қате. %d қадам,Қате. %d қадам,Wrong. %d steps
-Компьютер жауап берді,Компьютер жауап берді,The computer answered correctly
-Компьютер қателесті,Компьютер қателесті,The computer got it wrong
-Сіз сүйекті таптыңыз!,Сіз сүйекті таптыңыз!,You found the bone!
-Компьютер сүйекті тапты,Компьютер сүйекті тапты,The computer found the bone
-Тапты!,Тапты!,Found it!
-Өте жақын,Өте жақын,Very close
-Жақын,Жақын,Close
-Алыс емес,Алыс емес,Not far
-Алыс,Алыс,Far
-Түнгі далада бір отауға ақ сүйек жасырылған. Қайда екенін ешкім білмейді.,Түнгі далада бір отауға ақ сүйек жасырылған. Қайда екенін ешкім білмейді.,Somewhere on the night steppe a white bone is hidden in one cell. Nobody knows where.
-"Жүру үшін қадам керек, ал қадамды дәстүр туралы сұраққа жауап бергенде аласыз: дұрыс жауап үш қадам, қате жауап бір қадам береді.","Жүру үшін қадам керек, ал қадамды дәстүр туралы сұраққа жауап бергенде аласыз: дұрыс жауап үш қадам, қате жауап бір қадам береді.","You need steps to move, and you earn them by answering a question about tradition: a correct answer gives three steps, a wrong one gives a single step."
-"Әр қадамда көрші отауға өтесіз, ол отау сүйекке қаншалық жақын екенін айтады: өте жақын, жақын, алыс емес немесе алыс.","Әр қадамда көрші отауға өтесіз, ол отау сүйекке қаншалық жақын екенін айтады: өте жақын, жақын, алыс емес немесе алыс.","Each step takes you to a neighbouring cell, and that cell tells you how near the bone is: very close, close, not far or far."
-Сүйекті бірінші тапқан раундты ұтады. Үш раундтың екеуін ұтқан ойыншы жеңеді.,Сүйекті бірінші тапқан раундты ұтады. Үш раундтың екеуін ұтқан ойыншы жеңеді.,Whoever reaches the bone first wins the round. The player who takes two rounds out of three wins the game.
 "Қазақ салт-дәстүрі туралы білімді еске түсіріп, бекітеді.","Қазақ салт-дәстүрі туралы білімді еске түсіріп, бекітеді.",Recalls and reinforces what you know about Kazakh customs and traditions.
-Кеңістікте бағдарлау мен болжам жасауды үйретеді.,Кеңістікте бағдарлау мен болжам жасауды үйретеді.,Teaches spatial orientation and making an informed guess.
-Аз қадаммен мақсатқа жетуді жоспарлауға жаттықтырады.,Аз қадаммен мақсатқа жетуді жоспарлауға жаттықтырады.,Trains you to plan a route that reaches the goal in as few steps as possible.
-ІЗДЕУ ОЙЫНЫ,ІЗДЕУ ОЙЫНЫ,SEARCH GAME
-"Түнгі далада жасырылған ақ сүйекті іздейсіз. Жүру үшін қадам керек, ал қадамды дәстүр туралы сұраққа жауап бергенде аласыз.","Түнгі далада жасырылған ақ сүйекті іздейсіз. Жүру үшін қадам керек, ал қадамды дәстүр туралы сұраққа жауап бергенде аласыз.","You search the night steppe for a hidden white bone. Moving costs steps, and you earn steps by answering questions about tradition."
 Иә,Иә,Yes
 Жоқ,Жоқ,No
 БАСТА!,БАСТА!,GO!
@@ -424,3 +401,41 @@ WASD / стрелкалар — жүру · E — сөйлесу · Esc — үз
 ДАЛА ЖОЛЫ,ДАЛА ЖОЛЫ,PATH OF THE STEPPE
 БАТЫРДЫ ТАҢДА · ОНЫҢ ТАРАУЫН ӨТ,БАТЫРДЫ ТАҢДА · ОНЫҢ ТАРАУЫН ӨТ,CHOOSE A BATYR · PLAY THROUGH THEIR CHAPTER
 ТАҢДА · 1 НЕМЕСЕ 2,ТАҢДА · 1 НЕМЕСЕ 2,CHOOSE · 1 OR 2
+КӨК ТОП,КӨК ТОП,BLUE TEAM
+ҚЫЗЫЛ ТОП,ҚЫЗЫЛ ТОП,RED TEAM
+Көк топ — сіз және екі бот. Қызыл топ — үш бот.,Көк топ — сіз және екі бот. Қызыл топ — үш бот.,Blue team: you and two bots. Red team: three bots.
+ІЗДЕУШІ,ІЗДЕУШІ,SEEKER
+"Сүйекті тауып, өз көмбеңе жеткіз. Қарсыластан тартып алуға болады.","Сүйекті тауып, өз көмбеңе жеткіз. Қарсыластан тартып алуға болады.",Find the bone and bring it to your kombe. You can snatch it from a rival.
+ҚОРҒАУШЫ,ҚОРҒАУШЫ,DEFENDER
+"Сүйекті алып жүрмейді, бірақ қарсыласты ұстап, 2 секундқа тоқтатады.","Сүйекті алып жүрмейді, бірақ қарсыласты ұстап, 2 секундқа тоқтатады.","Doesn't carry the bone, but a touch stops a rival for 2 seconds."
+Дұрыс! Тобыңыз сүйектің қайда түскенін көреді.,Дұрыс! Тобыңыз сүйектің қайда түскенін көреді.,Correct! Your team will see where the bone lands.
+Қате. Сүйек қараңғыға түседі — іздеуге тура келеді.,Қате. Сүйек қараңғыға түседі — іздеуге тура келеді.,Wrong. The bone will fall into the dark — you'll have to search for it.
+ЛАҚТЫР!,ЛАҚТЫР!,THROW!
+Сүйек қараңғыға лақтырылды,Сүйек қараңғыға лақтырылды,The bone was thrown into the dark
+Сүйек осында түсті!,Сүйек осында түсті!,The bone landed here!
+СІЗ ІЗДЕУШІСІЗ!,СІЗ ІЗДЕУШІСІЗ!,YOU ARE THE SEEKER!
+СІЗ ҚОРҒАУШЫСЫЗ!,СІЗ ҚОРҒАУШЫСЫЗ!,YOU ARE THE DEFENDER!
+"Сүйекті тауып, көмбеңізге жеткізіңіз","Сүйекті тауып, көмбеңізге жеткізіңіз",Find the bone and bring it to your kombe
+"Қарсыласты ұстап, тоқтатыңыз","Қарсыласты ұстап, тоқтатыңыз",Catch the rivals to stop them
+МАҚСАТ: СҮЙЕКТІ КӨМБЕГЕ ЖЕТКІЗ,МАҚСАТ: СҮЙЕКТІ КӨМБЕГЕ ЖЕТКІЗ,GOAL: BRING THE BONE TO YOUR KOMBE
+МАҚСАТ: ҚАРСЫЛАСТЫ ТОҚТАТ,МАҚСАТ: ҚАРСЫЛАСТЫ ТОҚТАТ,GOAL: STOP THE RIVALS
+СІЗДІҢ КӨМБЕҢІЗ,СІЗДІҢ КӨМБЕҢІЗ,YOUR KOMBE
+Сүйек сізде! Көмбеге жүгіріңіз!,Сүйек сізде! Көмбеге жүгіріңіз!,You have the bone! Run to your kombe!
+«%s» сүйекті тапты!,«%s» сүйекті тапты!,«%s» found the bone!
+«%s» сүйекті тартып алды!,«%s» сүйекті тартып алды!,«%s» snatched the bone!
+Сізді тоқтатты!,Сізді тоқтатты!,You've been stopped!
+Сүйек жерге түсті!,Сүйек жерге түсті!,The bone fell to the ground!
+«%s» тоқтатылды!,«%s» тоқтатылды!,«%s» is stopped!
+УАҚЫТ БІТТІ,УАҚЫТ БІТТІ,TIME'S UP
+Ешкім ұпай алмады,Ешкім ұпай алмады,Nobody scored
+%s ҰПАЙ АЛДЫ!,%s ҰПАЙ АЛДЫ!,%s SCORES!
+Сіздің тобыңыз жеңді!,Сіздің тобыңыз жеңді!,Your team won!
+Бұл жолы қарсылас мықты болды.,Бұл жолы қарсылас мықты болды.,This time the rivals were stronger.
+ТОПТЫҚ ОЙЫН,ТОПТЫҚ ОЙЫН,TEAM GAME
+"Екі топ түнгі далада ақ сүйекті іздейді. Тапқан ойыншы оны өз көмбесіне жеткізуі керек, ал қарсылас топ тоқтатуға тырысады.","Екі топ түнгі далада ақ сүйекті іздейді. Тапқан ойыншы оны өз көмбесіне жеткізуі керек, ал қарсылас топ тоқтатуға тырысады.",Two teams search the night steppe for the white bone. Whoever finds it must carry it to their kombe while the other team tries to stop them.
+"Екі топ — Көк пен Қызыл, әр топтың өз көмбесі бар. Ақ сүйек түнгі далаға лақтырылады.","Екі топ — Көк пен Қызыл, әр топтың өз көмбесі бар. Ақ сүйек түнгі далаға лақтырылады.","Two teams, Blue and Red, each have their own kombe. The white bone is thrown out onto the night steppe."
+"Раунд алдында дәстүр туралы сұраққа жауап бересіз: дұрыс жауап берсеңіз, сүйектің қайда түскенін көресіз.","Раунд алдында дәстүр туралы сұраққа жауап бересіз: дұрыс жауап берсеңіз, сүйектің қайда түскенін көресіз.",Before each round you answer a question about traditions: answer correctly and you will see where the bone lands.
+"Іздеуші сүйекті өз көмбесіне алып жүгіреді. Қарсылас оны тиіп тартып алады, қорғаушы 2 секундқа тоқтатады.","Іздеуші сүйекті өз көмбесіне алып жүгіреді. Қарсылас оны тиіп тартып алады, қорғаушы 2 секундқа тоқтатады.","The seeker runs the bone to their kombe. A rival can snatch it with a touch; a defender stops the carrier for 2 seconds."
+Сүйекті өз көмбесіне жеткізген топ ұпай алады. Үш раундтың екеуін ұтқан топ жеңеді.,Сүйекті өз көмбесіне жеткізген топ ұпай алады. Үш раундтың екеуін ұтқан топ жеңеді.,The team that brings the bone to its own kombe scores a point. The team that wins two of three rounds wins.
+Топпен бірге әрекет етуге және рөл бөлісуге үйретеді.,Топпен бірге әрекет етуге және рөл бөлісуге үйретеді.,Teaches teamwork and sharing roles.
+Жылдамдық пен кеңістікте бағдарлауды дамытады.,Жылдамдық пен кеңістікте бағдарлауды дамытады.,Develops speed and spatial orientation.

@@ -14,7 +14,7 @@ const SCREENS := [
 	"res://scenes/ui/results.tscn",
 	"res://scenes/ui/abai_says.tscn",
 	"res://scenes/ui/togyz_qumalaq.tscn",
-	"res://scenes/ui/aq_suyek.tscn",
+	"res://scenes/world/aq_suyek.tscn",
 	"res://scenes/story/hero_select.tscn",
 ]
 ## Подписи, которые нарочно на двух языках.

@@ -83,6 +83,18 @@ func update_remaining(alive: int, total: int) -> void:
 		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_runners.add_child(icon)
 
+## Счёт команд «Ақ сүйек» на месте значков бегунов: синий : красный.
+func show_score(blue: int, red: int) -> void:
+	_shown_runners = Vector2i(-1, -1)
+	for child in _runners.get_children():
+		child.free()
+	for part: Array in [[str(blue), UiTokens.RUNNER], [":", UiTokens.CREAM], [str(red), UiTokens.SEEKER]]:
+		var label := Label.new()
+		label.text = part[0]
+		label.theme_type_variation = "HudTimerLabel"
+		label.add_theme_color_override("font_color", part[1])
+		_runners.add_child(label)
+
 ## Роль игрока в начале раунда: баннер на seconds секунд и цель на плашке.
 ## subtitle — вторая строка баннера: цель или кто ловец.
 func show_role(title: String, subtitle: String, objective: String, seconds: float) -> void:

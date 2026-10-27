@@ -35,7 +35,7 @@ GODOT=$GODOT tools/run_tests.sh                                  # все tools/
 - Классы, которые сами обращаются к автолоадам, в тесте нельзя писать как типы — см. шапку
   `test_case.gd`.
 - Правила режима живут отдельно от UI (`scripts/core/game_board.gd`,
-  `scripts/core/aq_suyek_board.gd`) и покрыты headless-тестами. Новый режим — так же.
+  `scripts/core/aq_suyek_match.gd`) и покрыты headless-тестами. Новый режим — так же.
 
 ## Как работаем
 

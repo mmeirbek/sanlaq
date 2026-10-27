@@ -1,6 +1,7 @@
 extends Control
 ## Подготовка к Соқыртеке: роль игрока, число ботов (1–7) и портреты всех
-## участников в их одежде.
+## участников в их одежде. По умолчанию роль решает жребий, как в документации:
+## ловцом становится любой участник наугад. Свою роль можно выбрать и вручную.
 
 const CHARACTER_SCENE := preload("res://scenes/entities/character_visual.tscn")
 const MIN_BOTS := 1
@@ -14,17 +15,21 @@ const FRAME_SIZE := 64
 var _game_data: Dictionary = {}
 var _bots_count: int = 3
 var _selected_role := Roles.Role.SOKYROTEKE
+## Роль решит жребий при старте; _selected_role тогда не важна.
+var _random_role := true
 
 @onready var _mode_label: Label = %ModeLabel
 @onready var _bots_label: Label = %BotsLabel
 @onready var _players_row: HBoxContainer = %PlayersRow
 @onready var _sokyroteke_card: SelectableCard = %SokyrotekeCard
 @onready var _runner_card: SelectableCard = %RunnerCard
+@onready var _random_card: SelectableCard = %RandomCard
 
 func _ready() -> void:
 	_game_data = SceneRouter.peek_pending_game_data()
 	var mode: String = _game_data.get("mode", "classic")
 	_bots_count = clampi(int(_game_data.get("bots", 3)), MIN_BOTS, MAX_BOTS)
+	_random_role = not _game_data.has("role")
 	_selected_role = _game_data.get("role", Roles.Role.SOKYROTEKE)
 	_mode_label.text = tr("Ойын түрі: %s") % _mode_name(mode)
 	_refresh_bots_label()
@@ -34,6 +39,7 @@ func _ready() -> void:
 	%PlusBtn.pressed.connect(_change_bots.bind(1))
 	_sokyroteke_card.pressed.connect(_set_role.bind(Roles.Role.SOKYROTEKE))
 	_runner_card.pressed.connect(_set_role.bind(Roles.Role.RUNNER))
+	_random_card.pressed.connect(_set_random_role)
 	%StartBtn.pressed.connect(_on_start)
 	(%Header as ScreenHeader).back_pressed.connect(SceneRouter.go_to_main_menu)
 
@@ -47,11 +53,17 @@ func _refresh_bots_label() -> void:
 
 func _set_role(role: Roles.Role) -> void:
 	_selected_role = role
+	_random_role = false
+	_refresh_role_cards()
+
+func _set_random_role() -> void:
+	_random_role = true
 	_refresh_role_cards()
 
 func _refresh_role_cards() -> void:
-	_sokyroteke_card.selected = _selected_role == Roles.Role.SOKYROTEKE
-	_runner_card.selected = _selected_role == Roles.Role.RUNNER
+	_random_card.selected = _random_role
+	_sokyroteke_card.selected = not _random_role and _selected_role == Roles.Role.SOKYROTEKE
+	_runner_card.selected = not _random_role and _selected_role == Roles.Role.RUNNER
 
 func _change_bots(delta: int) -> void:
 	_bots_count = clampi(_bots_count + delta, MIN_BOTS, MAX_BOTS)
@@ -102,5 +114,6 @@ func _add_portrait(player_name: String, outfit_index: int, portrait_scale: int) 
 
 func _on_start() -> void:
 	_game_data["bots"] = _bots_count
-	_game_data["role"] = _selected_role
+	# В игру уходит уже выпавшая роль: игра сама объявит, кто Соқыртеке.
+	_game_data["role"] = Roles.draw(_bots_count + 1) if _random_role else _selected_role
 	SceneRouter.go_to_game(_game_data)
