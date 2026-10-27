@@ -1,10 +1,10 @@
 class_name PixelBackdrop
 extends Control
-## Фон экрана в пиксельном стиле. Картинка рисуется в целом масштабе экрана
-## 1280×720 и по центру: на широком телефоне или планшете она не тянется на
-## дробный коэффициент, а встаёт в тёмное поле с золотой каймой по краю. Само окно
-## масштабирует экран целиком — целый ли этот масштаб, решает настройка проекта
-## (этап 6.3).
+## Фон экрана в пиксельном стиле. Картинка закрывает весь экран, как обои: на
+## телефоне, планшете или MacBook она растягивается до краёв без искажения
+## пропорций, а лишнее поровну срезается сверху-снизу или по бокам. Пиксели фона
+## при этом бывают на полпикселя неровными — за вуалью этого не видно, а пустая
+## рамка вокруг картинки выглядела как сломанная вёрстка.
 ## Сверху — вуаль, чтобы панели и текст читались на ярком закате.
 
 enum Variant { MAIN, STEPPE }
@@ -41,18 +41,14 @@ func _ready() -> void:
 
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, size), UiTokens.BURGUNDY_DARK)
-	var image_rect := picture_rect(_texture.get_size(), size)
-	draw_texture_rect(_texture, image_rect, false)
-	if image_rect.size.x < size.x or image_rect.size.y < size.y:
-		draw_rect(image_rect.grow(UiTokens.PIXEL), UiTokens.GOLD_DARK, false, UiTokens.PIXEL)
+	draw_texture_rect(_texture, picture_rect(_texture.get_size(), size), false)
 	if veil > 0.0:
 		draw_rect(Rect2(Vector2.ZERO, size), Color(UiTokens.OUTLINE, veil))
 
 
-## Где рисовать картинку: самый крупный целый масштаб, при котором она целиком
-## помещается, по центру. Если картинка больше экрана — масштаб 1 и обрезка
-## по центру.
+## Где рисовать картинку: наименьший масштаб, при котором она закрывает экран
+## целиком, по центру. Размер округляется вверх, чтобы у края не осталось щели.
 static func picture_rect(picture: Vector2, area: Vector2) -> Rect2:
-	var scale := maxi(1, floori(minf(area.x / picture.x, area.y / picture.y)))
-	var drawn := picture * scale
+	var scale := maxf(area.x / picture.x, area.y / picture.y)
+	var drawn := (picture * scale).ceil()
 	return Rect2(((area - drawn) / 2).floor(), drawn)

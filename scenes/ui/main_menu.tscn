@@ -30,116 +30,116 @@ script = ExtResource("3_backdrop")
 variant = 0
 veil = 0.2
 
-[node name="Logo" type="TextureRect" parent="."]
+[node name="Center" type="CenterContainer" parent="."]
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -320.0
-offset_top = 16.0
-offset_right = 320.0
-offset_bottom = 146.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Column" type="VBoxContainer" parent="Center"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 18
+
+[node name="Logo" type="TextureRect" parent="Center/Column"]
+layout_mode = 2
+size_flags_horizontal = 4
 mouse_filter = 2
 texture = ExtResource("4_logo")
 stretch_mode = 2
 
-[node name="Menu" type="PanelContainer" parent="."]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -560.0
-offset_top = 164.0
-offset_right = -48.0
-offset_bottom = 164.0
-grow_horizontal = 2
+[node name="Panels" type="HBoxContainer" parent="Center/Column"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 96
 
-[node name="Buttons" type="VBoxContainer" parent="Menu"]
+[node name="Menu" type="PanelContainer" parent="Center/Column/Panels"]
+custom_minimum_size = Vector2(512, 0)
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="Buttons" type="VBoxContainer" parent="Center/Column/Panels/Menu"]
 layout_mode = 2
 
-[node name="PlayBtn" type="Button" parent="Menu/Buttons"]
+[node name="PlayBtn" type="Button" parent="Center/Column/Panels/Menu/Buttons"]
 layout_mode = 2
 theme_type_variation = &"ButtonLarge"
 text = "ОЙНАУ"
 script = ExtResource("5_button")
 ornate = true
 
-[node name="WardrobeBtn" type="Button" parent="Menu/Buttons"]
+[node name="WardrobeBtn" type="Button" parent="Center/Column/Panels/Menu/Buttons"]
 layout_mode = 2
 text = "КИІМ ШКАФЫ"
 script = ExtResource("5_button")
 
-[node name="CodexBtn" type="Button" parent="Menu/Buttons"]
+[node name="CodexBtn" type="Button" parent="Center/Column/Panels/Menu/Buttons"]
 layout_mode = 2
 text = "МҰРА  ·  ЭНЦИКЛОПЕДИЯ"
 script = ExtResource("5_button")
 
-[node name="AboutBtn" type="Button" parent="Menu/Buttons"]
+[node name="AboutBtn" type="Button" parent="Center/Column/Panels/Menu/Buttons"]
 layout_mode = 2
 text = "ОЙЫН ТУРАЛЫ"
 script = ExtResource("5_button")
 
-[node name="SettingsBtn" type="Button" parent="Menu/Buttons"]
+[node name="SettingsBtn" type="Button" parent="Center/Column/Panels/Menu/Buttons"]
 layout_mode = 2
 text = "БАПТАУЛАР"
 script = ExtResource("5_button")
 
-[node name="QuitBtn" type="Button" parent="Menu/Buttons"]
+[node name="QuitBtn" type="Button" parent="Center/Column/Panels/Menu/Buttons"]
 layout_mode = 2
 theme_type_variation = &"ButtonSecondary"
 text = "Шығу"
 script = ExtResource("5_button")
 
-[node name="PlayerCard" type="PanelContainer" parent="."]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = 48.0
-offset_top = 164.0
-offset_right = 560.0
-offset_bottom = 164.0
-grow_horizontal = 2
+[node name="PlayerCard" type="PanelContainer" parent="Center/Column/Panels"]
+custom_minimum_size = Vector2(512, 0)
+layout_mode = 2
+size_flags_vertical = 0
 
-[node name="VBox" type="VBoxContainer" parent="PlayerCard"]
+[node name="VBox" type="VBoxContainer" parent="Center/Column/Panels/PlayerCard"]
 layout_mode = 2
 
-[node name="NameLabel" type="Label" parent="PlayerCard/VBox"]
+[node name="NameLabel" type="Label" parent="Center/Column/Panels/PlayerCard/VBox"]
 layout_mode = 2
 theme_type_variation = &"HeadingLabel"
 text = "Ойыншы аты"
 
-[node name="NicknameInput" type="LineEdit" parent="PlayerCard/VBox"]
+[node name="NicknameInput" type="LineEdit" parent="Center/Column/Panels/PlayerCard/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 placeholder_text = "Атыңызды жазыңыз"
 max_length = 24
 
-[node name="NicknameWarning" type="Label" parent="PlayerCard/VBox"]
+[node name="NicknameWarning" type="Label" parent="Center/Column/Panels/PlayerCard/VBox"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 theme_type_variation = &"WarningLabel"
 text = "Алдымен атыңызды жазыңыз!"
 
-[node name="MascotSlot" type="Control" parent="PlayerCard/VBox"]
+[node name="MascotSlot" type="Control" parent="Center/Column/Panels/PlayerCard/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Divider" type="Control" parent="PlayerCard/VBox"]
+[node name="Divider" type="Control" parent="Center/Column/Panels/PlayerCard/VBox"]
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("6_divider")
 
-[node name="RuleTitle" type="Label" parent="PlayerCard/VBox"]
+[node name="RuleTitle" type="Label" parent="Center/Column/Panels/PlayerCard/VBox"]
 layout_mode = 2
 theme_type_variation = &"HeadingLabel"
 text = "ҚЫСҚАША ЕРЕЖЕ"
 
-[node name="RuleText" type="Label" parent="PlayerCard/VBox"]
+[node name="RuleText" type="Label" parent="Center/Column/Panels/PlayerCard/VBox"]
 layout_mode = 2
 text = "Қашқындарды ұста да, олардың киімін дұрыс атаңыз."
 autowrap_mode = 3
@@ -173,10 +173,10 @@ script = ExtResource("7_dialog")
 dialog_title = "Шығу"
 dialog_message = "Ойыннан шығасыз ба?"
 
-[connection signal="text_changed" from="PlayerCard/VBox/NicknameInput" to="." method="_on_nickname_changed"]
-[connection signal="pressed" from="Menu/Buttons/PlayBtn" to="." method="_on_play_pressed"]
-[connection signal="pressed" from="Menu/Buttons/WardrobeBtn" to="." method="_on_wardrobe_pressed"]
-[connection signal="pressed" from="Menu/Buttons/CodexBtn" to="." method="_on_codex_pressed"]
-[connection signal="pressed" from="Menu/Buttons/AboutBtn" to="." method="_on_about_pressed"]
-[connection signal="pressed" from="Menu/Buttons/SettingsBtn" to="." method="_on_settings_pressed"]
-[connection signal="pressed" from="Menu/Buttons/QuitBtn" to="." method="_on_quit_pressed"]
+[connection signal="text_changed" from="Center/Column/Panels/PlayerCard/VBox/NicknameInput" to="." method="_on_nickname_changed"]
+[connection signal="pressed" from="Center/Column/Panels/Menu/Buttons/PlayBtn" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="Center/Column/Panels/Menu/Buttons/WardrobeBtn" to="." method="_on_wardrobe_pressed"]
+[connection signal="pressed" from="Center/Column/Panels/Menu/Buttons/CodexBtn" to="." method="_on_codex_pressed"]
+[connection signal="pressed" from="Center/Column/Panels/Menu/Buttons/AboutBtn" to="." method="_on_about_pressed"]
+[connection signal="pressed" from="Center/Column/Panels/Menu/Buttons/SettingsBtn" to="." method="_on_settings_pressed"]
+[connection signal="pressed" from="Center/Column/Panels/Menu/Buttons/QuitBtn" to="." method="_on_quit_pressed"]
