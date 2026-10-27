@@ -24,10 +24,6 @@ extends Resource
 @export var how_to_play: Array[String] = []
 ## Каким навыкам учит — по одному навыку на строку.
 @export var skills: Array[String] = []
-## Вариант фона (`SanlaqSceneBackdrop.Variant`), чтобы брифинг стоял на фоне
-## своего режима, а не на общем.
-@export var backdrop: int = 0
-
 ## Все озвучиваемые строки подряд, в порядке показа и нумерации файлов.
 func spoken_lines() -> Array[String]:
 	var out: Array[String] = []

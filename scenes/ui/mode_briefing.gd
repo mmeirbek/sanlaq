@@ -11,6 +11,9 @@ extends Control
 ## подсвечивается читаемая строка; если голоса нет вовсе, подсветка всё равно
 ## проходит по строкам в темпе чтения — экран работает и со звуком, и без него.
 
+## Схема шага: assets/sprites/briefing/<id>_<номер шага с 1>.png (briefing_art.py).
+const DIAGRAM_PATH := "res://assets/sprites/briefing/%s_%d.png"
+
 ## Куда вести после брифинга.
 const ROUTES := {
 	"sokyroteke": "chase",
@@ -26,13 +29,11 @@ var _spoken: Array[String] = []
 var _current_line: int = -1
 var _playing: bool = false
 
-@onready var _background: SanlaqSceneBackdrop = $Background
-@onready var _header: SanlaqHeader = %Header
+@onready var _header: ScreenHeader = %Header
 @onready var _steps_box: VBoxContainer = %StepsBox
 @onready var _skills_box: VBoxContainer = %SkillsBox
 @onready var _voice_btn: CheckButton = %VoiceBtn
 @onready var _start_btn: Button = %StartBtn
-@onready var _back_btn: Button = %BackBtn
 
 func _ready() -> void:
 	_narration = Narration.new()
@@ -40,7 +41,7 @@ func _ready() -> void:
 	_narration.line_finished.connect(_on_line_finished)
 
 	_start_btn.pressed.connect(_on_start_pressed)
-	_back_btn.pressed.connect(_on_back_pressed)
+	_header.back_pressed.connect(_on_back_pressed)
 	# Состояние ставим до подключения сигнала, иначе он сработает на установке.
 	_voice_btn.button_pressed = GameSettings.briefing_voice_enabled
 	_voice_btn.toggled.connect(_on_voice_toggled)
@@ -52,9 +53,8 @@ func _ready() -> void:
 		SceneRouter.go_to_mode_select()
 		return
 
-	_background.set_variant(_briefing.backdrop as SanlaqSceneBackdrop.Variant)
-	_header.kicker = _briefing.kicker
-	_header.title = _briefing.title
+	_header.title = tr(_briefing.title).to_upper()
+	_header.subtitle = tr(_briefing.kicker)
 	_build_lines()
 	Telemetry.log_event("briefing_open", {"mode": _briefing.id})
 	if GameSettings.briefing_voice_enabled:
@@ -87,25 +87,26 @@ func _build_lines() -> void:
 ## нужна: они про навык, а не про действие на доске.
 func _make_line(marker: String, source: String, index: int, diagram_step: int = -1) -> Control:
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 12)
+	row.add_theme_constant_override("separation", UiTokens.SPACE_S)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	var num := Label.new()
-	num.custom_minimum_size = Vector2(26, 0)
+	num.custom_minimum_size = Vector2(UiTokens.SPACE_L, 0)
 	num.text = marker
+	num.theme_type_variation = "HeadingLabel"
 	num.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	# По верхнему краю: иначе у многострочного пункта номер уезжает на середину.
 	num.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	num.size_flags_vertical = Control.SIZE_FILL
-	num.add_theme_font_override("font", SanlaqDesignTokens.FONT_BOLD)
-	num.add_theme_font_size_override("font_size", 18)
-	num.add_theme_color_override("font_color", SanlaqDesignTokens.GOLD_DARK)
+	num.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(num)
 
 	if diagram_step >= 0:
-		var diagram := StepDiagram.new()
-		diagram.mode_id = _briefing.id
-		diagram.step = diagram_step
-		diagram.custom_minimum_size = Vector2(176, 88)
+		var diagram := TextureRect.new()
+		diagram.texture = load(DIAGRAM_PATH % [_briefing.id, diagram_step + 1]) as Texture2D
+		diagram.stretch_mode = TextureRect.STRETCH_KEEP
+		diagram.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		diagram.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		row.add_child(diagram)
 
 	var text := Label.new()
@@ -113,30 +114,28 @@ func _make_line(marker: String, source: String, index: int, diagram_step: int = 
 	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER if diagram_step >= 0 else VERTICAL_ALIGNMENT_TOP
-	text.add_theme_font_size_override("font_size", 17)
-	text.add_theme_color_override("font_color", SanlaqDesignTokens.NAVY)
+	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(text)
 	_line_labels.append(text)
 
-	var click := Button.new()
-	click.flat = true
-	click.focus_mode = Control.FOCUS_NONE
-	click.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	click.set_anchors_preset(Control.PRESET_FULL_RECT)
-	click.pressed.connect(_on_line_pressed.bind(index))
-
 	var host := MarginContainer.new()
+	host.mouse_filter = Control.MOUSE_FILTER_STOP
+	host.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	host.gui_input.connect(func(event: InputEvent) -> void:
+		var mouse := event as InputEventMouseButton
+		if mouse != null and mouse.button_index == MOUSE_BUTTON_LEFT and mouse.pressed:
+			_on_line_pressed(index))
 	host.add_child(row)
-	host.add_child(click)
 	return host
 
 func _set_line_active(index: int, active: bool) -> void:
 	if index < 0 or index >= _line_labels.size():
 		return
 	var label := _line_labels[index]
-	label.add_theme_color_override(
-		"font_color",
-		SanlaqDesignTokens.GOLD_DARK if active else SanlaqDesignTokens.NAVY)
+	if active:
+		label.add_theme_color_override("font_color", UiTokens.GOLD_LIGHT)
+	else:
+		label.remove_theme_color_override("font_color")
 
 func _start_narration() -> void:
 	if _spoken.is_empty():

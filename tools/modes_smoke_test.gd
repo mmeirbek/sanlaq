@@ -14,18 +14,8 @@ func _init() -> void:
 	await _test_briefings()
 	await _test_abai()
 	await _test_togyz()
+	await _test_aq_suyek()
 	finish("MODES")
-
-## Каждый режим должен стоять на своём фоне, а не на дефолтном фоне лобби.
-func _check_backdrop(node: Node, expected: SanlaqSceneBackdrop.Variant, label: String) -> void:
-	var bg := node.get_node_or_null("Background") as SanlaqSceneBackdrop
-	if bg == null:
-		check(false, "%s: узел Background на месте" % label)
-		return
-	check(bg.variant == expected, "%s: свой вариант фона, получен %d" % [label, bg.variant])
-	var path: String = SanlaqSceneBackdrop.TEXTURES.get(bg.variant, "")
-	check(ResourceLoader.exists(path), "%s: файл фона на месте (%s)" % [label, path])
-	check(bg.get("_texture") != null, "%s: текстура фона загрузилась" % label)
 
 func _connected(node: Node, unique_name: String) -> bool:
 	var btn := node.get_node_or_null(unique_name) as Button
@@ -125,33 +115,30 @@ func _test_briefing(mode_id: String) -> void:
 	if n == null:
 		settings.set_briefing_voice_enabled(was_enabled)
 		return
-	_check_backdrop(n, brief.backdrop as SanlaqSceneBackdrop.Variant, mode_id + " (брифинг)")
-	check((n.get_node("%Header") as SanlaqHeader).title == brief.title,
+	check(n.get_node_or_null("Background") is PixelBackdrop, "%s: пиксельный фон брифинга" % mode_id)
+	check((n.get_node("%Header") as ScreenHeader).title == tr(brief.title).to_upper(),
 		"%s: заголовок брифинга подставлен" % mode_id)
 	var steps: VBoxContainer = n.get_node("%StepsBox")
 	var skills: VBoxContainer = n.get_node("%SkillsBox")
 	check(steps.get_child_count() == brief.how_to_play.size(),
 		"%s: показаны все шаги, получено %d" % [mode_id, steps.get_child_count()])
 
-	# У каждого шага своя схема, и схема умеет нарисовать ровно столько шагов,
-	# сколько их в ресурсе — иначе лишний шаг получил бы чужую картинку.
-	var drawn: int = StepDiagram.STEPS_DRAWN.get(mode_id, 0)
-	check(drawn == brief.how_to_play.size(),
-		"%s: схема покрывает все шаги (умеет %d, шагов %d)" % [mode_id, drawn, brief.how_to_play.size()])
+	# У каждого шага своя пиксельная схема из генератора — и только своя.
 	var diagrams := 0
-	for row in steps.get_children():
-		for node in row.get_children():
-			for leaf in node.get_children():
-				if leaf is StepDiagram:
-					diagrams += 1
-					check((leaf as StepDiagram).mode_id == mode_id,
-						"%s: схема знает свой режим" % mode_id)
+	for host in steps.get_children():
+		for leaf in host.get_child(0).get_children():
+			if leaf is TextureRect:
+				diagrams += 1
+				var expected := "res://assets/sprites/briefing/%s_%d.png" % [mode_id, diagrams]
+				check((leaf as TextureRect).texture != null and (leaf as TextureRect).texture.resource_path == expected,
+					"%s: у шага %d своя схема" % [mode_id, diagrams])
 	check(diagrams == brief.how_to_play.size(),
 		"%s: схема стоит у каждого шага, найдено %d" % [mode_id, diagrams])
 	check(skills.get_child_count() == brief.skills.size(),
 		"%s: показаны все навыки, получено %d" % [mode_id, skills.get_child_count()])
 	check(_connected(n, "%StartBtn"), "%s: кнопка «ОЙНАУ» подключена" % mode_id)
-	check(_connected(n, "%BackBtn"), "%s: кнопка «Артқа» подключена" % mode_id)
+	check((n.get_node("%Header") as ScreenHeader).back_pressed.get_connections().size() > 0,
+		"%s: «Артқа» подключена" % mode_id)
 	check((n.get_node("%VoiceBtn") as Button).visible,
 		"%s: кнопка озвучки показана — голос найден" % mode_id)
 
@@ -282,4 +269,41 @@ func _test_togyz() -> void:
 	if board3 != null and not board3.is_over() and board3.current_player == 0 and not bool(n.get("_animating")):
 		check(rings.size() == board3.legal_moves().size(),
 			"тоғыз: кольцом отмечены ровно доступные ходы, %d из %d" % [rings.size(), board3.legal_moves().size()])
+	await unmount(n)
+
+# --- Ақ сүйек ----------------------------------------------------------------
+
+func _test_aq_suyek() -> void:
+	var n := await mount("res://scenes/ui/aq_suyek.tscn")
+	if n == null:
+		return
+	check(n.get_node_or_null("Background") is PixelBackdrop, "ақ сүйек: пиксельный фон на месте")
+	check(n.get_node_or_null("WipBadge") == null, "ақ сүйек: наклейки «ӘЗІРЛЕНУДЕ» нет")
+	check((n.get_node("%Header") as ScreenHeader).back_pressed.get_connections().size() > 0,
+		"ақ сүйек: «Артқа» подключена")
+	var field := n.get_node("%Field") as AqSuyekField
+	check(field.cell_pressed.get_connections().size() > 0, "ақ сүйек: нажатия по полю подключены")
+
+	var options := n.get_node("%Options") as VBoxContainer
+	check(options.get_child_count() >= 2, "ақ сүйек: первый ход начинается с вопроса")
+	var board: AqSuyekBoard = n.get("_board")
+	# Верный ответ даёт шаги, после него поле принимает шаг в соседнюю клетку.
+	var answered := false
+	for btn: Button in options.get_children():
+		btn.pressed.emit()
+		answered = true
+		break
+	check(answered and not board.awaiting_answer(), "ақ сүйек: после ответа есть шаги")
+	var start: Vector2i = board.positions[AqSuyekBoard.HUMAN]
+	var target := start + Vector2i.RIGHT
+	# Клик по полю: центр клетки target в координатах поля.
+	await process_frame
+	var cell_px := float(AqSuyekField.CELL.get_width() + AqSuyekField.GAP)
+	var origin := (field.size - field.custom_minimum_size) / 2.0
+	check(field.cell_at(origin + (Vector2(target) + Vector2(0.5, 0.5)) * cell_px) == target,
+		"ақ сүйек: клик по центру клетки попадает в неё")
+	field.cell_pressed.emit(target)
+	await process_frame
+	check(board.positions[AqSuyekBoard.HUMAN] == target or board.round_index > 0,
+		"ақ сүйек: игрок шагнул в соседнюю клетку")
 	await unmount(n)

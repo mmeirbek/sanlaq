@@ -37,9 +37,9 @@
 
 - Слева «ҚАЛАЙ ОЙНАЛАДЫ» — пронумерованные шаги, у каждого своя **схема**
   этого шага; справа «НЕНІ ҮЙРЕТЕДІ» — навыки.
-- Схемы рисуются кодом (`StepDiagram`), а не лежат картинками: показывают точное
-  состояние игры (какая отау выбрана, сколько в ней құмалақ), внутри нет ни
-  одного слова — локализацию не ломают, и меняются вместе с правилами.
+- Схемы — пиксельные картинки из генератора `tools/artgen/briefing_art.py`
+  (`assets/sprites/briefing/<режим>_<шаг>.png`). Внутри нет ни одного слова —
+  локализацию не ломают.
 - Текст локализуется обычным `tr()`: строки в `.tres` хранятся по-казахски и они
   же являются ключами в `assets/i18n/ui_strings.csv`.
 - **Озвучка по умолчанию выключена** — объяснение читается глазами. Переключатель
@@ -219,15 +219,14 @@ icon_path    = "res://assets/sprites/items/head_borik_02.png"
 - **Новый режим целиком**: сцена + скрипт в `scenes/ui/`, константа и
   `go_to_*()` в `autoload/scene_router.gd`, карточка на `mode_select.tscn`
   с кнопкой, `ModeBriefing` в `data/briefings/` и маршрут в `ROUTES` внутри
-  `scenes/ui/mode_briefing.gd`, вариант фона в `SanlaqSceneBackdrop.Variant`,
-  сцена в `SCENES` внутри `tools/ui_audit.gd` и проверки в
+  `scenes/ui/mode_briefing.gd`, сцена в `SCENES` внутри `tools/ui_audit.gd` и проверки в
   `tools/modes_smoke_test.gd`.
   Правила выносить в отдельный класс без ссылок на ноды — как `GameBoard`.
 - **Объяснение режима**: правь `data/briefings/<режим>.tres` — шаги
   `how_to_play` и навыки `skills`. Каждую новую строку добавь в
   `assets/i18n/ui_strings.csv` с английским переводом и перегенерируй озвучку
   (`python3 tools/generate_voice_lines.py`). Добавил шаг — дорисуй его схему в
-  `scripts/ui/components/step_diagram.gd` и поправь там же `STEPS_DRAWN`.
+  `tools/artgen/briefing_art.py` (`DIAGRAMS`) и пересобери арт.
   `modes_smoke_test.gd` уронит сборку, если строка осталась без перевода, без
   озвучки или без своей схемы.
 - **Новое слово для «Абай айтады»**: `GameWord` в `data/words/`

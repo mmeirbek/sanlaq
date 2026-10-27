@@ -90,16 +90,7 @@ func _check_theme_variations() -> void:
 				used[found.get_string(1)] = path
 	for variation: String in used:
 		var known := THEME.get_type_variation_base(variation) != &"" or ClassDB.class_exists(variation)
-		# Старая тема живёт до конца этапа 3; её варианты проверяем, только если
-		# экран уже на новой теме — поэтому смотрим лишь варианты новой темы.
-		if not known and _legacy_variation(variation):
-			continue
 		check(known, "вариант темы «%s» существует (%s)" % [variation, used[variation].get_file()])
-
-
-## Варианты старой темы sanlaq_theme.tres — уйдут вместе с ней в этапе 3.
-func _legacy_variation(variation: String) -> bool:
-	return load("res://resources/ui/sanlaq_theme.tres").get_type_variation_base(variation) != &""
 
 
 func _files(dir_path: String, extensions: Array) -> PackedStringArray:
