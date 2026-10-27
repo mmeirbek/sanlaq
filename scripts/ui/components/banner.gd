@@ -67,7 +67,7 @@ func show_banner(title: String, subtitle: String = "", hold_seconds: float = 2.0
 	visible = true
 
 	await _animate_height(0.0, height)
-	await get_tree().create_timer(hold_seconds).timeout
+	await get_tree().create_timer(hold_seconds, false).timeout
 	if serial != _serial:
 		return
 	await _animate_height(height, 0.0)

@@ -157,7 +157,7 @@ func _trigger_quiz(target: Player) -> void:
 
 	if sokyroteke.is_bot:
 		var chance := _bot_correct_chance()
-		await get_tree().create_timer(1.0).timeout
+		await get_tree().create_timer(1.0, false).timeout
 		submit_quiz_answer(randf() < chance)
 
 func _bot_correct_chance() -> float:
@@ -210,7 +210,7 @@ func _end_round(sokyroteke_won: bool) -> void:
 	var winner := "sokyroteke" if sokyroteke_won else "players"
 	_last_winner = winner
 	round_ended.emit(winner)
-	await get_tree().create_timer(3.0).timeout
+	await get_tree().create_timer(3.0, false).timeout
 	_end_match()
 
 func _end_match() -> void:

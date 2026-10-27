@@ -5,6 +5,7 @@ extends Control
 ## Персонаж в карточке — в целом масштабе, чтобы пиксели оставались ровными.
 const MASCOT_SCALE := 3
 const CHARACTER_SCENE := preload("res://scenes/entities/character_visual.tscn")
+const WELCOME := preload("res://scripts/ui/welcome_overlay.gd")
 
 @onready var nickname_input: LineEdit = %NicknameInput
 @onready var nickname_warning: Label = %NicknameWarning
@@ -22,6 +23,9 @@ func _ready() -> void:
 	quit_dialog.confirmed.connect(func() -> void: SceneRouter.quit())
 	Telemetry.license_denied.connect(_on_license_denied)
 	_spawn_mascot()
+	# Обучение — только живому игроку и только в первый раз.
+	if not RunContext.is_automated() and WELCOME.should_show():
+		add_child(WELCOME.new())
 
 func _on_license_denied(reason: String) -> void:
 	var overlay := ColorRect.new()
@@ -116,6 +120,13 @@ func _on_about_pressed() -> void:
 func _on_settings_pressed() -> void:
 	Telemetry.log_event("button_press", {"button": "settings"})
 	SceneRouter.go_to_settings()
+
+## Esc в главном меню — то же, что «Шығу»: спросить, выходить ли. Само окно
+## ловит Esc раньше и закрывается.
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel") and not quit_dialog.visible:
+		get_viewport().set_input_as_handled()
+		_on_quit_pressed()
 
 func _on_quit_pressed() -> void:
 	Telemetry.log_event("button_press", {"button": "quit"})

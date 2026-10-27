@@ -53,6 +53,8 @@ func _init() -> void:
 	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	_count_label = _label("HudLabel", Control.PRESET_TOP_WIDE, COUNT_HEIGHT)
 	_caption_label = _label("CaptionLabel", Control.PRESET_BOTTOM_WIDE, CAPTION_HEIGHT)
+	# На дереве приглушённый цвет подписи не читается (контраст 2,7) — светлее.
+	_caption_label.add_theme_color_override("font_color", UiTokens.PARCHMENT_DARK)
 
 
 func _label(variation: String, preset: Control.LayoutPreset, height: int) -> Label:

@@ -7,6 +7,8 @@ extends CanvasLayer
 
 signal spectate_requested
 signal leave_requested
+## Кнопка паузы в правом верхнем углу — для пальца; с клавиатуры пауза — Esc.
+signal pause_requested
 ## Кнопки «предыдущий / следующий игрок» в режиме наблюдения: -1 или +1.
 signal spectate_cycled(step: int)
 
@@ -44,6 +46,18 @@ func _ready() -> void:
 	_caught_choice.cancelled.connect(leave_requested.emit)
 	%PrevBtn.pressed.connect(func() -> void: spectate_cycled.emit(-1))
 	%NextBtn.pressed.connect(func() -> void: spectate_cycled.emit(1))
+	_add_pause_button()
+
+func _add_pause_button() -> void:
+	var button := PixelButton.new()
+	button.name = "PauseBtn"
+	button.text = "II"
+	button.theme_type_variation = "ButtonSecondary"
+	button.focus_mode = Control.FOCUS_NONE
+	button.custom_minimum_size = Vector2(UiTokens.TOUCH_MIN, UiTokens.TOUCH_MIN)
+	button.pressed.connect(pause_requested.emit)
+	$Root.add_child(button)
+	button.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, UiTokens.SPACE_S)
 
 func update_timer(seconds: float) -> void:
 	var whole := ceili(maxf(0.0, seconds))

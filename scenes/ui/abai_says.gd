@@ -35,6 +35,7 @@ var _turn_pos: int = 0
 var _input_pos: int = 0
 var _busy: bool = false
 var _audio: GameAudio
+var _pause: PauseMenu
 
 @onready var _setup_panel: PanelContainer = %SetupPanel
 @onready var _play_panel: Control = %PlayPanel
@@ -65,7 +66,10 @@ func _ready() -> void:
 	_ready_btn.pressed.connect(_on_ready_pressed)
 	_again_btn.pressed.connect(_reset_to_setup)
 	_menu_btn.pressed.connect(func() -> void: SceneRouter.go_to_main_menu())
-	(%Header as ScreenHeader).back_pressed.connect(SceneRouter.go_to_mode_select)
+	(%Header as ScreenHeader).back_pressed.connect(_on_back)
+	_pause = PauseMenu.new()
+	_pause.main_menu_requested.connect(SceneRouter.go_to_main_menu)
+	add_child(_pause)
 	_show_only(_setup_panel)
 
 func _start_game(player_count: int) -> void:
@@ -193,17 +197,17 @@ func _show_sequence() -> void:
 	_progress_label.text = ""
 	_update_players()
 
-	await get_tree().create_timer(0.6).timeout
+	await get_tree().create_timer(0.6, false).timeout
 	if not is_inside_tree():
 		return
 	for idx in _sequence:
 		_set_card_active(idx, true)
 		_audio.play_word(_words[idx].sound_path, idx)
-		await get_tree().create_timer(SHOW_ON).timeout
+		await get_tree().create_timer(SHOW_ON, false).timeout
 		if not is_inside_tree():
 			return
 		_set_card_active(idx, false)
-		await get_tree().create_timer(SHOW_GAP).timeout
+		await get_tree().create_timer(SHOW_GAP, false).timeout
 		if not is_inside_tree():
 			return
 
@@ -247,7 +251,7 @@ func _on_card_pressed(index: int) -> void:
 
 func _flash_card(index: int) -> void:
 	_set_card_active(index, true)
-	var timer := get_tree().create_timer(TAP_FLASH)
+	var timer := get_tree().create_timer(TAP_FLASH, false)
 	timer.timeout.connect(func() -> void:
 		if is_inside_tree():
 			_set_card_active(index, false))
@@ -261,7 +265,7 @@ func _finish_turn(correct: bool) -> void:
 	else:
 		_set_status(tr("Қате!"), UiTokens.DANGER)
 		_update_players()
-	await get_tree().create_timer(FEEDBACK_TIME).timeout
+	await get_tree().create_timer(FEEDBACK_TIME, false).timeout
 	if not is_inside_tree():
 		return
 	_busy = false
@@ -317,3 +321,11 @@ func _update_progress() -> void:
 func _show_only(panel: Control) -> void:
 	for p: Control in [_setup_panel, _play_panel, _handoff_panel, _end_panel]:
 		p.visible = p == panel
+
+## «Артқа» и Esc посреди партии ставят паузу, а не бросают игру; вне партии —
+## назад к выбору режима.
+func _on_back() -> void:
+	if _state != State.SETUP and _state != State.GAME_END:
+		_pause.open()
+	else:
+		SceneRouter.go_to_mode_select()

@@ -95,8 +95,9 @@ func apply_outfit_profile(profile_index: int) -> void:
 			apply_random_outfit()
 			return
 
+## Имя бота на языке игры: на английском — латиницей (Айгүл -> Aigul).
 static func bot_name_for(bot_index: int) -> String:
-	return BOT_NAMES[posmod(bot_index, BOT_NAMES.size())]
+	return TranslationServer.translate(BOT_NAMES[posmod(bot_index, BOT_NAMES.size())])
 
 static func get_outfit_profile(profile_index: int) -> Array:
 	return OUTFIT_PROFILES[posmod(profile_index, OUTFIT_PROFILES.size())]
