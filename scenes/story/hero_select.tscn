@@ -38,7 +38,7 @@ offset_right = -32.0
 offset_bottom = 120.0
 grow_horizontal = 2
 script = ExtResource("4_header")
-title = "ТАРИХ ЖОЛЫ"
+title = "ДАЛА ЖОЛЫ"
 subtitle = "БАТЫРДЫ ТАҢДА · ОНЫҢ ТАРАУЫН ӨТ"
 
 [node name="Cards" type="HBoxContainer" parent="."]

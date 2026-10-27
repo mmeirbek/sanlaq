@@ -1,5 +1,5 @@
 extends "res://tools/test_case.gd"
-## Ядро «Тарих жолы» (scripts/story/story_state.gd) на настоящих главах из data/story:
+## Ядро «Дала жолы» (scripts/story/story_state.gd) на настоящих главах из data/story:
 ## шаги по очереди, бірлік и выборы, финал и союзники, XP и статьи, сохранение.
 
 const CHAPTERS := ["kerey", "abylai", "kabanbay"]

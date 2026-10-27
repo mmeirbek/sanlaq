@@ -1,6 +1,6 @@
 class_name StoryLooks
 extends RefCounted
-## Облики людей «Тарих жолы» (ключи look из data/story, как в atilla): тело и
+## Облики людей «Дала жолы» (ключи look из data/story, как в atilla): тело и
 ## вещи по слотам. Собираются из тех же слоёв, что персонаж Соқыртеке; сауыт и
 ## дулыға есть только здесь (tools/artgen/characters.py, STORY_ITEMS).
 

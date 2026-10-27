@@ -107,8 +107,8 @@ def aq_suyek():
     return canvas
 
 
-def tarikh_zholy():
-    """Три героя «Тарих жолы» на закатной степи под знаменем: Керей, Абылай, Қабанбай."""
+def dala_zholy():
+    """Три героя «Дала жолы» на закатной степи под знаменем: Керей, Абылай, Қабанбай."""
     canvas = Canvas(WIDTH, HEIGHT, c("sunset"))
     for y in range(0, 20):
         fill(canvas, rows({y: (0, WIDTH - 1)}), c("sunset_pink") if y < 8 else c("peach"))
@@ -156,7 +156,7 @@ ART = {
     "abai_says": abai_says,
     "togyz_qumalaq": togyz_qumalaq,
     "aq_suyek": aq_suyek,
-    "tarikh_zholy": tarikh_zholy,
+    "dala_zholy": dala_zholy,
 }
 
 

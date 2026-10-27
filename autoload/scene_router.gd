@@ -114,7 +114,7 @@ func go_to_aq_suyek() -> void:
 func go_to_hero_select() -> void:
 	_change_scene(SCENE_HERO_SELECT)
 
-## Мир «Тарих жолы»; result — итог мини-игры, из которой вернулись.
+## Мир «Дала жолы»; result — итог мини-игры, из которой вернулись.
 func go_to_story_world(result: Dictionary = {}) -> void:
 	_pending_story_result = result
 	_change_scene(SCENE_STORY_WORLD)

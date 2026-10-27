@@ -77,7 +77,7 @@ func _check_texts(node: Node, where: String) -> void:
 	check(untranslated.is_empty(), "%s: на английском нет казахского текста (%d)" % [where, untranslated.size()])
 
 
-## «Тарих жолы»: заставка главы, HUD и разговор, мини-игры, костёр, финал,
+## «Дала жолы»: заставка главы, HUD и разговор, мини-игры, костёр, финал,
 ## раздел «Тарих» энциклопедии (тексты сюжета — в story_strings.csv).
 func _check_story() -> void:
 	var save_manager := autoload("SaveManager")

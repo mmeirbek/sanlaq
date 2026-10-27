@@ -41,7 +41,7 @@ var _equipped_items: Dictionary = {}
 var runner_sprint_time := 0.0
 var runner_sprint_uses := RUNNER_SPRINT_USES
 var bot_speed_mult: float = 1.0
-## Множитель извне: в «Тарих жолы» игрок на коне в бәйге.
+## Множитель извне: в «Дала жолы» игрок на коне в бәйге.
 var speed_mult: float = 1.0
 var _footprint_boost: bool = false
 

@@ -496,7 +496,7 @@ and pull request:
 - stage 6: pause, Esc everywhere, whole-pixel scaling, first-launch onboarding,
   missing translations;
 - stage 7: dead code and duplicates removed, roles as enums, gdlint in CI, docs;
-- stage 8 (next): the story mode «Тарих жолы» from the atilla concept.
+- stage 8 (next): the story mode «Дала жолы» from the atilla concept.
 
 ---
 
@@ -519,7 +519,7 @@ Inspect before changing — all of this exists and is covered by tests in `tools
 
 # 20. What We Want to Build Next
 
-Stage 8 of `docs/REDESIGN_PLAN.md`: the story mode «Тарих жолы». The player picks a
+Stage 8 of `docs/REDESIGN_PLAN.md`: the story mode «Дала жолы». The player picks a
 hero, walks the aul, talks to people, completes tasks and mini-games and unlocks
 encyclopedia articles. Chapter I first, then II and III. Content comes from atilla
 and is reviewed by the team for historical accuracy (`docs/HISTORY_REVIEW.md`).
@@ -706,7 +706,7 @@ The final asset should match the established game style, not simply be copied fr
 
 # 30. Current Priority
 
-Get the stage 5–7 pull requests merged, then build «Тарих жолы» chapter I
+Get the stage 5–7 pull requests merged, then build «Дала жолы» chapter I
 (stage 8 in `docs/REDESIGN_PLAN.md`).
 
 ---
@@ -770,10 +770,10 @@ MODES:
 Абай айтады — memory, 2-4 players pass-and-play
 Тоғыз құмалақ — board game, vs human or bot
 Ақ сүйек — night search, questions give steps, vs bot
-Тарих жолы — story mode, planned (stage 8)
+Дала жолы — story mode, planned (stage 8)
 
 DONE: redesign stages 0-7 (see docs/REDESIGN_PLAN.md)
-NEXT: stage 8 — Тарих жолы
+NEXT: stage 8 — Дала жолы
 ```
 
 ---
@@ -833,5 +833,5 @@ The current challenge is to transform that foundation into a coherent visual and
 
 The immediate mission is:
 
-> **Keep the four modes polished and green, and build the story mode «Тарих жолы» on the same systems.**
+> **Keep the four modes polished and green, and build the story mode «Дала жолы» on the same systems.**
 

@@ -40,7 +40,7 @@ func _ready() -> void:
 	var game_data := SceneRouter.get_pending_game_data()
 	var bot_count: int = clampi(int(game_data.get("bots", 5)), 1, 7)
 	_selected_role = game_data.get("role", Roles.Role.SOKYROTEKE)
-	# Раунд «Соқыр теке» из «Тарих жолы»: итог уходит обратно в мир главы.
+	# Раунд «Соқыр теке» из «Дала жолы»: итог уходит обратно в мир главы.
 	_from_story = bool(game_data.get("story", false))
 
 	match_mgr = _systems.get_node("MatchManager")
@@ -482,4 +482,3 @@ func _process(_delta: float) -> void:
 			game_hud.update_slow(human.slow_timer)
 		elif not human.is_slowed():
 			game_hud.hide_slow()
-

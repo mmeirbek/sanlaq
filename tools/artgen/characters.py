@@ -361,7 +361,7 @@ def head_dulyga(canvas, fig):
     fill(canvas, {(x, 6 + up) for x, y in dome if y == 6 + up}, c("gold_dark"))
 
 
-## Облики героев и жителей «Тарих жолы»: этих вещей нет в шкафу и квизе.
+## Облики героев и жителей «Дала жолы»: этих вещей нет в шкафу и квизе.
 STORY_ITEMS = {
     "torso_sauyt_01": torso_sauyt,
     "head_dulyga_01": head_dulyga,
