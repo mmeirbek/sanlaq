@@ -14,6 +14,7 @@ var game_audio: GameAudio
 var quiz_hud: QuizHUD
 var game_hud: GameHUD
 var _pause_menu: PauseMenu
+var _from_story := false
 var camera: GameCamera
 
 var _players: Array[Player] = []
@@ -39,6 +40,8 @@ func _ready() -> void:
 	var game_data := SceneRouter.get_pending_game_data()
 	var bot_count: int = clampi(int(game_data.get("bots", 5)), 1, 7)
 	_selected_role = game_data.get("role", Roles.Role.SOKYROTEKE)
+	# Раунд «Соқыр теке» из «Тарих жолы»: итог уходит обратно в мир главы.
+	_from_story = bool(game_data.get("story", false))
 
 	match_mgr = _systems.get_node("MatchManager")
 	map = $Map as MapManager
@@ -239,6 +242,10 @@ func _on_match_ended(results: Dictionary) -> void:
 	)
 	results["human_won"] = human_won
 	results["correct_answers"] = _correct_answers
+	if _from_story:
+		await get_tree().create_timer(2.0, false).timeout
+		SceneRouter.go_to_story_world({"won": human_won})
+		return
 	results["career"] = SaveManager.record_match(human_won, _correct_answers)
 	Telemetry.log_event("round_result", {
 		"role": Roles.ROLE_IDS[_selected_role],
@@ -255,7 +262,7 @@ func _on_match_ended(results: Dictionary) -> void:
 
 func _setup_match_features() -> void:
 	_touch_controls.set_sprint_mode(_selected_role == Roles.Role.RUNNER)
-	_touch_controls.echo_pressed.connect(_activate_echo)
+	_touch_controls.action_tapped.connect(_activate_echo)
 	if _selected_role == Roles.Role.RUNNER:
 		game_hud.update_runner_sprint(0.0, _players[0].runner_sprint_uses)
 	else:

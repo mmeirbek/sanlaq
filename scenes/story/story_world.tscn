@@ -1,0 +1,64 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/story/story_world.gd" id="1_world"]
+[ext_resource type="Script" path="res://scripts/systems/camera_controller.gd" id="2_camera"]
+[ext_resource type="Script" path="res://scripts/story/story_hud.gd" id="3_hud"]
+[ext_resource type="Script" path="res://scripts/story/dialogue_box.gd" id="4_dialogue"]
+[ext_resource type="Script" path="res://scripts/ui/touch_controls.gd" id="5_touch"]
+[ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="6_theme"]
+
+[node name="StoryWorld" type="Node2D"]
+script = ExtResource("1_world")
+
+[node name="Ground" type="Node2D" parent="."]
+
+[node name="World" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="Camera" type="Camera2D" parent="."]
+script = ExtResource("2_camera")
+follow_speed = 6.0
+
+[node name="Ui" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="Root" type="Control" parent="Ui"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("6_theme")
+
+[node name="Hud" type="Control" parent="Ui/Root"]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_hud")
+
+[node name="Overlay" type="Control" parent="Ui/Root"]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dialogue" type="Control" parent="Ui/Root"]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_dialogue")
+
+[node name="TouchControls" type="CanvasLayer" parent="."]
+script = ExtResource("5_touch")

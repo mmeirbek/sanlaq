@@ -54,6 +54,11 @@ def save(canvas, path, scale=PIXEL):
     """Сохраняет холст, увеличенный в целое число раз без сглаживания."""
     os.makedirs(os.path.dirname(path), exist_ok=True)
     image = canvas.image.resize((canvas.width * scale, canvas.height * scale), Image.Resampling.NEAREST)
+    # Те же пиксели — файл не трогаем: иначе PNG меняется побайтно и засоряет git.
+    if os.path.exists(path):
+        with Image.open(path) as old:
+            if old.size == image.size and old.convert("RGBA").tobytes() == image.convert("RGBA").tobytes():
+                return path
     image.save(path)
     return path
 

@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/modes/abai_says.png" id="8_art"]
 [ext_resource type="Texture2D" path="res://assets/sprites/modes/togyz_qumalaq.png" id="9_art"]
 [ext_resource type="Texture2D" path="res://assets/sprites/modes/aq_suyek.png" id="10_art"]
+[ext_resource type="Texture2D" path="res://assets/sprites/modes/tarikh_zholy.png" id="11_art"]
 
 [node name="ModeSelect" type="Control"]
 layout_mode = 3
@@ -64,6 +65,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("5_card")
+compact = true
 
 [node name="VBox" type="VBoxContainer" parent="Cards/ChaseCard"]
 layout_mode = 2
@@ -102,6 +104,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("5_card")
+compact = true
 
 [node name="VBox" type="VBoxContainer" parent="Cards/AbaiCard"]
 layout_mode = 2
@@ -140,6 +143,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("5_card")
+compact = true
 
 [node name="VBox" type="VBoxContainer" parent="Cards/TogyzCard"]
 layout_mode = 2
@@ -178,6 +182,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("5_card")
+compact = true
 
 [node name="VBox" type="VBoxContainer" parent="Cards/AqSuyekCard"]
 layout_mode = 2
@@ -206,6 +211,45 @@ text = "Түнгі далада жасырылған ақ сүйекті ізд�
 autowrap_mode = 3
 
 [node name="AqSuyekPlayBtn" type="Button" parent="Cards/AqSuyekCard/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "БАСТАУ"
+script = ExtResource("6_button")
+
+[node name="StoryCard" type="PanelContainer" parent="Cards"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("5_card")
+compact = true
+
+[node name="VBox" type="VBoxContainer" parent="Cards/StoryCard"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Art" type="TextureRect" parent="Cards/StoryCard/VBox"]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("11_art")
+stretch_mode = 3
+
+[node name="Kicker" type="Label" parent="Cards/StoryCard/VBox"]
+layout_mode = 2
+theme_type_variation = &"CaptionLabel"
+text = "ТАРИХИ ОЙЫН"
+
+[node name="Name" type="Label" parent="Cards/StoryCard/VBox"]
+layout_mode = 2
+theme_type_variation = &"HeadingLabel"
+text = "Тарих жолы"
+
+[node name="Desc" type="Label" parent="Cards/StoryCard/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Батырды таңдап, оның тарауын өт: ауылды арала, елмен сөйлес, тапсырмалар мен ойындарды орында."
+autowrap_mode = 3
+
+[node name="StoryPlayBtn" type="Button" parent="Cards/StoryCard/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "БАСТАУ"

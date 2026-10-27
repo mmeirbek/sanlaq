@@ -19,8 +19,8 @@
 
 | Автолоад | Что делает |
 |---|---|
-| `AssetRegistry` | индексирует `data/`: `get_clothing(slot)`, `get_words()`, `get_briefing(id)`, вопросы, боты, режим |
-| `SaveManager` | ник, экипировка, настройки, карьера в `user://save_data.json`; в тестах не читает и не пишет |
+| `AssetRegistry` | индексирует `data/`: `get_clothing(slot)`, `get_words()`, `get_briefing(id)`, вопросы, боты, режим, главы и герои сюжета |
+| `SaveManager` | ник, экипировка, настройки, карьера, прогресс сюжета (`story`, `save_story()`) в `user://save_data.json`; в тестах не читает и не пишет |
 | `GameSettings` | язык (локаль + язык данных), громкость, тряска, озвучка объяснений |
 | `MusicAudio` | фоновая музыка |
 | `SceneRouter` | переходы со шторкой (`go_to_*`), передача данных между экранами, замораживает уходящий экран |
@@ -35,7 +35,7 @@
 
 Все экраны — `Control` с `ScreenHeader` (заголовок, «Артқа», Esc) и `PixelBackdrop`.
 Компоненты — в `scripts/ui/components/`: `PixelButton`, `SelectableCard`,
-`ClothingCard`, `SlotTabs`, `ConfirmDialog`, `PauseMenu`, `Toast`, `Banner`,
+`ClothingCard`, `EntryCard`, `SlotTabs`, `ConfirmDialog`, `PauseMenu`, `Toast`, `Banner`,
 `Countdown`, `TimeBar`, `GemDivider`. Описание — в [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md).
 
 - `main_menu` — ник, персонаж игрока, вход в разделы; при первом запуске —
@@ -71,11 +71,45 @@ game.tscn
 - Свойства одежды — поля `ClothingItem` (`slow_duration_mult`, `visibility_mult`,
   `dry_speed_mult`), игрок их перемножает.
 
+## Тарих жолы (`scenes/story/`, `scripts/story/`)
+
+```
+hero_select.tscn         карусель трёх героев, прогресс и «БАСТАУ / ЖАЛҒАСТЫРУ / ҚАЙТА ОЙНАУ»
+story_world.tscn         мир главы: земля, сортируемый по y мир, игрок, камера
+├── Ui: StoryHud         глава, цель «3 / 7», XP, пауза, баннер задания, тост
+├── Ui: DialogueBox      портрет, печать по буквам, выбор 1/2
+├── Ui: Overlay          экраны поверх мира (StoryOverlays)
+└── TouchControls        стик и кнопка «сөйлесу»
+```
+
+- **Данные.** `StoryChapter` — шаги (`StoryBeat`), диалоги, расстановка жителей,
+  финал. `StoryCast` — герои, жители, статьи энциклопедии (`EncyclopediaEntry`).
+  Шаг — житель, диалог, действие (`StoryBeat.Action`), XP, статьи.
+- **Ядро — `StoryState`**, без узлов, поверх словаря `SaveManager.story`: шаги строго
+  по очереди, бірлік 0–100, флаги выборов, XP главы, открытые статьи, финал и
+  союзники. Тест — `story_rules_test`.
+- **Мир — `story_world.gd`.** Место (`StoryLayout`: аул, степь, Түркістан; метр —
+  40 px, y вниз, нижний край картинки — точка на земле) строится заново при переезде.
+  Цель шага — `target_point()`: житель, предмет задания или арба.
+- **Задания в мире** — подклассы `StoryTaskRunner` в `scripts/story/tasks/` (сбор,
+  стройка, конь, след, бәйге): сигналы `finished` / `failed`, картинка на баннере.
+  Соперник в бәйге ищет дорогу `AStarGrid2D` по коллизиям места.
+- **Экраны поверх мира** — `StoryOverlays` (`scripts/story/overlays/`): заставка
+  главы, костёр, карта маршрута, финал (сигнал `done`), асық и жекпе-жек (`won` /
+  `lost`, проигрыш — `ConfirmDialog` с повтором). Правила мини-игр — `AsykRules`,
+  `DuelRules` (`scripts/story/games/`), тест `story_games_test`.
+- **Соқыр теке** в сюжете — обычная `game.tscn` с `{"story": true}`: итог возвращается
+  через `SceneRouter.take_story_result()`.
+- **Автопилот** `story_world_test` проходит все три главы через настоящий мир, как
+  игрок; отдельно — порядок стройки юрты и бәйге (проигрыш, соперник, победа).
+
 ## Локализация
 
 Ключ — казахская строка, колонки `keys,kk,en` в `assets/i18n/ui_strings.csv`. В коде —
 `tr()`; `Label` переводит свой `text` сам. Названия вещей и слов хранятся в ресурсах
 парами `name_kz` / `name_en`, язык берётся из `GameSettings.get_lang_code()`.
+Тексты сюжета (диалоги, статьи, цели) — отдельный `assets/i18n/story_strings.csv`,
+его собирает из `data/story/` скрипт `tools/story/extract_strings.py`.
 
 ## Тесты (`tools/`)
 

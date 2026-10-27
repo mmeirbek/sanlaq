@@ -329,3 +329,97 @@ BEST STREAK: %d
 Аружан,Аружан,Aruzhan
 Нұрлан,Нұрлан,Nurlan
 Жанар,Жанар,Zhanar
+ТАРИХИ ОЙЫН,ТАРИХИ ОЙЫН,HISTORY GAME
+Тарих жолы,Тарих жолы,Path of History
+"Батырды таңдап, оның тарауын өт: ауылды арала, елмен сөйлес, тапсырмалар мен ойындарды орында.","Батырды таңдап, оның тарауын өт: ауылды арала, елмен сөйлес, тапсырмалар мен ойындарды орында.","Choose a hero and play through their chapter: walk the aul, talk to people, finish tasks and games."
+АЯҚТАЛДЫ,АЯҚТАЛДЫ,COMPLETED
+E · ЖОЛҒА ШЫҒУ,E · ЖОЛҒА ШЫҒУ,E · SET OFF
+ЭНЦИКЛОПЕДИЯ: %s,ЭНЦИКЛОПЕДИЯ: %s,ENCYCLOPEDIA: %s
+ТАҒЫ БІР РЕТ?,ТАҒЫ БІР РЕТ?,TRY AGAIN?
+"Бұл жолы болмады. Қайталайсың ба, әлде кейінірек пе?","Бұл жолы болмады. Қайталайсың ба, әлде кейінірек пе?",It didn't work out this time. Try again now or later?
+ҚАЙТАЛАУ,ҚАЙТАЛАУ,RETRY
+КЕЙІНІРЕК,КЕЙІНІРЕК,LATER
+Тарау аяқталды,Тарау аяқталды,Chapter complete
+Жолға шық: %s,Жолға шық: %s,Set off: %s
+ЖОЛҒА ШЫҒУ,ЖОЛҒА ШЫҒУ,SET OFF
+ТАРИХ ЖОЛЫ · ТҰЛҒАЛАР МЕН ОҚИҒАЛАР,ТАРИХ ЖОЛЫ · ТҰЛҒАЛАР МЕН ОҚИҒАЛАР,TARIKH ZHOLY · PEOPLE AND EVENTS
+"Батырлармен бірге Тарих жолынан өтіп, жаңа беттерді аш.","Батырлармен бірге Тарих жолынан өтіп, жаңа беттерді аш.",Travel the Path of History with the batyrs and open new pages.
+КИІМ,КИІМ,CLOTHES
+ТАРИХ,ТАРИХ,HISTORY
+%s — осы тарауда ашылады.,%s — осы тарауда ашылады.,%s — opens in this chapter.
+Тарих жолында ашылады.,Тарих жолында ашылады.,Opens on the Path of History.
+Әлі ашылмаған,Әлі ашылмаған,Not yet opened
+E · ӘРІ ҚАРАЙ,E · ӘРІ ҚАРАЙ,E · NEXT
+АСЫҚ АТУ,АСЫҚ АТУ,ASYK ATU
+"Екі рет бас: алдымен бағытты, сосын күшті дәл тап.","Екі рет бас: алдымен бағытты, сосын күшті дәл тап.","Press twice: first hit the direction, then the power."
+БАҒЫТ,БАҒЫТ,AIM
+КҮШ,КҮШ,POWER
+1 · БАҒЫТТЫ ТАҢДА — E / БОС ОРЫН,1 · БАҒЫТТЫ ТАҢДА — E / БОС ОРЫН,1 · PICK THE AIM — E / SPACE
+2 · КҮШТІ ТАҢДА — E / БОС ОРЫН,2 · КҮШТІ ТАҢДА — E / БОС ОРЫН,2 · PICK THE POWER — E / SPACE
+Атыс: %d   ·   Ұтыс: %d / %d,Атыс: %d   ·   Ұтыс: %d / %d,Throws: %d   ·   Won: %d / %d
+ЖЕҢІС!,ЖЕҢІС!,VICTORY!
+АСЫҚТАР ШЕҢБЕРДЕ ҚАЛДЫ,АСЫҚТАР ШЕҢБЕРДЕ ҚАЛДЫ,THE ASYKS STAYED IN THE CIRCLE
+Ақсақалдан не сұрайсың?,Ақсақалдан не сұрайсың?,What will you ask the elder?
+ЖЕКПЕ-ЖЕК,ЖЕКПЕ-ЖЕК,SINGLE COMBAT
+Жау батыры,Жау батыры,Enemy batyr
+Жекпе-жек басталады!,Жекпе-жек басталады!,The duel begins!
+ШАБУЫЛ,ШАБУЫЛ,ATTACK
+18–28 зақым,18–28 зақым,18–28 damage
+ҚОРҒАНУ,ҚОРҒАНУ,GUARD
+зақым екі есе аз,зақым екі есе аз,half damage
+АЙЛА,АЙЛА,FEINT
+"35 зақым, 60%","35 зақым, 60%","35 damage, 60%"
+ШИПА,ШИПА,REMEDY
++34 күш,+34 күш,+34 strength
+КӨМЕК,КӨМЕК,ALLY
+40 зақым,40 зақым,40 damage
+ЖАУДЫҢ КЕЗЕГІ,ЖАУДЫҢ КЕЗЕГІ,ENEMY'S TURN
+САҚ БОЛ! ҚОРҒАН!,САҚ БОЛ! ҚОРҒАН!,WATCH OUT! GUARD!
+СЕНІҢ КЕЗЕГІҢ,СЕНІҢ КЕЗЕГІҢ,YOUR TURN
+ҚОРҒАН,ҚОРҒАН,GUARD
+ЖАЛТАРДЫ,ЖАЛТАРДЫ,DODGED
+АЙЛА ӨТТІ!,АЙЛА ӨТТІ!,FEINT WORKED!
+ЖАСАҚ!,ЖАСАҚ!,COMRADE!
+ТОСТЫҢ!,ТОСТЫҢ!,BLOCKED!
+Соққың дәл тиді: %d зақым.,Соққың дәл тиді: %d зақым.,Your blow landed: %d damage.
+Қалқанды көтердің. Келесі соққы әлсіз тиеді.,Қалқанды көтердің. Келесі соққы әлсіз тиеді.,You raised your shield. The next blow will be weaker.
+Айла-шарғың өтті! 35 зақым.,Айла-шарғың өтті! 35 зақым.,Your feint worked! 35 damage.
+Жау айлаңды аңғарып қалды.,Жау айлаңды аңғарып қалды.,The enemy saw through your feint.
+"Жарақатыңды таңып, күш жинадың: +%d.","Жарақатыңды таңып, күш жинадың: +%d.",You bound your wounds and gathered strength: +%d.
+Жасақтас жауды дәл тапты: 40 зақым!,Жасақтас жауды дәл тапты: 40 зақым!,Your comrade struck true: 40 damage!
+Ауыр соққыны қалқанмен тостың: %d зақым.,Ауыр соққыны қалқанмен тостың: %d зақым.,You took the heavy blow on your shield: %d damage.
+Ауыр соққы тиді: %d зақым!,Ауыр соққы тиді: %d зақым!,A heavy blow hit you: %d damage!
+Жау найзасын көтерді — ауыр соққыға дайындалуда!,Жау найзасын көтерді — ауыр соққыға дайындалуда!,The enemy raised his spear — a heavy blow is coming!
+Жасақтас қалқанымен бөгеді: %d зақым.,Жасақтас қалқанымен бөгеді: %d зақым.,Your comrade blocked with his shield: %d damage.
+Жаудың соққысы: %d зақым.,Жаудың соққысы: %d зақым.,The enemy's blow: %d damage.
+Жау батыры жеңілді!,Жау батыры жеңілді!,The enemy batyr is defeated!
+Жекпе-жекте жеңілдің.,Жекпе-жекте жеңілдің.,You lost the duel.
+ЖЕҢІЛДІҢ,ЖЕҢІЛДІҢ,DEFEAT
+Жасақтың рухы көтерілді!,Жасақтың рухы көтерілді!,The troops' spirits rose!
+"Тыныс алып, қайта шық.","Тыныс алып, қайта шық.",Catch your breath and go again.
+Энциклопедияда ашылды: %d,Энциклопедияда ашылды: %d,Opened in the encyclopedia: %d
+БАСҚА БАТЫР,БАСҚА БАТЫР,ANOTHER BATYR
+ЭНЦИКЛОПЕДИЯ,ЭНЦИКЛОПЕДИЯ,ENCYCLOPEDIA
+WASD / стрелкалар — жүру · E — сөйлесу · Esc — үзіліс,WASD / стрелкалар — жүру · E — сөйлесу · Esc — үзіліс,WASD / arrows — walk · E — talk · Esc — pause
+Ауыл,Ауыл,Aul
+Дала,Дала,Steppe
+%s ОРЫН   ·   Белгі: %d / %d   ·   %d с,%s ОРЫН   ·   Белгі: %d / %d   ·   %d с,%s PLACE   ·   Flags: %d / %d   ·   %d s
+1-ШІ,1-ШІ,1ST
+2-ШІ,2-ШІ,2ND
+Мәреге бірінші жеттің!,Мәреге бірінші жеттің!,You reached the finish first!
+Уақыт бітті.,Уақыт бітті.,Time is up.
+Қарсылас озып кетті.,Қарсылас озып кетті.,Your rival got ahead.
+Киіз,Киіз,Felt
+Қолыңда: %s      Тұрғызылды: %d/%d,Қолыңда: %s      Тұрғызылды: %d/%d,Carrying: %s      Built: %d/%d
+АЛДЫМЕН: %s,АЛДЫМЕН: %s,FIRST: %s
+КИІЗ ҮЙ ДАЙЫН!,КИІЗ ҮЙ ДАЙЫН!,THE YURT IS UP!
+Атқа қайта бар!,Атқа қайта бар!,Go back to the horse!
+Бағанаға дейін: %d қадам,Бағанаға дейін: %d қадам,To the post: %d steps
+АТ БАЙЛАНДЫ!,АТ БАЙЛАНДЫ!,HORSE TIED!
+ЫСТЫҚ! ІЗ КӨРІНДІ,ЫСТЫҚ! ІЗ КӨРІНДІ,HOT! TRACKS IN SIGHT
+ЖЫЛЫ,ЖЫЛЫ,WARM
+СУЫҚ,СУЫҚ,COLD
+ТАБЫЛДЫ: %s,ТАБЫЛДЫ: %s,FOUND: %s
+МҰРА · ЭНЦИКЛОПЕДИЯ,МҰРА · ЭНЦИКЛОПЕДИЯ,HERITAGE · ENCYCLOPEDIA
+ТАРИХ ЖОЛЫ,ТАРИХ ЖОЛЫ,PATH OF HISTORY
+БАТЫРДЫ ТАҢДА · ОНЫҢ ТАРАУЫН ӨТ,БАТЫРДЫ ТАҢДА · ОНЫҢ ТАРАУЫН ӨТ,CHOOSE A BATYR · PLAY THROUGH THEIR CHAPTER

@@ -1,0 +1,417 @@
+[gd_resource type="Resource" script_class="StoryChapter" format=3]
+
+[ext_resource type="Script" path="res://scripts/story/story_beat.gd" id="1_story_beat"]
+[ext_resource type="Script" path="res://scripts/story/story_task.gd" id="2_story_task"]
+[ext_resource type="Script" path="res://scripts/story/campfire_topic.gd" id="3_campfire_topic"]
+[ext_resource type="Script" path="res://scripts/story/story_placement.gd" id="4_story_placement"]
+[ext_resource type="Script" path="res://scripts/story/story_choice.gd" id="5_story_choice"]
+[ext_resource type="Script" path="res://scripts/story/story_dialogue.gd" id="6_story_dialogue"]
+[ext_resource type="Script" path="res://scripts/story/story_chapter.gd" id="7_story_chapter"]
+
+[sub_resource type="Resource" id="StoryBeat_1"]
+script = ExtResource("1_story_beat")
+npc = "NPC_COMMANDER"
+objective = "Әскери кеңеске қатыс"
+dialogue = "DIA_B_COUNCIL"
+xp = 50
+checkpoint = "KABANBAY_COUNCIL"
+action = 0
+unlock = Array[String]([])
+location = 0
+
+[sub_resource type="Resource" id="StoryBeat_2"]
+script = ExtResource("1_story_beat")
+npc = "NPC_SMITH"
+objective = "Ұстадан қару-жарақ ал"
+dialogue = "DIA_B_SMITH"
+xp = 30
+checkpoint = "KABANBAY_SMITH"
+action = 0
+unlock = Array[String](["sauyt"])
+location = 0
+
+[sub_resource type="Resource" id="StoryTask_3"]
+script = ExtResource("2_story_task")
+title = "ЖАУ ІЗІН ТАБУ"
+hint = "Батыстағы үлкен тастардың арасын қара."
+item_label = "Жау ізі"
+props = Array[String](["torsyk"])
+points = PackedVector2Array(-16.2, 6.4)
+required = 1
+goal = Vector2(0.0, 0.0)
+
+[sub_resource type="Resource" id="StoryBeat_4"]
+script = ExtResource("1_story_beat")
+npc = "NPC_SCOUT"
+objective = "Батыстан жау ізін тап"
+dialogue = "DIA_B_SCOUT_TRACK"
+xp = 70
+checkpoint = "KABANBAY_TRACK"
+action = 4
+unlock = Array[String]([])
+location = 0
+task = SubResource("StoryTask_3")
+
+[sub_resource type="Resource" id="StoryBeat_5"]
+script = ExtResource("1_story_beat")
+npc = "NPC_AISHA"
+objective = "Ауылдың аман екенін біл"
+dialogue = "DIA_B_AISHA"
+xp = 30
+checkpoint = "KABANBAY_AUL"
+action = 0
+unlock = Array[String]([])
+location = 0
+
+[sub_resource type="Resource" id="StoryBeat_6"]
+script = ExtResource("1_story_beat")
+npc = "NPC_SCOUT"
+objective = "Далаға шығып, жекпе-жекке тұр"
+dialogue = "DIA_B_SCOUT"
+xp = 150
+checkpoint = "KABANBAY_DUEL"
+action = 8
+unlock = Array[String](["dzungar_wars", "zhekpe_zhek"])
+location = 1
+
+[sub_resource type="Resource" id="CampfireTopic_7"]
+script = ExtResource("3_campfire_topic")
+label = "Соғыстар мен шайқастар"
+dialogue = "DIA_B_T1"
+entry = "dzungar_wars"
+
+[sub_resource type="Resource" id="CampfireTopic_8"]
+script = ExtResource("3_campfire_topic")
+label = "Аңырақай даласы"
+dialogue = "DIA_B_T4"
+entry = "anyrakay"
+
+[sub_resource type="Resource" id="CampfireTopic_9"]
+script = ExtResource("3_campfire_topic")
+label = "Батыр кім?"
+dialogue = "DIA_B_T2"
+entry = "sauyt"
+
+[sub_resource type="Resource" id="CampfireTopic_10"]
+script = ExtResource("3_campfire_topic")
+label = "Бөгенбай туралы"
+dialogue = "DIA_B_T5"
+entry = "bogenbay_batyr"
+
+[sub_resource type="Resource" id="StoryBeat_11"]
+script = ExtResource("1_story_beat")
+npc = "NPC_ELDER"
+objective = "Жеңіс түні: от басына бар"
+dialogue = "DIA_B_ELDER"
+xp = 50
+checkpoint = "KABANBAY_NIGHT"
+action = 9
+unlock = Array[String]([])
+location = 0
+campfire_title = "Жеңіс түні"
+topics = Array[ExtResource("3_campfire_topic")]([SubResource("CampfireTopic_7"), SubResource("CampfireTopic_8"), SubResource("CampfireTopic_9"), SubResource("CampfireTopic_10")])
+
+[sub_resource type="Resource" id="StoryBeat_12"]
+script = ExtResource("1_story_beat")
+npc = "NPC_COMMANDER"
+objective = "Аңырақайға аттан"
+dialogue = "DIA_B_ROUTE"
+xp = 100
+checkpoint = "KABANBAY_COMPLETE"
+action = 10
+unlock = Array[String](["kabanbay_batyr", "balkash", "anyrakay"])
+location = 1
+route_title = "Аңырақайға жол"
+route_goal = "Біріккен қолға қосылу"
+route_start = "Сарыарқа"
+route_end = "Аңырақай"
+route = PackedVector2Array(0.56, 0.24, 0.52, 0.38, 0.56, 0.52, 0.63, 0.63)
+
+[sub_resource type="Resource" id="StoryPlacement_13"]
+script = ExtResource("4_story_placement")
+npc = "NPC_COMMANDER"
+look = ""
+position = Vector2(-4.0, -6.0)
+facing = Vector2(0.0, 1.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_14"]
+script = ExtResource("4_story_placement")
+npc = "NPC_SMITH"
+look = ""
+position = Vector2(8.4, -3.2)
+facing = Vector2(-1.0, 0.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_15"]
+script = ExtResource("4_story_placement")
+npc = "NPC_AISHA"
+look = ""
+position = Vector2(-8.0, -4.5)
+facing = Vector2(1.0, 0.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_16"]
+script = ExtResource("4_story_placement")
+npc = "NPC_SCOUT"
+look = ""
+position = Vector2(5.0, -7.0)
+facing = Vector2(0.0, 1.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_17"]
+script = ExtResource("4_story_placement")
+npc = "NPC_ELDER"
+look = ""
+position = Vector2(-5.6, 1.2)
+facing = Vector2(1.0, 0.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_18"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "warrior"
+position = Vector2(2.6, -12.4)
+facing = Vector2(0.0, 1.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_19"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "warrior"
+position = Vector2(-2.6, -12.4)
+facing = Vector2(0.0, 1.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_20"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "warrior"
+position = Vector2(3.4, -9.6)
+facing = Vector2(-1.0, 0.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_21"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "resident"
+position = Vector2(10.8, 2.0)
+facing = Vector2(-1.0, 0.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_22"]
+script = ExtResource("4_story_placement")
+npc = "NPC_SCOUT"
+look = ""
+position = Vector2(-1.8, -9.6)
+facing = Vector2(0.0, 1.0)
+location = 1
+
+[sub_resource type="Resource" id="StoryPlacement_23"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "warrior"
+position = Vector2(3.2, -8.4)
+facing = Vector2(-1.0, 0.0)
+location = 1
+
+[sub_resource type="Resource" id="StoryPlacement_24"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "warrior"
+position = Vector2(-4.6, -7.2)
+facing = Vector2(1.0, 0.0)
+location = 1
+
+[sub_resource type="Resource" id="StoryPlacement_25"]
+script = ExtResource("4_story_placement")
+npc = "NPC_COMMANDER"
+look = ""
+position = Vector2(1.6, -5.2)
+facing = Vector2(0.0, -1.0)
+location = 1
+
+[sub_resource type="Resource" id="StoryPlacement_26"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "warrior"
+position = Vector2(-4.8, 4.4)
+facing = Vector2(1.0, 0.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_27"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "warrior"
+position = Vector2(-3.4, 6.2)
+facing = Vector2(0.0, -1.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryPlacement_28"]
+script = ExtResource("4_story_placement")
+npc = ""
+look = "warrior"
+position = Vector2(3.6, 5.2)
+facing = Vector2(-1.0, 0.0)
+location = 0
+
+[sub_resource type="Resource" id="StoryChoice_29"]
+script = ExtResource("5_story_choice")
+label = "Жасақты бір қолға біріктір"
+next_dialogue = "DIA_B_FORTIFY"
+flag = "united"
+xp = 20
+unity = 40
+
+[sub_resource type="Resource" id="StoryChoice_30"]
+script = ExtResource("5_story_choice")
+label = "Екі топқа бөлініп, тосқауыл құр"
+next_dialogue = "DIA_B_AMBUSH"
+flag = "split"
+xp = 20
+unity = 10
+
+[sub_resource type="Resource" id="StoryDialogue_31"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_B_COUNCIL"
+speaker = "Жүзбасы"
+look = "warrior"
+lines = Array[String](["Батыр, барлаушылар хабар әкелді: жау қолы асудан өтуге дайындалып жатыр.", "Жасақ дайын. Бұйрығыңызды күтеміз."])
+choices = Array[ExtResource("5_story_choice")]([SubResource("StoryChoice_29"), SubResource("StoryChoice_30")])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_32"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_B_FORTIFY"
+speaker = "Жүзбасы"
+look = "warrior"
+lines = Array[String](["Құп болады! Барлық жасақ бір тудың астына жиналады.", "Жекпе-жекке шыққанда артыңда жасақтас тұрады. Алдымен ұстаға соғып, қаруыңызды алыңыз."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_33"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_B_AMBUSH"
+speaker = "Жүзбасы"
+look = "warrior"
+lines = Array[String](["Құп болады! Жасақты екіге бөлеміз, сайға тосқауыл қоямыз.", "Бірақ жекпе-жекке жалғыз шығасыз. Алдымен ұстаға соғып, қаруыңызды алыңыз."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_34"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_B_SMITH"
+speaker = "Ұста"
+look = "resident"
+lines = Array[String](["Сауытыңыз жөнделді, найзаңыз қайралды.", "Мына шапанды да алыңыз — таулы жерде түн суық."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_35"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_B_SCOUT_TRACK"
+speaker = "Барлаушы"
+look = "envoy"
+lines = Array[String](["Батыс жақтағы тастардың арасынан жау ізі көрінді.", "Барып өз көзіңмен қара — біз мұнда күземіз."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_36"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_B_AISHA"
+speaker = "Айша"
+look = "woman"
+lines = Array[String](["Ана мен бала таудағы жасырын жайлауға көшті.", "Ауыл сізге сенеді, батыр. Аман оралыңыз."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_37"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_B_SCOUT"
+speaker = "Барлаушы"
+look = "envoy"
+lines = Array[String](["Жау батыры екі қолдың алдына шығып, жекпе-жекке шақырды!", "Ата дәстүр бойынша ұрыс жекпе-жектен басталады."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_38"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_B_ELDER"
+speaker = "Ақсақал"
+look = "elder"
+lines = Array[String](["Жеңіспен оралдың, батыр. Отқа жақын кел."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_39"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_B_T1"
+speaker = "Ақсақал"
+look = "elder"
+lines = Array[String](["Бұланты мен Аңырақай шайқастарында қазақ жасақтары бірігіп соғысты.", "Бұл жеңістер елдің рухын көтерді."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = "[ПРОВЕРИТЬ] битвы при Бұланты и Аңырақай, их даты"
+
+[sub_resource type="Resource" id="StoryDialogue_40"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_B_T2"
+speaker = "Ақсақал"
+look = "elder"
+lines = Array[String](["Батыр — ел қорғаны.", "Оның күші тек білегінде емес, елге деген адалдығында."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = ""
+
+[sub_resource type="Resource" id="StoryDialogue_41"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_B_T4"
+speaker = "Ақсақал"
+look = "elder"
+lines = Array[String](["Аңырақай — Балқаштың оңтүстігіндегі дала.", "Сол жердегі шайқаста үш жүздің жасағы бірге қимылдаған."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = "[ПРОВЕРИТЬ] дата и место Аңырақай"
+
+[sub_resource type="Resource" id="StoryDialogue_42"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_B_T5"
+speaker = "Ақсақал"
+look = "elder"
+lines = Array[String](["Қанжығалы Бөгенбай да сол замандағы қолбасшы.", "Ел оның атын Қабанбаймен қатар атайды."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = "[ПРОВЕРИТЬ] годы жизни Бөгенбая"
+
+[sub_resource type="Resource" id="StoryDialogue_43"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_B_T3"
+speaker = "Ақсақал"
+look = "elder"
+lines = Array[String](["Жеңіспен оралған батырға шапан жабады.", "Бұл — ел алғысының белгісі."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = "[ПРОВЕРИТЬ] обычай «шапан жабу» для батыра"
+
+[sub_resource type="Resource" id="StoryDialogue_44"]
+script = ExtResource("6_story_dialogue")
+id = "DIA_B_ROUTE"
+speaker = "Жүзбасы"
+look = "warrior"
+lines = Array[String](["Жасақтар бірігіп жатыр. Келесі жиын — Аңырақай даласында."])
+choices = Array[ExtResource("5_story_choice")]([])
+check_note = "[ПРОВЕРИТЬ] место сбора — Аңырақай"
+
+[resource]
+script = ExtResource("7_story_chapter")
+id = "CH_KABANBAY"
+hero = "ROLE_KABANBAY"
+title = "III тарау · Қорғаныс"
+subtitle = "XVIII ғасыр"
+intro = "Жау қолы шекараға жақындады. Қабанбай батыр жасақты бастап, елді қорғауға аттанады."
+finale_title = "III ТАРАУ АЯҚТАЛДЫ"
+finale_text = "Біріккен қазақ жасақтары жауға тойтарыс берді. Аңырақай даласындағы жеңіс халық жадында сақталды."
+finale_alt_text = "Бір тудың астына жиналған жасақ жауды тойтарды. Аңырақай даласындағы жеңісте әр рудың үлесі болды."
+finale_alt_min_unity = 40
+ally_min_unity = 40
+ally_message = "Жасақ бір тудың астына жиналды"
+duel_ally_min_unity = 40
+beats = Array[ExtResource("1_story_beat")]([SubResource("StoryBeat_1"), SubResource("StoryBeat_2"), SubResource("StoryBeat_4"), SubResource("StoryBeat_5"), SubResource("StoryBeat_6"), SubResource("StoryBeat_11"), SubResource("StoryBeat_12")])
+placements = Array[ExtResource("4_story_placement")]([SubResource("StoryPlacement_13"), SubResource("StoryPlacement_14"), SubResource("StoryPlacement_15"), SubResource("StoryPlacement_16"), SubResource("StoryPlacement_17"), SubResource("StoryPlacement_18"), SubResource("StoryPlacement_19"), SubResource("StoryPlacement_20"), SubResource("StoryPlacement_21"), SubResource("StoryPlacement_22"), SubResource("StoryPlacement_23"), SubResource("StoryPlacement_24"), SubResource("StoryPlacement_25")])
+allies = Array[ExtResource("4_story_placement")]([SubResource("StoryPlacement_26"), SubResource("StoryPlacement_27"), SubResource("StoryPlacement_28")])
+dialogues = Array[ExtResource("6_story_dialogue")]([SubResource("StoryDialogue_31"), SubResource("StoryDialogue_32"), SubResource("StoryDialogue_33"), SubResource("StoryDialogue_34"), SubResource("StoryDialogue_35"), SubResource("StoryDialogue_36"), SubResource("StoryDialogue_37"), SubResource("StoryDialogue_38"), SubResource("StoryDialogue_39"), SubResource("StoryDialogue_40"), SubResource("StoryDialogue_41"), SubResource("StoryDialogue_42"), SubResource("StoryDialogue_43"), SubResource("StoryDialogue_44")])

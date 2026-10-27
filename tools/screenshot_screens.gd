@@ -30,6 +30,8 @@ const SCENES := {
 	"settings": "res://scenes/ui/settings.tscn",
 	"about": "res://scenes/ui/about.tscn",
 	"results": "res://scenes/ui/results.tscn",
+	"hero_select": "res://scenes/story/hero_select.tscn",
+	"story_world": "res://scenes/story/story_world.tscn",
 	"ui_gallery": "res://tools/ui_gallery.tscn",
 	"ui_gallery_overlays": "res://tools/ui_gallery_overlays.tscn",
 }

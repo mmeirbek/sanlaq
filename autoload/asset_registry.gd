@@ -12,6 +12,8 @@ var game_words_by_id: Dictionary = {}
 var game_words_by_category: Dictionary = {}
 var briefings_by_id: Dictionary = {}
 var culture_questions: Array[CultureQuestion] = []
+var story_chapters_by_id: Dictionary = {}
+var story_cast: StoryCast
 
 func _ready() -> void:
 	_scan_data_folder("clothing")
@@ -21,6 +23,7 @@ func _ready() -> void:
 	_scan_data_folder("words")
 	_scan_data_folder("briefings")
 	_scan_data_folder("questions")
+	_scan_data_folder("story")
 
 func _scan_data_folder(subfolder: String) -> void:
 	var dir := DirAccess.open("res://data/%s" % subfolder)
@@ -72,6 +75,11 @@ func _register_resource(res: Resource, subfolder: String) -> void:
 		"briefings":
 			if res is ModeBriefing:
 				briefings_by_id[res.id] = res
+		"story":
+			if res is StoryChapter:
+				story_chapters_by_id[res.id] = res
+			elif res is StoryCast:
+				story_cast = res
 		"words":
 			if res is GameWord:
 				game_words.append(res)
@@ -123,3 +131,9 @@ func get_random_bot_profile() -> BotProfile:
 	if bot_profiles.is_empty():
 		return null
 	return bot_profiles[randi() % bot_profiles.size()]
+
+func get_story_chapter(chapter_id: String) -> StoryChapter:
+	return story_chapters_by_id.get(chapter_id, null)
+
+func get_story_cast() -> StoryCast:
+	return story_cast
