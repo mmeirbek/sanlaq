@@ -4,16 +4,8 @@
 
 [resource]
 script = ExtResource("1")
-mode_id = "classic"
-display_name_kz = "Классикалық"
-min_players = 2
-max_players = 8
-sokyroteke_count = 1
-round_duration = 90.0
 headstart_secs = 3.0
 sokyroteke_speed_mult = 1.35
 player_base_speed = 220.0
-sokyroteke_speed_penalty_mult = 0.9
 quiz_answer_time = 10.0
-standing_noise_interval = 4.5
 shield_duration = 2.0

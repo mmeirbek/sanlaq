@@ -5,7 +5,6 @@
 [resource]
 script = ExtResource("1")
 profile_id = "bot_hard"
-display_name = "Шебер"
 difficulty = 2
 wander_speed_mult = 1.0
 fear_distance = 120.0
@@ -14,4 +13,3 @@ reaction_delay = 0.05
 noise_mistake_chance = 0.02
 can_sprint = true
 use_hiding_spots = true
-taunt_chance = 0.1

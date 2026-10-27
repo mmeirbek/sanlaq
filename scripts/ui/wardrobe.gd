@@ -3,12 +3,6 @@ extends Control
 ## Шкаф: игрок выбирает одежду по слотам и сразу видит её на своём персонаже,
 ## который медленно поворачивается, — одежду видно со всех сторон.
 
-const SLOT_NAMES := {
-	ClothingItem.SlotType.HEAD: "Бас киім",
-	ClothingItem.SlotType.TORSO: "Сырт киім",
-	ClothingItem.SlotType.PANTS: "Шалбар",
-	ClothingItem.SlotType.SHOES: "Аяқ киім",
-}
 const CHARACTER_SCENE := preload("res://scenes/entities/character_visual.tscn")
 ## Персонаж на пьедестале — ×4, целым масштабом.
 const MANNEQUIN_SCALE := 4
@@ -55,13 +49,12 @@ func _turn_mannequin() -> void:
 	_turn += 1
 
 func _apply_equipped_outfit() -> void:
-	for slot in ClothingItem.SlotType.values():
-		_mannequin.set_clothing(slot, AssetRegistry.get_clothing_by_id(SaveManager.get_equipped(slot)))
+	OutfitApplier.dress(_mannequin, OutfitApplier.player_outfit())
 
 func _show_slot(slot: ClothingItem.SlotType) -> void:
 	_current_slot = slot
 	_slot_tabs.select(slot)
-	%SlotName.text = SLOT_NAMES[slot]
+	%SlotName.text = ClothingItem.SLOT_NAMES[slot]
 	_refresh_items()
 
 ## focus_id — карточка, которой вернуть фокус после пересборки: выбор с
@@ -89,17 +82,11 @@ func _show_details(item: ClothingItem, equipped_id: String) -> void:
 		%Equipped.visible = false
 		return
 	var lang := GameSettings.get_lang_code()
-	%EffectLabel.text = tr("ҚАСИЕТІ: %s") % _effect_for(item.id)
+	var effect := item.effect_text if not item.effect_text.is_empty() else "Сәндік зат"
+	%EffectLabel.text = tr("ҚАСИЕТІ: %s") % tr(effect)
 	%ItemName.text = item.get_name_for_lang(lang)
 	%ItemDesc.text = item.get_desc_for_lang(lang)
 	%Equipped.visible = item.id == equipped_id
-
-func _effect_for(item_id: String) -> String:
-	match item_id:
-		"head_tymaq_01": return tr("Баяулау уақыты −30%")
-		"torso_shapan_01": return tr("Соқыртекеге азырақ көрінесіз")
-		"shoes_saptama_etik_01": return tr("Құрғақ жерде жылдамдық +8%")
-	return tr("Сәндік зат")
 
 func _equip_item(item: ClothingItem) -> void:
 	if item.id == SaveManager.get_equipped(_current_slot):

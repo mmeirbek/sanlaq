@@ -57,7 +57,8 @@ func _test_pixel_button() -> void:
 	check(caps.size() == 2, "у кнопки ornate два навершия, получено %d" % caps.size())
 	button.ornate = false
 	await process_frame
-	caps = button.get_children(true).filter(func(n: Node) -> bool: return n is TextureRect and not n.is_queued_for_deletion())
+	caps = button.get_children(true).filter(
+		func(n: Node) -> bool: return n is TextureRect and not n.is_queued_for_deletion())
 	check(caps.is_empty(), "навершия убираются вместе с ornate")
 	await unmount(button)
 

@@ -47,7 +47,8 @@ func _on_license_denied(reason: String) -> void:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
 
-	var reason_text := tr("Бұл құрылғылар саны лимитінен асып кетті.") if reason == "device_limit" else tr("Лицензия жойылды.")
+	var reason_text := tr("Бұл құрылғылар саны лимитінен асып кетті.") if reason == "device_limit" \
+		else tr("Лицензия жойылды.")
 	var message := Label.new()
 	message.text = "%s\n%s" % [reason_text, tr("Ұйымдастырушыға хабарласыңыз.")]
 	message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -85,8 +86,7 @@ func _spawn_mascot() -> void:
 	_mascot.scale = Vector2.ONE * MASCOT_SCALE
 	_mascot.set_direction(Vector2.DOWN)
 	_mascot_slot.add_child(_mascot)
-	for slot in ClothingItem.SlotType.values():
-		_mascot.set_clothing(slot, AssetRegistry.get_clothing_by_id(SaveManager.get_equipped(slot)))
+	OutfitApplier.dress(_mascot, OutfitApplier.player_outfit())
 	_mascot_slot.resized.connect(_place_mascot)
 	_place_mascot()
 

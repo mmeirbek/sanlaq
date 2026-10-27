@@ -182,12 +182,6 @@ func play_fog() -> void:
 		return
 	_queue_voice(74.0, 0.42, 0.18, true)
 
-func play_yurt_enter() -> void:
-	if _play_named("yurt"):
-		return
-	_queue_voice(130.0, 0.18, 0.22, true)
-	_queue_voice(262.0, 0.30, 0.08, false)
-
 func play_splash() -> void:
 	if _play_named("splash"):
 		return

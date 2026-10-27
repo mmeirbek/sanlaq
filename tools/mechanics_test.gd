@@ -66,9 +66,9 @@ func _test_last_catch_ends_round_once() -> void:
 	var game := await _start_round()
 	var mm = game.match_mgr
 	_make_seeker(mm, mm.human_player)
-	var round_winners: Array[String] = []
+	var round_winners: Array[Roles.Winner] = []
 	var match_results: Array[Dictionary] = []
-	mm.round_ended.connect(func(winner: String) -> void: round_winners.append(winner))
+	mm.round_ended.connect(func(winner: Roles.Winner) -> void: round_winners.append(winner))
 	mm.match_ended.connect(func(results: Dictionary) -> void: match_results.append(results))
 
 	var runners := _runners(mm)
@@ -81,10 +81,10 @@ func _test_last_catch_ends_round_once() -> void:
 
 	mm.round_timer = 0.0
 	await create_timer(ROUND_END_PAUSE).timeout
-	check(round_winners == ["sokyroteke"], "раунд закончился один раз победой ловца: %s" % [round_winners])
+	check(round_winners == [Roles.Winner.SOKYROTEKE], "раунд закончился один раз победой ловца: %s" % [round_winners])
 	check(match_results.size() == 1, "итог матча отправлен один раз, получено %d" % match_results.size())
 	if match_results.size() == 1:
-		check(match_results[0].get("winner") == "sokyroteke", "в итоге матча победил ловец")
+		check(match_results[0].get("winner") == Roles.Winner.SOKYROTEKE, "в итоге матча победил ловец")
 	await _stop(game)
 
 
@@ -203,8 +203,8 @@ func _test_shield_wears_off_fully() -> void:
 	runner.apply_shield(0.2)
 	await create_timer(0.5).timeout
 	check(not runner.has_shield(), "щит закончился")
-	check(is_equal_approx(runner.modulate.a, 1.0),
-		"после щита бегун снова непрозрачный, альфа %.2f" % runner.modulate.a)
+	check(is_equal_approx(runner.modulate.a, 1.0) and runner.get_node("CharacterVisual").visible,
+		"после щита бегун снова виден целиком")
 	await _stop(game)
 
 

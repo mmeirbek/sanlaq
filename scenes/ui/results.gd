@@ -3,18 +3,18 @@ extends Control
 ## ранг игрока и статистика, дальше — снова играть, шкаф или меню.
 
 const WINNER_ART := {
-	"sokyroteke": preload("res://assets/sprites/modes/role_seeker.png"),
-	"players": preload("res://assets/sprites/modes/role_runner.png"),
+	Roles.Winner.SOKYROTEKE: preload("res://assets/sprites/modes/role_seeker.png"),
+	Roles.Winner.RUNNERS: preload("res://assets/sprites/modes/role_runner.png"),
 }
 
 func _ready() -> void:
 	var results := SceneRouter.get_pending_results()
-	var winner: String = results.get("winner", "players")
+	var winner: Roles.Winner = results.get("winner", Roles.Winner.RUNNERS)
 	var career: Dictionary = results.get("career", SaveManager.career)
 	var correct_answers: int = results.get("correct_answers", 0)
 	var wins := int(career.get("wins", 0))
-	%WinnerArt.texture = WINNER_ART.get(winner, WINNER_ART["players"])
-	if winner == "sokyroteke":
+	%WinnerArt.texture = WINNER_ART[winner]
+	if winner == Roles.Winner.SOKYROTEKE:
 		%WinnerLabel.text = tr("СОҚЫРТЕКЕ ЖЕҢДІ!")
 		%SubLabel.text = tr("Соқыртеке барлық қашушыны ұстап алды!")
 	else:

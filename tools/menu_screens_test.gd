@@ -30,7 +30,7 @@ func _test_lobby() -> void:
 		"выбрана одна роль — бегун")
 	(lobby.get_node("%StartBtn") as Button).pressed.emit()
 	var sent: Dictionary = router.peek_pending_game_data()
-	check(sent.get("bots") == 1 and sent.get("role") == "runner", "в игру уходят роль и число ботов: %s" % sent)
+	check(sent.get("bots") == 1 and sent.get("role") == Roles.Role.RUNNER, "в игру уходят роль и число ботов: %s" % sent)
 	await process_frame
 	await process_frame
 	if current_scene:
@@ -62,7 +62,7 @@ func _test_wardrobe() -> void:
 
 func _test_results_without_data() -> void:
 	var router := autoload("SceneRouter")
-	for results in [{}, {"winner": "sokyroteke"}]:
+	for results in [{}, {"winner": Roles.Winner.SOKYROTEKE}]:
 		router.set_pending_results(results)
 		var screen := await mount("res://scenes/ui/results.tscn")
 		check(not (screen.get_node("%WinnerLabel") as Label).text.is_empty()

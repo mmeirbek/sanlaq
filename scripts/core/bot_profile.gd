@@ -4,7 +4,6 @@ extends Resource
 enum Difficulty { EASY, MEDIUM, HARD }
 
 @export var profile_id: String = ""
-@export var display_name: String = ""
 @export var difficulty: Difficulty = Difficulty.MEDIUM
 
 @export_range(0.5, 1.5) var wander_speed_mult: float = 0.7
@@ -15,4 +14,3 @@ enum Difficulty { EASY, MEDIUM, HARD }
 
 @export var can_sprint: bool = false
 @export var use_hiding_spots: bool = true
-@export var taunt_chance: float = 0.05

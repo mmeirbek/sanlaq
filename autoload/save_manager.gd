@@ -29,23 +29,11 @@ func set_equipped(slot_type: ClothingItem.SlotType, item_id: String) -> void:
 	equipped[slot_type] = item_id
 	_save_to_disk()
 
-func is_equipped(item_id: String) -> bool:
-	for slot in equipped.values():
-		if slot == item_id:
-			return true
-	return false
-
 func get_random_pool_item(slot_type: ClothingItem.SlotType) -> ClothingItem:
 	var items := AssetRegistry.get_clothing(slot_type)
 	if items.is_empty():
 		return null
 	return items[randi() % items.size()]
-
-func equip_random_outfit() -> void:
-	for slot in [ClothingItem.SlotType.HEAD, ClothingItem.SlotType.TORSO, ClothingItem.SlotType.PANTS, ClothingItem.SlotType.SHOES]:
-		var item := get_random_pool_item(slot)
-		if item:
-			set_equipped(slot, item.id)
 
 func get_setting(key: String, default: Variant = null) -> Variant:
 	return settings.get(key, default)
@@ -134,9 +122,6 @@ func _dict_to_string_keys(d: Dictionary) -> Dictionary:
 		out[str(k)] = d[k]
 	return out
 
-func commit() -> void:
-	_save_to_disk()
-
 func set_nickname(value: String) -> void:
 	nickname = value
 	_save_to_disk()
@@ -151,12 +136,3 @@ func record_match(won: bool, correct_answers: int) -> Dictionary:
 		career["streak"] = 0
 	_save_to_disk()
 	return career.duplicate()
-
-func reset_all() -> void:
-	equipped.clear()
-	cloth_pool.clear()
-	nickname = ""
-	settings.clear()
-	career = {"wins": 0, "streak": 0, "best_streak": 0, "knowledge": 0}
-	_ensure_equipped_outfit()
-	_save_to_disk()

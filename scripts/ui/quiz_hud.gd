@@ -132,10 +132,6 @@ func _build_options(item: ClothingItem) -> Array[String]:
 	_correct_index = options.find(correct)
 	return options
 
+## Название слота строчными — оно стоит посреди вопроса.
 func _slot_name(slot: ClothingItem.SlotType) -> String:
-	match slot:
-		ClothingItem.SlotType.HEAD: return tr("бас киім")
-		ClothingItem.SlotType.TORSO: return tr("сырт киім")
-		ClothingItem.SlotType.PANTS: return tr("шалбар")
-		ClothingItem.SlotType.SHOES: return tr("аяқ киім")
-	return "?"
+	return tr(ClothingItem.SLOT_NAMES[slot]).to_lower()

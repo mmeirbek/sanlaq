@@ -13,7 +13,7 @@ const FRAME_SIZE := 64
 
 var _game_data: Dictionary = {}
 var _bots_count: int = 3
-var _selected_role := "sokyroteke"
+var _selected_role := Roles.Role.SOKYROTEKE
 
 @onready var _mode_label: Label = %ModeLabel
 @onready var _bots_label: Label = %BotsLabel
@@ -25,15 +25,15 @@ func _ready() -> void:
 	_game_data = SceneRouter.peek_pending_game_data()
 	var mode: String = _game_data.get("mode", "classic")
 	_bots_count = clampi(int(_game_data.get("bots", 3)), MIN_BOTS, MAX_BOTS)
-	_selected_role = "runner" if _game_data.get("role", "sokyroteke") == "runner" else "sokyroteke"
+	_selected_role = _game_data.get("role", Roles.Role.SOKYROTEKE)
 	_mode_label.text = tr("Ойын түрі: %s") % _mode_name(mode)
 	_refresh_bots_label()
 	_refresh_role_cards()
 	_build_players()
 	%MinusBtn.pressed.connect(_change_bots.bind(-1))
 	%PlusBtn.pressed.connect(_change_bots.bind(1))
-	_sokyroteke_card.pressed.connect(_set_role.bind("sokyroteke"))
-	_runner_card.pressed.connect(_set_role.bind("runner"))
+	_sokyroteke_card.pressed.connect(_set_role.bind(Roles.Role.SOKYROTEKE))
+	_runner_card.pressed.connect(_set_role.bind(Roles.Role.RUNNER))
 	%StartBtn.pressed.connect(_on_start)
 	(%Header as ScreenHeader).back_pressed.connect(SceneRouter.go_to_main_menu)
 
@@ -45,13 +45,13 @@ func _mode_name(mode: String) -> String:
 func _refresh_bots_label() -> void:
 	_bots_label.text = tr("Боттар: %d") % _bots_count
 
-func _set_role(role: String) -> void:
+func _set_role(role: Roles.Role) -> void:
 	_selected_role = role
 	_refresh_role_cards()
 
 func _refresh_role_cards() -> void:
-	_sokyroteke_card.selected = _selected_role == "sokyroteke"
-	_runner_card.selected = _selected_role == "runner"
+	_sokyroteke_card.selected = _selected_role == Roles.Role.SOKYROTEKE
+	_runner_card.selected = _selected_role == Roles.Role.RUNNER
 
 func _change_bots(delta: int) -> void:
 	_bots_count = clampi(_bots_count + delta, MIN_BOTS, MAX_BOTS)
@@ -83,11 +83,10 @@ func _add_portrait(player_name: String, outfit_index: int, portrait_scale: int) 
 	visual.set_direction(Vector2.DOWN)
 	stage.add_child(visual)
 	if outfit_index < 0:
-		for slot in ClothingItem.SlotType.values():
-			visual.set_clothing(slot, AssetRegistry.get_clothing_by_id(SaveManager.get_equipped(slot)))
+		OutfitApplier.dress(visual, OutfitApplier.player_outfit())
 	else:
 		visual.set_base_variant(outfit_index + 1)
-		_apply_bot_outfit(visual, outfit_index)
+		OutfitApplier.dress(visual, OutfitApplier.bot_outfit(outfit_index))
 
 	var name_label := Label.new()
 	name_label.text = player_name
@@ -100,16 +99,6 @@ func _add_portrait(player_name: String, outfit_index: int, portrait_scale: int) 
 		name_label.add_theme_color_override("font_color", UiTokens.GOLD_LIGHT)
 	box.add_child(name_label)
 	_players_row.add_child(box)
-
-func _apply_bot_outfit(visual: CharacterVisual, outfit_index: int) -> void:
-	var outfit := Player.get_outfit_profile(outfit_index)
-	for slot in ClothingItem.SlotType.values():
-		var item := AssetRegistry.get_clothing_by_id(outfit[int(slot)])
-		if item == null:
-			var alternatives := AssetRegistry.get_clothing(slot as ClothingItem.SlotType)
-			if not alternatives.is_empty():
-				item = alternatives[0]
-		visual.set_clothing(slot as ClothingItem.SlotType, item)
 
 func _on_start() -> void:
 	_game_data["bots"] = _bots_count

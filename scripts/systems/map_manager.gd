@@ -34,7 +34,7 @@ const GROUND_DECOR: Array[Texture2D] = [
 ]
 
 ## Маска слоёв коллизий препятствий (слои 1 и 3) — та же, что у игроков.
-const OBSTACLE_LAYER := 5
+const OBSTACLE_LAYER := WorldLayers.PHYSICS_WORLD
 const ROCK_RADIUS := 18.0
 ## Бревно вдоль x; бревно вдоль y — тот же прямоугольник, повёрнутый на 90°.
 const LOG_SIZE := Vector2(56, 28)
@@ -124,8 +124,10 @@ func _build_ground() -> void:
 	var outer_x := bounds.position.x - post_w
 	var outer_w := bounds.size.x + post_w * 2.0
 	_add_tiled(FENCE_ALONG_X, Rect2(outer_x, bounds.position.y - rail_h, outer_w, rail_h), WorldLayers.DECALS)
-	_add_tiled(FENCE_ALONG_Y, Rect2(outer_x, bounds.position.y - rail_h * 0.5, post_w, bounds.size.y + rail_h * 0.5), WorldLayers.DECALS)
-	_add_tiled(FENCE_ALONG_Y, Rect2(bounds.end.x, bounds.position.y - rail_h * 0.5, post_w, bounds.size.y + rail_h * 0.5), WorldLayers.DECALS)
+	var side_top := bounds.position.y - rail_h * 0.5
+	var side_height := bounds.size.y + rail_h * 0.5
+	_add_tiled(FENCE_ALONG_Y, Rect2(outer_x, side_top, post_w, side_height), WorldLayers.DECALS)
+	_add_tiled(FENCE_ALONG_Y, Rect2(bounds.end.x, side_top, post_w, side_height), WorldLayers.DECALS)
 	_add_tiled(FENCE_ALONG_X, Rect2(outer_x, bounds.end.y, outer_w, rail_h), WorldLayers.DECALS)
 
 func _build_arena() -> void:
@@ -319,9 +321,6 @@ func _spawn_clear(pos: Vector2) -> bool:
 		if pos.distance_to(obs) < ROCK_CLEAR:
 			return false
 	return true
-
-func is_in_bounds(pos: Vector2) -> bool:
-	return bounds.has_point(pos)
 
 func clamp_to_bounds(pos: Vector2, radius: float = 0.0) -> Vector2:
 	var clamped := pos

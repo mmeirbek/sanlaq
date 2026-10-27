@@ -7,7 +7,6 @@ extends Control
 ##
 ## Обращается к GameSettings — в тестах этот класс нельзя писать как тип.
 
-signal resumed
 signal main_menu_requested
 
 var _panel: PanelContainer
@@ -77,7 +76,6 @@ func resume() -> void:
 		return
 	visible = false
 	get_tree().paused = false
-	resumed.emit()
 
 
 func is_open() -> bool:

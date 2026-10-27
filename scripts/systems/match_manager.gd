@@ -3,14 +3,13 @@ extends Node
 
 enum MatchState { SETUP, COUNTDOWN, PLAYING, QUIZ, ROUND_END, MATCH_END }
 
-signal match_state_changed(new_state: MatchState)
 signal round_started
 signal sokyroteke_assigned(player: Player)
 signal player_caught(catcher: Player, caught: Player)
 signal player_eliminated(player: Player)
 signal quiz_triggered(catcher: Player, target: Player, item: ClothingItem)
 signal quiz_resolved(catcher: Player, target: Player, correct: bool)
-signal round_ended(winner: String)
+signal round_ended(winner: Roles.Winner)
 signal match_ended(results: Dictionary)
 
 var current_state: MatchState = MatchState.SETUP
@@ -32,7 +31,7 @@ var runners_total: int = 0
 var eliminated_count: int = 0
 var catch_cooldown: float = 0.0
 var _last_target: Player
-var _last_winner: String = "players"
+var _last_winner := Roles.Winner.RUNNERS
 
 func _ready() -> void:
 	mode = AssetRegistry.get_default_mode()
@@ -68,7 +67,6 @@ func _start_new_round() -> void:
 	sokyroteke.set_frozen(true)
 
 	current_state = MatchState.COUNTDOWN
-	match_state_changed.emit(current_state)
 	round_started.emit()
 
 func _select_sokyroteke() -> void:
@@ -101,7 +99,6 @@ func _process(delta: float) -> void:
 		if headstart_timer <= 0:
 			sokyroteke.set_frozen(false)
 			current_state = MatchState.PLAYING
-			match_state_changed.emit(current_state)
 		return
 
 	if current_state == MatchState.PLAYING:
@@ -114,7 +111,6 @@ func _process(delta: float) -> void:
 		if quiz_active:
 			return
 		current_state = MatchState.PLAYING
-		match_state_changed.emit(current_state)
 
 func on_player_touches_sokyroteke(player: Player) -> void:
 	if current_state != MatchState.PLAYING:
@@ -135,12 +131,6 @@ func on_player_touches_sokyroteke(player: Player) -> void:
 	player_caught.emit(sokyroteke, player)
 	_trigger_quiz(player)
 
-func on_catch_area_entered(area: Area2D) -> void:
-	var body := area.get_parent() as Player
-	if body == null or body == sokyroteke:
-		return
-	on_player_touches_sokyroteke(body)
-
 func _trigger_quiz(target: Player) -> void:
 	var item := target.get_random_clothing_item_for_quiz()
 	if item == null:
@@ -149,7 +139,6 @@ func _trigger_quiz(target: Player) -> void:
 
 	quiz_active = true
 	current_state = MatchState.QUIZ
-	match_state_changed.emit(current_state)
 	quiz_triggered.emit(sokyroteke, target, item)
 
 	sokyroteke.set_frozen(true)
@@ -197,7 +186,6 @@ func submit_quiz_answer(correct: bool) -> void:
 			catch_cooldown = maxf(catch_cooldown, mode.shield_duration)
 
 	current_state = MatchState.PLAYING
-	match_state_changed.emit(current_state)
 
 func _end_round(sokyroteke_won: bool) -> void:
 	# Раунд заканчивается один раз: иначе таймер, истёкший во время паузы перед
@@ -205,9 +193,8 @@ func _end_round(sokyroteke_won: bool) -> void:
 	if current_state == MatchState.ROUND_END or current_state == MatchState.MATCH_END:
 		return
 	current_state = MatchState.ROUND_END
-	match_state_changed.emit(current_state)
 
-	var winner := "sokyroteke" if sokyroteke_won else "players"
+	var winner := Roles.Winner.SOKYROTEKE if sokyroteke_won else Roles.Winner.RUNNERS
 	_last_winner = winner
 	round_ended.emit(winner)
 	await get_tree().create_timer(3.0, false).timeout
@@ -215,8 +202,4 @@ func _end_round(sokyroteke_won: bool) -> void:
 
 func _end_match() -> void:
 	current_state = MatchState.MATCH_END
-	match_state_changed.emit(current_state)
 	match_ended.emit({"winner": _last_winner})
-
-func _T(key: String) -> String:
-	return GameSettings.localize(key)

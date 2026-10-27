@@ -1,5 +1,7 @@
 extends Node2D
 
+const PLAYER_SCENE := preload("res://scenes/entities/player.tscn")
+
 const YURT_REVEAL_DELAY := 5.0
 const YURT_REVEAL_DURATION := 5.0
 
@@ -18,7 +20,7 @@ var _players: Array[Player] = []
 var _bots: Array[Node] = []
 var _spectating: bool = false
 var _spectate_index: int = 0
-var _selected_role := "sokyroteke"
+var _selected_role := Roles.Role.SOKYROTEKE
 var _correct_answers := 0
 var _echo_time := 0.0
 var _echo_uses := 1
@@ -36,7 +38,7 @@ var _yurt_reveal := {} # key: player_index -> seconds remaining of reveal
 func _ready() -> void:
 	var game_data := SceneRouter.get_pending_game_data()
 	var bot_count: int = clampi(int(game_data.get("bots", 5)), 1, 7)
-	_selected_role = game_data.get("role", "sokyroteke")
+	_selected_role = game_data.get("role", Roles.Role.SOKYROTEKE)
 
 	match_mgr = _systems.get_node("MatchManager")
 	map = $Map as MapManager
@@ -55,7 +57,7 @@ func _ready() -> void:
 	for i in bot_count:
 		var profile_id: String = profiles[min(i, profiles.size() - 1)]
 		_spawn_bot(i, profile_id)
-	if _selected_role == "runner":
+	if _selected_role == Roles.Role.RUNNER:
 		match_mgr.human_must_be_runner = true
 	else:
 		match_mgr.forced_sokyroteke = _players[0]
@@ -119,8 +121,7 @@ func _on_catch_area_entered(body: Node2D, catcher: Player) -> void:
 	match_mgr.on_player_touches_sokyroteke(target)
 
 func _spawn_human_player() -> void:
-	var player_scene := load("res://scenes/entities/player.tscn") as PackedScene
-	var p := player_scene.instantiate() as Player
+	var p := PLAYER_SCENE.instantiate() as Player
 	p.player_index = 0
 	p.is_bot = false
 	p.global_position = map.get_safe_spawn()
@@ -136,8 +137,7 @@ func _spawn_human_player() -> void:
 			game_hud.update_runner_sprint(time_left, uses_left))
 
 func _spawn_bot(idx: int, profile_id: String = "") -> void:
-	var player_scene := load("res://scenes/entities/player.tscn") as PackedScene
-	var p := player_scene.instantiate() as Player
+	var p := PLAYER_SCENE.instantiate() as Player
 	p.player_index = idx + 1
 	p.is_bot = true
 	p.bot_name = Player.bot_name_for(idx)
@@ -210,8 +210,8 @@ func _on_round_started() -> void:
 	game_hud.start_countdown(match_mgr.mode.headstart_secs)
 
 ## Итог сразу, а не через паузу до экрана результатов.
-func _on_round_ended(winner: String) -> void:
-	game_hud.show_result(tr("СОҚЫРТЕКЕ ЖЕҢДІ!") if winner == "sokyroteke" else tr("ҚАШУШЫЛАР ЖЕҢДІ!"))
+func _on_round_ended(winner: Roles.Winner) -> void:
+	game_hud.show_result(tr("СОҚЫРТЕКЕ ЖЕҢДІ!") if winner == Roles.Winner.SOKYROTEKE else tr("ҚАШУШЫЛАР ЖЕҢДІ!"))
 
 func _on_player_caught(_catcher: Player, target: Player) -> void:
 	game_audio.play_catch()
@@ -232,16 +232,16 @@ func _on_player_eliminated(player: Player) -> void:
 		game_hud.show_caught_choice()
 
 func _on_match_ended(results: Dictionary) -> void:
-	var winner: String = results.get("winner", "players")
+	var winner: Roles.Winner = results.get("winner", Roles.Winner.RUNNERS)
 	var human_won := match_mgr.human_player.is_alive() and (
-		(winner == "sokyroteke" and match_mgr.sokyroteke == match_mgr.human_player)
-		or (winner == "players" and match_mgr.sokyroteke != match_mgr.human_player)
+		(winner == Roles.Winner.SOKYROTEKE and match_mgr.sokyroteke == match_mgr.human_player)
+		or (winner == Roles.Winner.RUNNERS and match_mgr.sokyroteke != match_mgr.human_player)
 	)
 	results["human_won"] = human_won
 	results["correct_answers"] = _correct_answers
 	results["career"] = SaveManager.record_match(human_won, _correct_answers)
 	Telemetry.log_event("round_result", {
-		"role": _selected_role,
+		"role": Roles.ROLE_IDS[_selected_role],
 		"bots": _bots.size(),
 		"human_won": human_won,
 		"correct_answers": _correct_answers,
@@ -254,9 +254,9 @@ func _on_match_ended(results: Dictionary) -> void:
 	SceneRouter.go_to_results(results)
 
 func _setup_match_features() -> void:
-	_touch_controls.set_sprint_mode(_selected_role == "runner")
+	_touch_controls.set_sprint_mode(_selected_role == Roles.Role.RUNNER)
 	_touch_controls.echo_pressed.connect(_activate_echo)
-	if _selected_role == "runner":
+	if _selected_role == Roles.Role.RUNNER:
 		game_hud.update_runner_sprint(0.0, _players[0].runner_sprint_uses)
 	else:
 		game_hud.update_sokyroteke_echo(0.0, _echo_uses)
@@ -264,7 +264,7 @@ func _setup_match_features() -> void:
 func _update_match_features(delta: float) -> void:
 	if match_mgr.current_state != MatchManager.MatchState.PLAYING:
 		return
-	if _selected_role == "sokyroteke":
+	if _selected_role == Roles.Role.SOKYROTEKE:
 		if _echo_time > 0.0:
 			_echo_time = maxf(0.0, _echo_time - delta)
 			game_hud.update_sokyroteke_echo(_echo_time, _echo_uses)
@@ -281,7 +281,7 @@ func _update_match_features(delta: float) -> void:
 		game_hud.update_runner_sprint(_players[0].runner_sprint_time, _players[0].runner_sprint_uses)
 
 func _activate_echo() -> void:
-	if _selected_role != "sokyroteke" or _echo_uses <= 0 or _echo_time > 0.0:
+	if _selected_role != Roles.Role.SOKYROTEKE or _echo_uses <= 0 or _echo_time > 0.0:
 		return
 	_echo_uses -= 1
 	_echo_time = 3.0
@@ -398,7 +398,8 @@ func _process(_delta: float) -> void:
 		var fp_radius := FootprintSystem.SIGHT_RADIUS
 		if human_is_sokyroteke and _fog_time > 0.0:
 			fp_radius = 65.0
-		match_mgr.sokyroteke.set_footprint_boost(footprint_system.has_visible_print(match_mgr.sokyroteke.global_position, fp_radius))
+		var on_print := footprint_system.has_visible_print(match_mgr.sokyroteke.global_position, fp_radius)
+		match_mgr.sokyroteke.set_footprint_boost(on_print)
 		if human_is_sokyroteke:
 			vision.set_target_position(match_mgr.sokyroteke.global_position + Player.BODY_CENTER)
 			var center := match_mgr.sokyroteke.global_position
@@ -408,7 +409,8 @@ func _process(_delta: float) -> void:
 					p.visible = true
 				else:
 					var revealed: bool = float(_yurt_reveal.get(p.player_index, 0.0)) > 0.0
-					p.visible = p.is_alive() and (revealed or (not map.is_inside_yurt(p.global_position) and center.distance_to(p.global_position) <= light * p.get_visibility_multiplier()))
+					var in_light := center.distance_to(p.global_position) <= light * p.get_visibility_multiplier()
+					p.visible = p.is_alive() and (revealed or (not map.is_inside_yurt(p.global_position) and in_light))
 				# Соқыртеке не должен читать ники — иначе бегунов можно узнать без квиза по одежде.
 				p.set_name_label_visible(false)
 		else:
