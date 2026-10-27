@@ -12,7 +12,7 @@ const SCENE_MODE_SELECT := "res://scenes/ui/mode_select.tscn"
 const SCENE_MODE_BRIEFING := "res://scenes/ui/mode_briefing.tscn"
 const SCENE_ABAI_SAYS := "res://scenes/ui/abai_says.tscn"
 const SCENE_TOGYZ_QUMALAQ := "res://scenes/ui/togyz_qumalaq.tscn"
-const SCENE_AQ_SUYEK := "res://scenes/ui/aq_suyek.tscn"
+const SCENE_AQ_SUYEK := "res://scenes/world/aq_suyek.tscn"
 const SCENE_HERO_SELECT := "res://scenes/story/hero_select.tscn"
 const SCENE_STORY_WORLD := "res://scenes/story/story_world.tscn"
 

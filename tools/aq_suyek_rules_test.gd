@@ -1,202 +1,306 @@
 extends "res://tools/test_case.gd"
-## Автотест правил «Ақ сүйек». Запускается в CI:
+## Автотест правил «Ақ сүйек» на карте (scripts/core/aq_suyek_match.gd) и того,
+## как по ним ходят боты (scripts/ai/aq_suyek_brain.gd). Запускается в CI:
 ##     godot --headless --path . --script tools/aq_suyek_rules_test.gd
 ## При провале выходит с кодом 1 и роняет сборку.
 
-const SELF_PLAY_GAMES := 200
-## Шаги даются только за ответы, поэтому партия обязана завершаться. Упереться
-## в потолок можно лишь если ход перестал менять состояние — это баг.
-const MOVE_LIMIT := 20000
+const SEEKER := AqSuyekMatch.Role.SEEKER
+const DEFENDER := AqSuyekMatch.Role.DEFENDER
+const BLUE := AqSuyekMatch.Team.BLUE
+const RED := AqSuyekMatch.Team.RED
+const BASES: Array[Vector2] = [Vector2(-700, 0), Vector2(700, 0)]
+const FIELD := Rect2(-850, -500, 1700, 1000)
+const SELF_PLAY_GAMES := 100
+const FRAME := 1.0 / 30.0
+## Шаг симуляции партий ботов: крупнее кадра, чтобы прогон шёл секунды.
+const SIM_FRAME := 0.05
+const SPEED := 220.0
 
 func _init() -> void:
-	_test_initial_state()
-	_test_bone_never_on_start()
-	_test_hint_tiers()
-	_test_no_move_without_answer()
-	_test_answer_grants_steps()
-	_test_steps_are_spent()
-	_test_turn_passes_when_steps_run_out()
-	_test_cannot_leave_the_grid()
-	_test_finding_bone_wins_round()
+	_test_setup()
+	_test_seeker_picks_up()
+	_test_defender_cannot_carry()
+	_test_delivery_scores()
+	_test_no_delivery_to_enemy_base()
+	_test_steal_waits_for_immunity()
+	_test_no_steal_back_right_away()
+	_test_defender_stuns_and_drops()
+	_test_defender_cooldown()
+	_test_stunned_cannot_act()
+	_test_teammates_do_not_interact()
+	_test_timeout_is_a_round_without_points()
 	_test_match_ends_at_two_wins()
-	_test_loser_starts_next_round()
-	_test_round_end_snapshot()
-	_test_bot_never_walks_off_grid()
+	_test_draws_still_end_the_match()
+	_test_bot_targets()
 	_test_random_self_play()
-
 	finish("AQ SUYEK RULES")
 
-## Доска с заранее известным местом сүйек — иначе проверять подсказки нечем.
-func _board_with_bone(at: Vector2i) -> AqSuyekBoard:
-	var b := AqSuyekBoard.new()
-	b.bone = at
-	return b
+## Көк: 0 и 1 — іздеуші, 2 — қорғаушы. Қызыл: 3 и 4 — іздеуші, 5 — қорғаушы.
+func _match() -> AqSuyekMatch:
+	var m := AqSuyekMatch.new()
+	for team in [BLUE, RED]:
+		m.add_player(team, SEEKER)
+		m.add_player(team, SEEKER)
+		m.add_player(team, DEFENDER)
+	m.bases = BASES.duplicate()
+	m.start_round(Vector2.ZERO)
+	return m
 
-func _test_initial_state() -> void:
-	var b := AqSuyekBoard.new()
-	check(b.positions.size() == 2, "оба игрока на поле")
-	check(b.positions[0] == Vector2i(0, AqSuyekBoard.GRID - 1), "игрок в своём көмбе")
-	check(b.positions[1] == Vector2i(AqSuyekBoard.GRID - 1, 0), "компьютер в своём көмбе")
-	check(b.scores == [0, 0], "счёт нулевой")
-	check(b.revealed.is_empty(), "поле нетронуто")
-	check(not b.is_over(), "партия не окончена на старте")
-	check(b.awaiting_answer(), "ход начинается с вопроса")
+## Все стоят далеко друг от друга и от сүйек — ничего не происходит, пока тест
+## сам не сдвинет кого-то.
+func _apart() -> Array[Vector2]:
+	var out: Array[Vector2] = []
+	for i in 6:
+		out.append(Vector2(-400 + i * 160, 400))
+	return out
 
-func _test_bone_never_on_start() -> void:
-	var bad := 0
-	for _i in 300:
-		var b := AqSuyekBoard.new()
-		if b.positions.has(b.bone):
-			bad += 1
-	check(bad == 0, "сүйек никогда не прячется под игроком (нарушений: %d)" % bad)
+func _types(events: Array[Dictionary]) -> Array[String]:
+	var out: Array[String] = []
+	for e in events:
+		out.append(String(e["type"]))
+	return out
 
-func _test_hint_tiers() -> void:
-	var b := _board_with_bone(Vector2i(2, 2))
-	check(b.hint_for(Vector2i(2, 2)) == AqSuyekBoard.Hint.FOUND, "0 клеток — нашёл")
-	check(b.hint_for(Vector2i(2, 3)) == AqSuyekBoard.Hint.VERY_CLOSE, "1 клетка — очень близко")
-	check(b.hint_for(Vector2i(2, 4)) == AqSuyekBoard.Hint.CLOSE, "2 клетки — близко")
-	check(b.hint_for(Vector2i(0, 1)) == AqSuyekBoard.Hint.NEAR, "3 клетки — недалеко")
-	check(b.hint_for(Vector2i(0, 4)) == AqSuyekBoard.Hint.NEAR, "4 клетки — недалеко")
-	# От центра поля 5×5 дальше четырёх клеток не отойти, поэтому «далеко»
-	# проверяем на сүйек в углу.
-	var corner := _board_with_bone(Vector2i(0, 0))
-	check(corner.hint_for(Vector2i(4, 1)) == AqSuyekBoard.Hint.FAR, "5 клеток — далеко")
-	check(corner.hint_for(Vector2i(4, 4)) == AqSuyekBoard.Hint.FAR, "8 клеток — далеко")
+func _test_setup() -> void:
+	var m := _match()
+	check(m.teams.size() == 6 and m.roles.size() == 6, "в партии шесть игроков")
+	check(m.teams.count(BLUE) == 3 and m.teams.count(RED) == 3, "две команды по трое")
+	check(m.carrier == -1 and m.bone == Vector2.ZERO, "сүйек лежит на земле, у него нет хозяина")
+	check(m.playing and m.time_left == AqSuyekMatch.ROUND_TIME, "раунд идёт, время полное")
+	check(m.step(FRAME, _apart()).is_empty(), "пока никто не рядом, ничего не происходит")
 
-func _test_no_move_without_answer() -> void:
-	var b := AqSuyekBoard.new()
-	var before: Vector2i = b.positions[0]
-	check(not b.can_step(Vector2i.UP), "без ответа ходить нельзя")
-	var res: Dictionary = b.step(Vector2i.UP)
-	check(b.positions[0] == before, "и позиция не изменилась")
-	check(not res["found"], "разбор хода пустой")
+func _test_seeker_picks_up() -> void:
+	var m := _match()
+	var pos := _apart()
+	pos[1] = Vector2(10, 0)
+	var events := m.step(FRAME, pos)
+	check(m.carrier == 1 and _types(events).has("picked"), "іздеуші поднимает сүйек")
+	pos[1] = Vector2(-200, 50)
+	m.step(FRAME, pos)
+	check(m.bone == pos[1], "сүйек едет вместе с несущим")
 
-func _test_answer_grants_steps() -> void:
-	var b := AqSuyekBoard.new()
-	check(b.answer(true) == AqSuyekBoard.STEPS_CORRECT, "верный ответ даёт больше шагов")
-	check(not b.awaiting_answer(), "вопрос больше не нужен")
-	check(b.answer(true) == 0, "второй ответ подряд шагов не добавляет")
+func _test_defender_cannot_carry() -> void:
+	var m := _match()
+	var pos := _apart()
+	pos[2] = Vector2(5, 0)
+	m.step(FRAME, pos)
+	check(m.carrier == -1, "қорғаушы сүйек не поднимает")
 
-	var b2 := AqSuyekBoard.new()
-	check(b2.answer(false) == AqSuyekBoard.STEPS_WRONG, "неверный ответ тоже даёт ход, но короче")
+func _test_delivery_scores() -> void:
+	var m := _match()
+	var pos := _apart()
+	pos[0] = Vector2.ZERO
+	m.step(FRAME, pos)
+	pos[0] = BASES[BLUE] + Vector2(20, 0)
+	var events := m.step(FRAME, pos)
+	var types := _types(events)
+	check(types.has("delivered") and types.has("round_over"), "донёс до своей көмбе — раунд окончен")
+	check(m.scores == [1, 0], "очко досталось команде несущего, счёт %s" % [m.scores])
+	check(not m.playing and m.round_index == 1, "раунд закрыт, счётчик раундов вырос")
 
-func _test_steps_are_spent() -> void:
-	var b := _board_with_bone(Vector2i(4, 4))
-	b.answer(true)
-	var res: Dictionary = b.step(Vector2i.UP)
-	check(int(res["steps_left"]) == AqSuyekBoard.STEPS_CORRECT - 1, "шаг списался")
-	check(b.revealed.has(res["to"]), "клетка открылась и запомнила подсказку")
+func _test_no_delivery_to_enemy_base() -> void:
+	var m := _match()
+	var pos := _apart()
+	pos[0] = Vector2.ZERO
+	m.step(FRAME, pos)
+	pos[0] = BASES[RED]
+	m.step(FRAME, pos)
+	check(m.playing and m.scores == [0, 0], "в чужую көмбе очко не засчитывается")
 
-func _test_turn_passes_when_steps_run_out() -> void:
-	var b := _board_with_bone(Vector2i(4, 4))
-	b.answer(false)  # ровно один шаг
-	b.step(Vector2i.UP)
-	check(b.current_player == AqSuyekBoard.BOT, "шаги кончились — очередь соперника")
-	check(b.awaiting_answer(), "сопернику тоже нужен вопрос")
+func _test_steal_waits_for_immunity() -> void:
+	var m := _match()
+	var pos := _apart()
+	pos[0] = Vector2.ZERO
+	pos[3] = Vector2(20, 0)
+	# Оба у сүйек, ближе Көк — он и поднял; Қызыл стоит вплотную.
+	m.step(FRAME, pos)
+	check(m.carrier == 0, "поднял ближайший к сүйек")
+	m.step(FRAME, pos)
+	check(m.carrier == 0, "сразу после подъёма сүйек не отобрать")
+	m.step(AqSuyekMatch.STEAL_IMMUNITY, pos)
+	check(m.carrier == 3, "после передышки соперник-іздеуші отбирает касанием")
 
-func _test_cannot_leave_the_grid() -> void:
-	var b := _board_with_bone(Vector2i(2, 2))
-	b.answer(true)
-	# Игрок стоит в левом нижнем углу: влево и вниз — за поле.
-	check(not b.can_step(Vector2i.LEFT), "за левый край поля не выйти")
-	check(not b.can_step(Vector2i.DOWN), "за нижний край поля не выйти")
-	check(b.can_step(Vector2i.UP) and b.can_step(Vector2i.RIGHT), "внутрь поля ходить можно")
+func _test_no_steal_back_right_away() -> void:
+	var m := _match()
+	var pos := _apart()
+	pos[0] = Vector2.ZERO
+	pos[3] = Vector2(20, 0)
+	m.step(FRAME, pos)
+	m.step(AqSuyekMatch.STEAL_IMMUNITY, pos)
+	var stolen := m.carrier
+	m.step(FRAME, pos)
+	check(stolen == 3 and m.carrier == 3, "отобранное сразу не перекидывается обратно")
 
-func _test_finding_bone_wins_round() -> void:
-	# Прячем сүйек прямо над игроком, чтобы он дошёл за один шаг.
-	var b := AqSuyekBoard.new()
-	b.bone = b.positions[0] + Vector2i.UP
-	b.answer(true)
-	var res: Dictionary = b.step(Vector2i.UP)
-	check(res["found"], "дошёл до сүйек")
-	check(res["round_over"], "раунд закрылся")
-	check(b.scores[AqSuyekBoard.HUMAN] == 1, "очко ушло нашедшему")
-	check(not b.is_over(), "партия продолжается — нужна вторая победа")
+func _test_defender_stuns_and_drops() -> void:
+	var m := _match()
+	var pos := _apart()
+	pos[0] = Vector2.ZERO
+	m.step(FRAME, pos)
+	pos[0] = Vector2(-300, 0)
+	pos[5] = Vector2(-290, 0)
+	var events := m.step(FRAME, pos)
+	check(_types(events).has("stunned"), "қорғаушы останавливает несущего касанием")
+	check(m.is_stunned(0) and m.stun_left(0) > AqSuyekMatch.STUN_TIME - 0.1, "остановлен на STUN_TIME")
+	check(m.carrier == -1 and m.bone == pos[0], "остановленный уронил сүйек там, где стоял")
+	m.step(AqSuyekMatch.STUN_TIME, pos)
+	check(not m.is_stunned(0), "через STUN_TIME снова в игре")
+
+func _test_defender_cooldown() -> void:
+	var m := _match()
+	var pos := _apart()
+	pos[5] = Vector2(0, 300)
+	pos[0] = Vector2(10, 300)
+	m.step(FRAME, pos)
+	m.step(AqSuyekMatch.STUN_TIME, pos)
+	check(not m.is_stunned(0), "остановка кончилась")
+	m.step(FRAME, pos)
+	check(not m.is_stunned(0), "пока қорғаушы перезаряжается, второй раз не останавливает")
+	m.step(AqSuyekMatch.DEFENDER_COOLDOWN, pos)
+	check(m.is_stunned(0), "после перезарядки останавливает снова")
+
+func _test_stunned_cannot_act() -> void:
+	var m := _match()
+	var pos := _apart()
+	pos[5] = Vector2(100, 0)
+	pos[1] = Vector2(110, 0)
+	m.step(FRAME, pos)
+	check(m.is_stunned(1), "іздеуші Көк остановлен")
+	pos[1] = Vector2(5, 0)
+	m.step(FRAME, pos)
+	check(m.carrier == -1, "остановленный не поднимает сүйек")
+
+func _test_teammates_do_not_interact() -> void:
+	var m := _match()
+	var pos := _apart()
+	pos[0] = Vector2.ZERO
+	m.step(FRAME, pos)
+	pos[1] = Vector2(10, 0)
+	pos[2] = Vector2(-10, 0)
+	m.step(AqSuyekMatch.STEAL_IMMUNITY + FRAME, pos)
+	check(m.carrier == 0 and not m.is_stunned(0), "свои не отбирают сүйек и не останавливают")
+
+func _test_timeout_is_a_round_without_points() -> void:
+	var m := _match()
+	var events := m.step(AqSuyekMatch.ROUND_TIME + 1.0, _apart())
+	check(_types(events).has("timeout") and not m.playing, "время вышло — раунд окончен")
+	check(m.scores == [0, 0] and m.round_index == 1, "раунд без очков всё равно засчитан как сыгранный")
 
 func _test_match_ends_at_two_wins() -> void:
-	var b := AqSuyekBoard.new()
-	var res := {}
-	for _round in 2:
-		b.current_player = AqSuyekBoard.HUMAN
-		b.bone = b.positions[AqSuyekBoard.HUMAN] + Vector2i.UP
-		b.steps[AqSuyekBoard.HUMAN] = 0
-		b.answer(true)
-		res = b.step(Vector2i.UP)
-	check(b.scores[AqSuyekBoard.HUMAN] == AqSuyekBoard.WINS_NEEDED, "две победы набраны")
-	check(b.is_over(), "партия завершилась на второй победе")
-	check(b.winner() == AqSuyekBoard.HUMAN, "победитель определён верно")
-	check(bool(res["finished"]), "разбор хода сообщил о конце партии")
+	var m := _match()
+	for i in 2:
+		check(not m.finished, "партия идёт перед раундом %d" % (i + 1))
+		_deliver(m, 3)
+		if not m.finished:
+			m.start_round(Vector2.ZERO)
+	check(m.finished and m.winner_team == RED, "две победы Қызыл — партия окончена, победил Қызыл")
+	check(m.round_index == 2, "третий раунд не понадобился")
 
-func _test_loser_starts_next_round() -> void:
-	var b := AqSuyekBoard.new()
-	b.bone = b.positions[AqSuyekBoard.HUMAN] + Vector2i.UP
-	b.answer(true)
-	b.step(Vector2i.UP)
-	check(b.current_player == AqSuyekBoard.BOT, "новый раунд начинает проигравший")
-	check(b.revealed.is_empty(), "поле в новом раунде чистое")
+func _test_draws_still_end_the_match() -> void:
+	var m := _match()
+	_deliver(m, 0)
+	for i in 2:
+		m.start_round(Vector2.ZERO)
+		m.step(AqSuyekMatch.ROUND_TIME + 1.0, _apart())
+	check(m.finished and m.winner_team == BLUE, "после трёх раундов побеждает команда с бо́льшим счётом")
+	var even := _match()
+	for i in AqSuyekMatch.ROUNDS:
+		even.step(AqSuyekMatch.ROUND_TIME + 1.0, _apart())
+		if not even.finished:
+			even.start_round(Vector2.ZERO)
+	check(even.finished and even.winner_team == -1, "ни одного очка за три раунда — ничья")
 
-## Экран показывает итог раунда уже после того, как доска пересобралась под
-## следующий, поэтому разбор хода обязан нести снимок доигранного поля. Без него
-## экран рисовал бы новый, ещё не найденный сүйек — то есть выдавал бы ответ.
-func _test_round_end_snapshot() -> void:
-	var b := AqSuyekBoard.new()
-	# Уводим сүйек в дальний угол: попадись он на первом же шаге, раунд закрылся
-	# бы раньше времени и проверка мерила бы совсем другую ситуацию.
-	b.bone = Vector2i(AqSuyekBoard.GRID - 1, AqSuyekBoard.GRID - 1)
-	b.answer(true)
-	b.step(Vector2i.UP)  # открываем клетку, чтобы снимку было что хранить
-	b.current_player = AqSuyekBoard.HUMAN
-	b.steps[AqSuyekBoard.HUMAN] = 1
-	var was_at: Vector2i = b.positions[AqSuyekBoard.HUMAN]
-	b.bone = was_at + Vector2i.UP
-	var hidden_at: Vector2i = b.bone
-	var res: Dictionary = b.step(Vector2i.UP)
+## Игрок id поднимает сүйек в центре и относит в свою көмбе.
+func _deliver(m: AqSuyekMatch, id: int) -> void:
+	var pos := _apart()
+	pos[id] = m.bone
+	m.step(FRAME, pos)
+	pos[id] = m.bases[m.teams[id]]
+	m.step(FRAME, pos)
 
-	check(res["bone"] == hidden_at, "разбор помнит, где сүйек лежал на самом деле")
-	# Сравнивать с новым местом сүйек нельзя: оно случайное и раз в двадцать три
-	# раза совпадёт со старым. Что доска уже пересобралась, видно по көмбе.
-	check(b.positions[AqSuyekBoard.HUMAN] == Vector2i(0, AqSuyekBoard.GRID - 1),
-		"доска уже вернула обоих в көмбе под новый раунд")
-	var snapshot: Array = res["final_positions"]
-	check(snapshot[AqSuyekBoard.HUMAN] == hidden_at, "снимок держит нашедшего на сүйек")
-	check(not res["final_revealed"].is_empty(), "снимок держит открытые клетки")
-	check(b.revealed.is_empty(), "а доска их уже стёрла — снимок не ссылка на неё")
+func _test_bot_targets() -> void:
+	var m := _match()
+	var pos := _apart()
+	var roam := Vector2(123, -45)
+	check(AqSuyekBrain.target(1, m, pos, false, roam) == roam, "сүйек не видно — бот ищет")
+	check(AqSuyekBrain.target(1, m, pos, true, roam) == m.bone, "сүйек видно — іздеуші бежит к нему")
+	pos[0] = Vector2.ZERO
+	m.step(FRAME, pos)
+	check(AqSuyekBrain.target(0, m, pos, true, roam) == BASES[BLUE], "несущий бежит к своей көмбе")
+	var chase := AqSuyekBrain.target(4, m, pos, true, roam)
+	check(chase.distance_to(pos[0]) <= AqSuyekBrain.LEAD + 0.1 and chase.x < pos[0].x,
+		"соперник догоняет несущего с упреждением к его көмбе: %s" % chase)
+	pos[3] = Vector2(-60, 0)
+	check(AqSuyekBrain.target(2, m, pos, true, roam) == pos[3],
+		"қорғаушы встречает соперника, ближайшего к своему несущему")
+	var cover := AqSuyekBrain.target(1, m, pos, true, roam)
+	check(cover.x < 0.0 and cover.distance_to(pos[0]) <= AqSuyekBrain.ESCORT_GAP + 0.1,
+		"свой іздеуші прикрывает несущего со стороны погони: %s" % cover)
+	var tackle := pos.duplicate()
+	tackle[5] = pos[0] + Vector2(10, 0)
+	m.step(FRAME, tackle)
+	check(m.is_stunned(0) and AqSuyekBrain.target(0, m, tackle, true, roam) == tackle[0],
+		"остановленный бот стоит на месте")
 
-func _test_bot_never_walks_off_grid() -> void:
-	seed(20260910)
-	var bot := AqSuyekBot.new()
-	var bad := 0
-	for _i in 400:
-		var b := AqSuyekBoard.new()
-		b.current_player = AqSuyekBoard.BOT
-		b.answer(true)
-		var direction := bot.choose_step(b)
-		if direction == Vector2i.ZERO:
-			continue
-		if not b.can_step(direction):
-			bad += 1
-	check(bad == 0, "компьютер не ходит за поле и без шагов (нарушений: %d)" % bad)
-
+## Партии ботов друг против друга по тем же правилам: все шестеро — боты,
+## бегут к точкам из AqSuyekBrain. Каждая партия обязана закончиться, а счёт —
+## сходиться с числом донесённых сүйек.
 func _test_random_self_play() -> void:
-	seed(20260910)
-	var bot := AqSuyekBot.new()
 	var unfinished := 0
-	var stuck := 0
-
-	for _g in SELF_PLAY_GAMES:
-		var b := AqSuyekBoard.new()
-		var moves := 0
-		while not b.is_over() and moves < MOVE_LIMIT:
-			if b.awaiting_answer():
-				b.answer(bot.answers_correctly())
-			var direction := bot.choose_step(b)
-			if direction == Vector2i.ZERO:
-				stuck += 1
-				break
-			b.step(direction)
-			moves += 1
-		if not b.is_over() and moves >= MOVE_LIMIT:
+	var score_mismatch := 0
+	var bad_carrier := 0
+	var delivered_total := 0
+	for game in SELF_PLAY_GAMES:
+		var m := _match()
+		m.start_round(_random_spot())
+		var pos := _spawn_positions()
+		var knows := [false, false]
+		var roam := _roam_points()
+		var delivered := 0
+		var frames := 0
+		# Три раунда по 90 секунд — потолок; дальше партия считается зависшей.
+		while not m.finished and frames * SIM_FRAME < AqSuyekMatch.ROUND_TIME * (AqSuyekMatch.ROUNDS + 1):
+			frames += 1
+			for id in 6:
+				var team: int = m.teams[id]
+				if not knows[team]:
+					knows[team] = m.carrier >= 0 or AqSuyekBrain.sees(team, m, pos)
+				if pos[id].distance_to(roam[id]) < 30.0:
+					roam[id] = _random_spot()
+				var target := AqSuyekBrain.target(id, m, pos, knows[team], roam[id])
+				var speed := SPEED * (AqSuyekMatch.CARRY_SPEED if m.carrier == id else 1.0)
+				if not m.is_stunned(id):
+					pos[id] = pos[id].move_toward(target, speed * SIM_FRAME).clamp(FIELD.position, FIELD.end)
+			for e in m.step(SIM_FRAME, pos):
+				if e["type"] == "delivered":
+					delivered += 1
+				if e["type"] == "round_over" and not m.finished:
+					m.start_round(_random_spot())
+					pos = _spawn_positions()
+					knows = [false, false]
+			if m.carrier >= 0 and m.roles[m.carrier] != SEEKER:
+				bad_carrier += 1
+		if not m.finished:
 			unfinished += 1
+		if delivered != m.scores[0] + m.scores[1]:
+			score_mismatch += 1
+		delivered_total += delivered
+	check(unfinished == 0, "все %d партий ботов закончились (не закончилось: %d)" % [SELF_PLAY_GAMES, unfinished])
+	check(score_mismatch == 0, "счёт всегда равен числу донесённых сүйек (расхождений: %d)" % score_mismatch)
+	check(bad_carrier == 0, "сүйек носят только іздеуші (нарушений: %d)" % bad_carrier)
+	check(delivered_total > SELF_PLAY_GAMES,
+		"боты действительно доносят сүйек: %d раз за %d партий" % [delivered_total, SELF_PLAY_GAMES])
 
-	check(stuck == 0, "нет позиций, из которых некуда шагнуть (%d)" % stuck)
-	check(unfinished == 0, "все %d партий завершились (не завершилось: %d)" % [SELF_PLAY_GAMES, unfinished])
+func _spawn_positions() -> Array[Vector2]:
+	var out: Array[Vector2] = []
+	for team in [BLUE, RED]:
+		for k in 3:
+			out.append(BASES[team] + Vector2(0, -60 + k * 60))
+	return out
+
+func _roam_points() -> Array[Vector2]:
+	var out: Array[Vector2] = []
+	for i in 6:
+		out.append(_random_spot())
+	return out
+
+func _random_spot() -> Vector2:
+	return Vector2(randf_range(-450, 450), randf_range(-400, 400))

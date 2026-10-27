@@ -274,36 +274,72 @@ func _test_togyz() -> void:
 # --- Ақ сүйек ----------------------------------------------------------------
 
 func _test_aq_suyek() -> void:
-	var n := await mount("res://scenes/ui/aq_suyek.tscn")
+	var n := await mount("res://scenes/world/aq_suyek.tscn")
 	if n == null:
 		return
-	check(n.get_node_or_null("Background") is PixelBackdrop, "ақ сүйек: пиксельный фон на месте")
-	check(n.get_node_or_null("WipBadge") == null, "ақ сүйек: наклейки «ӘЗІРЛЕНУДЕ» нет")
-	check((n.get_node("%Header") as ScreenHeader).back_pressed.get_connections().size() > 0,
-		"ақ сүйек: «Артқа» подключена")
-	var field := n.get_node("%Field") as AqSuyekField
-	check(field.cell_pressed.get_connections().size() > 0, "ақ сүйек: нажатия по полю подключены")
+	var constants: Dictionary = n.get_script().get_script_constant_map()
+	var players := n.get_node("Players")
+	check(players.get_child_count() == 6, "ақ сүйек: на поле две команды по трое")
+	var setup := n.find_child("SetupPanel", true, false)
+	check(setup != null, "ақ сүйек: перед партией — выбор роли")
+	if setup == null:
+		await unmount(n)
+		return
+	(setup.find_child("DefenderCard", true, false) as SelectableCard).pressed.emit()
+	(setup.find_child("StartBtn", true, false) as Button).pressed.emit()
+	await process_frame
+	var rules: AqSuyekMatch = n.get("_match")
+	check(rules != null and rules.roles[0] == AqSuyekMatch.Role.DEFENDER, "ақ сүйек: игрок взял выбранную роль")
+	check(rules != null and rules.roles.slice(0, 3).count(AqSuyekMatch.Role.SEEKER) == 2
+		and rules.roles.slice(3, 6).count(AqSuyekMatch.Role.SEEKER) == 2,
+		"ақ сүйек: в каждой команде два іздеуші и один қорғаушы")
+	if rules == null:
+		await unmount(n)
+		return
 
-	var options := n.get_node("%Options") as VBoxContainer
-	check(options.get_child_count() >= 2, "ақ сүйек: первый ход начинается с вопроса")
-	var board: AqSuyekBoard = n.get("_board")
-	# Верный ответ даёт шаги, после него поле принимает шаг в соседнюю клетку.
-	var answered := false
-	for btn: Button in options.get_children():
-		btn.pressed.emit()
-		answered = true
-		break
-	check(answered and not board.awaiting_answer(), "ақ сүйек: после ответа есть шаги")
-	var start: Vector2i = board.positions[AqSuyekBoard.HUMAN]
-	var target := start + Vector2i.RIGHT
-	# Клик по полю: центр клетки target в координатах поля.
-	await process_frame
-	var cell_px := float(AqSuyekField.CELL.get_width() + AqSuyekField.GAP)
-	var origin := (field.size - field.custom_minimum_size) / 2.0
-	check(field.cell_at(origin + (Vector2(target) + Vector2(0.5, 0.5)) * cell_px) == target,
-		"ақ сүйек: клик по центру клетки попадает в неё")
-	field.cell_pressed.emit(target)
-	await process_frame
-	check(board.positions[AqSuyekBoard.HUMAN] == target or board.round_index > 0,
-		"ақ сүйек: игрок шагнул в соседнюю клетку")
+	# Раунд 1: Көк іздеуші (id 1) поднимает сүйек и относит в свою көмбе.
+	await _aq_play_round(n, constants)
+	await _aq_deliver(rules, players, 1)
+	check(rules.scores == [1, 0], "ақ сүйек: донесённый сүйек — очко Көк топ, счёт %s" % [rules.scores])
+	await create_timer(float(constants["ROUND_PAUSE"]) + 0.3).timeout
+	check(n.find_child("QuestionPanel", true, false) != null, "ақ сүйек: следующий раунд снова с вопроса")
+
+	# Раунд 2: ещё одна доставка — партия до двух очков окончена.
+	await _aq_play_round(n, constants)
+	await _aq_deliver(rules, players, 1)
+	check(rules.finished and rules.winner_team == AqSuyekMatch.Team.BLUE, "ақ сүйек: два очка — победа Көк топ")
+	await create_timer(float(constants["ROUND_PAUSE"]) + 0.3).timeout
+	var end := n.find_child("EndPanel", true, false)
+	check(end != null and end.find_child("AgainBtn", true, false) != null
+		and end.find_child("MenuBtn", true, false) != null,
+		"ақ сүйек: итоги с кнопками «Қайта ойнау» и «Бас мәзір»")
 	await unmount(n)
+
+
+## Ответить на вопрос, бросить сүйек и дождаться конца обратного отсчёта.
+func _aq_play_round(n: Node, constants: Dictionary) -> void:
+	var question := n.find_child("QuestionPanel", true, false)
+	check(question != null, "ақ сүйек: раунд начинается с вопроса о традициях")
+	if question == null:
+		return
+	var options := question.find_child("Options", true, false)
+	check(options != null and options.get_child_count() >= 2, "ақ сүйек: у вопроса есть варианты")
+	(options.get_child(0) as Button).pressed.emit()
+	await process_frame
+	var throw := question.find_child("ThrowBtn", true, false) as Button
+	check(throw != null, "ақ сүйек: после ответа — кнопка броска")
+	throw.pressed.emit()
+	await create_timer(float(constants["HEADSTART"]) + 0.2).timeout
+	check(int(n.get("_phase")) == int(constants["Phase"]["PLAYING"]), "ақ сүйек: отсчёт прошёл, раунд идёт")
+
+
+## Перенести игрока id к сүйек, а потом в его көмбе — как будто он добежал сам.
+func _aq_deliver(rules: AqSuyekMatch, players: Node, id: int) -> void:
+	var runner := players.get_child(id) as Node2D
+	runner.global_position = rules.bone
+	await physics_frame
+	await physics_frame
+	check(rules.carrier == id, "ақ сүйек: іздеуші поднял сүйек")
+	runner.global_position = rules.bases[rules.teams[id]]
+	await physics_frame
+	await physics_frame

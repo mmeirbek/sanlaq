@@ -23,7 +23,7 @@ const SCENES := {
 	"mode_select": "res://scenes/ui/mode_select.tscn",
 	"abai_says": "res://scenes/ui/abai_says.tscn",
 	"togyz_qumalaq": "res://scenes/ui/togyz_qumalaq.tscn",
-	"aq_suyek": "res://scenes/ui/aq_suyek.tscn",
+	"aq_suyek": "res://scenes/world/aq_suyek.tscn",
 	"lobby": "res://scenes/ui/lobby.tscn",
 	"wardrobe": "res://scenes/ui/wardrobe.tscn",
 	"codex": "res://scenes/ui/codex.tscn",
@@ -73,6 +73,7 @@ func _init() -> void:
 		await _shoot("briefing_" + mode_id, "res://scenes/ui/mode_briefing.tscn")
 	for role in GAME_RUNS:
 		await _shoot_game(role, GAME_RUNS[role])
+	await _shoot_aq_suyek()
 
 	print("\nготово: ", _out_dir)
 	quit()
@@ -108,6 +109,31 @@ func _shoot_game(role: Roles.Role, shots: Dictionary) -> void:
 		if _wanted(name):
 			_capture(name)
 	await _unmount(game)
+
+
+## Ақ сүйек дальше выбора роли (его снимает общий цикл): вопрос перед раундом
+## и поле через пару секунд игры после броска.
+func _shoot_aq_suyek() -> void:
+	if not ["aq_suyek_question", "aq_suyek_play"].any(_wanted):
+		return
+	var field := _mount(SCENES["aq_suyek"])
+	if field == null:
+		return
+	for _i in 6:
+		await process_frame
+	(field.find_child("StartBtn", true, false) as Button).pressed.emit()
+	for _i in 12:
+		await process_frame
+	if _wanted("aq_suyek_question"):
+		_capture("aq_suyek_question")
+	var question := field.find_child("QuestionPanel", true, false)
+	(question.find_child("Options", true, false).get_child(0) as Button).pressed.emit()
+	await process_frame
+	(question.find_child("ThrowBtn", true, false) as Button).pressed.emit()
+	await create_timer(5.0).timeout
+	if _wanted("aq_suyek_play"):
+		_capture("aq_suyek_play")
+	await _unmount(field)
 
 
 ## Квиз как после поимки первого бегуна.
