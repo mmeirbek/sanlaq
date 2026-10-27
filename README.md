@@ -175,7 +175,20 @@ godot --path . --script tools/screenshot_screens.gd -- --size=1560x720   # ск�
 ## Сборка
 
 Web-сборку делает CI. Вручную: Editor → Manage Export Templates (4.7) → Project →
-Export → пресет Web, Windows, Linux, macOS или Android.
+Export → пресет Web или Windows.
+
+**macOS** — скриптом, не из меню экспорта (только на Mac):
+
+```
+GODOT=~/Downloads/Godot.app/Contents/MacOS/Godot tools/build_macos.sh
+```
+
+Получится `export/macos/Sanlaq.app` (Intel и Apple Silicon) и архив
+`export/macos/Sanlaq-macos.zip` для передачи. Скрипт переименовывает файлы внутри
+пакета латиницей и подписывает его ad-hoc: с именем «САҢЛАҚ - Sañlaq» macOS подпись не
+проверяет. Сертификата Apple нет, поэтому на чужом Mac первый запуск — правой кнопкой →
+«Открыть» (или Системные настройки → Конфиденциальность и безопасность → «Всё равно
+открыть»).
 
 ## Совместная работа
 
