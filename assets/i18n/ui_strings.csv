@@ -330,7 +330,7 @@ BEST STREAK: %d
 Нұрлан,Нұрлан,Nurlan
 Жанар,Жанар,Zhanar
 ТАРИХИ ОЙЫН,ТАРИХИ ОЙЫН,HISTORY GAME
-Тарих жолы,Тарих жолы,Path of History
+Дала жолы,Дала жолы,Path of the Steppe
 "Батырды таңдап, оның тарауын өт: ауылды арала, елмен сөйлес, тапсырмалар мен ойындарды орында.","Батырды таңдап, оның тарауын өт: ауылды арала, елмен сөйлес, тапсырмалар мен ойындарды орында.","Choose a hero and play through their chapter: walk the aul, talk to people, finish tasks and games."
 АЯҚТАЛДЫ,АЯҚТАЛДЫ,COMPLETED
 E · ЖОЛҒА ШЫҒУ,E · ЖОЛҒА ШЫҒУ,E · SET OFF
@@ -342,12 +342,12 @@ E · ЖОЛҒА ШЫҒУ,E · ЖОЛҒА ШЫҒУ,E · SET OFF
 Тарау аяқталды,Тарау аяқталды,Chapter complete
 Жолға шық: %s,Жолға шық: %s,Set off: %s
 ЖОЛҒА ШЫҒУ,ЖОЛҒА ШЫҒУ,SET OFF
-ТАРИХ ЖОЛЫ · ТҰЛҒАЛАР МЕН ОҚИҒАЛАР,ТАРИХ ЖОЛЫ · ТҰЛҒАЛАР МЕН ОҚИҒАЛАР,TARIKH ZHOLY · PEOPLE AND EVENTS
-"Батырлармен бірге Тарих жолынан өтіп, жаңа беттерді аш.","Батырлармен бірге Тарих жолынан өтіп, жаңа беттерді аш.",Travel the Path of History with the batyrs and open new pages.
+ДАЛА ЖОЛЫ · ТҰЛҒАЛАР МЕН ОҚИҒАЛАР,ДАЛА ЖОЛЫ · ТҰЛҒАЛАР МЕН ОҚИҒАЛАР,DALA ZHOLY · PEOPLE AND EVENTS
+"Батырлармен бірге Дала жолынан өтіп, жаңа беттерді аш.","Батырлармен бірге Дала жолынан өтіп, жаңа беттерді аш.",Travel the Path of the Steppe with the batyrs and open new pages.
 КИІМ,КИІМ,CLOTHES
 ТАРИХ,ТАРИХ,HISTORY
 %s — осы тарауда ашылады.,%s — осы тарауда ашылады.,%s — opens in this chapter.
-Тарих жолында ашылады.,Тарих жолында ашылады.,Opens on the Path of History.
+Дала жолында ашылады.,Дала жолында ашылады.,Opens on the Path of the Steppe.
 Әлі ашылмаған,Әлі ашылмаған,Not yet opened
 E · ӘРІ ҚАРАЙ,E · ӘРІ ҚАРАЙ,E · NEXT
 АСЫҚ АТУ,АСЫҚ АТУ,ASYK ATU
@@ -421,6 +421,6 @@ WASD / стрелкалар — жүру · E — сөйлесу · Esc — үз
 СУЫҚ,СУЫҚ,COLD
 ТАБЫЛДЫ: %s,ТАБЫЛДЫ: %s,FOUND: %s
 МҰРА · ЭНЦИКЛОПЕДИЯ,МҰРА · ЭНЦИКЛОПЕДИЯ,HERITAGE · ENCYCLOPEDIA
-ТАРИХ ЖОЛЫ,ТАРИХ ЖОЛЫ,PATH OF HISTORY
+ДАЛА ЖОЛЫ,ДАЛА ЖОЛЫ,PATH OF THE STEPPE
 БАТЫРДЫ ТАҢДА · ОНЫҢ ТАРАУЫН ӨТ,БАТЫРДЫ ТАҢДА · ОНЫҢ ТАРАУЫН ӨТ,CHOOSE A BATYR · PLAY THROUGH THEIR CHAPTER
 ТАҢДА · 1 НЕМЕСЕ 2,ТАҢДА · 1 НЕМЕСЕ 2,CHOOSE · 1 OR 2

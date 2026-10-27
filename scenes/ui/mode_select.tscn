@@ -10,7 +10,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/modes/abai_says.png" id="8_art"]
 [ext_resource type="Texture2D" path="res://assets/sprites/modes/togyz_qumalaq.png" id="9_art"]
 [ext_resource type="Texture2D" path="res://assets/sprites/modes/aq_suyek.png" id="10_art"]
-[ext_resource type="Texture2D" path="res://assets/sprites/modes/tarikh_zholy.png" id="11_art"]
+[ext_resource type="Texture2D" path="res://assets/sprites/modes/dala_zholy.png" id="11_art"]
 
 [node name="ModeSelect" type="Control"]
 layout_mode = 3
@@ -241,7 +241,7 @@ text = "ТАРИХИ ОЙЫН"
 [node name="Name" type="Label" parent="Cards/StoryCard/VBox"]
 layout_mode = 2
 theme_type_variation = &"HeadingLabel"
-text = "Тарих жолы"
+text = "Дала жолы"
 
 [node name="Desc" type="Label" parent="Cards/StoryCard/VBox"]
 layout_mode = 2

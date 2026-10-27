@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Переносит контент «Тарих жолы» из atilla в ресурсы Godot.
+"""Переносит контент «Дала жолы» из atilla в ресурсы Godot.
 
     python tools/story/port_atilla.py --atilla ~/Desktop/atilla
 

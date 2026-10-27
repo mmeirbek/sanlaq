@@ -74,7 +74,7 @@ game.tscn
 - Свойства одежды — поля `ClothingItem` (`slow_duration_mult`, `visibility_mult`,
   `dry_speed_mult`), игрок их перемножает.
 
-## Тарих жолы (`scenes/story/`, `scripts/story/`)
+## Дала жолы (`scenes/story/`, `scripts/story/`)
 
 ```
 hero_select.tscn         карусель трёх героев, прогресс и «БАСТАУ / ЖАЛҒАСТЫРУ / ҚАЙТА ОЙНАУ»

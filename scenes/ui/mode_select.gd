@@ -19,12 +19,12 @@ func _ready() -> void:
 		var mode_id: String = MODES[card_name][0]
 		(get_node("%" + card_name) as SelectableCard).pressed.connect(_open_mode.bind(mode_id))
 		(get_node("%" + MODES[card_name][1]) as Button).pressed.connect(_open_mode.bind(mode_id))
-	# «Тарих жолы» объясняет себя сам: выбор героя и заставка главы.
+	# «Дала жолы» объясняет себя сам: выбор героя и заставка главы.
 	(%StoryCard as SelectableCard).pressed.connect(_open_story)
 	(%StoryPlayBtn as Button).pressed.connect(_open_story)
 
 func _open_story() -> void:
-	Telemetry.log_event("button_press", {"button": "mode_tarikh_zholy"})
+	Telemetry.log_event("button_press", {"button": "mode_dala_zholy"})
 	SceneRouter.go_to_hero_select()
 
 func _open_mode(mode_id: String) -> void:

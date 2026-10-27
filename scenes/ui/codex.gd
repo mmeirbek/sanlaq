@@ -1,7 +1,7 @@
 extends Control
 ## Энциклопедия: два раздела. «Киім» — коллекция одежды по слотам и описание
 ## вещи с иллюстрацией (иконка и персонаж, на котором она надета). «Тарих» —
-## статьи «Тарих жолы» по рубрикам; закрытая статья подсказывает, в какой
+## статьи «Дала жолы» по рубрикам; закрытая статья подсказывает, в какой
 ## главе она открывается. Статьи общие для всех героев.
 
 const RARITY_NAMES := {
@@ -10,9 +10,9 @@ const RARITY_NAMES := {
 	ClothingItem.Rarity.LEGENDARY: "Аңыз",
 }
 const CATEGORIES := ["ТҰЛҒАЛАР", "ОҚИҒАЛАР", "ЖЕР-СУ", "МӘДЕНИЕТ"]
-const SUBTITLES := ["ҰЛТТЫҚ КИІМ · ТАРИХЫН ТАНЫ", "ТАРИХ ЖОЛЫ · ТҰЛҒАЛАР МЕН ОҚИҒАЛАР"]
+const SUBTITLES := ["ҰЛТТЫҚ КИІМ · ТАРИХЫН ТАНЫ", "ДАЛА ЖОЛЫ · ТҰЛҒАЛАР МЕН ОҚИҒАЛАР"]
 const LORE := ["Әр заттың тарихын оқып, өз образыңды жина.",
-	"Батырлармен бірге Тарих жолынан өтіп, жаңа беттерді аш."]
+	"Батырлармен бірге Дала жолынан өтіп, жаңа беттерді аш."]
 const CHARACTER_SCENE := preload("res://scenes/entities/character_visual.tscn")
 ## Персонаж в иллюстрации — ×3, целым масштабом.
 const MANNEQUIN_SCALE := 3
@@ -184,7 +184,7 @@ func _show_category(index: int) -> void:
 func _locked_hint(entry: EncyclopediaEntry) -> String:
 	if _where.has(entry.id):
 		return tr("%s — осы тарауда ашылады.") % tr(_where[entry.id])
-	return tr("Тарих жолында ашылады.")
+	return tr("Дала жолында ашылады.")
 
 
 func _select_entry(chosen: EntryCard) -> void:

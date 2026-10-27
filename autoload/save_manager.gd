@@ -15,7 +15,7 @@ var equipped: Dictionary = {}
 var cloth_pool: Array[String] = []
 var settings: Dictionary = {}
 var career: Dictionary = {"wins": 0, "streak": 0, "best_streak": 0, "knowledge": 0}
-## Прогресс «Тарих жолы»: формат — в шапке StoryState, плюс выбранный герой "hero".
+## Прогресс «Дала жолы»: формат — в шапке StoryState, плюс выбранный герой "hero".
 var story: Dictionary = {}
 
 func _ready() -> void:

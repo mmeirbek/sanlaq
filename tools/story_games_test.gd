@@ -1,5 +1,5 @@
 extends "res://tools/test_case.gd"
-## Правила мини-игр «Тарих жолы»: асық ату и жекпе-жек (scripts/story/games).
+## Правила мини-игр «Дала жолы»: асық ату и жекпе-жек (scripts/story/games).
 
 
 func _init() -> void:
